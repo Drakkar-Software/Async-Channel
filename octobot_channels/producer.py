@@ -19,7 +19,7 @@ from asyncio import Task
 from typing import Iterable
 
 from octobot_channels.consumer import Consumer
-from tools import get_logger
+from octobot_commons.logging.logging_util import get_logger
 
 
 class Producer:

@@ -20,7 +20,7 @@ from octobot_channels import CONSUMER_CALLBACK_TYPE
 from octobot_channels.channels.channel_instances import ChannelInstances
 from octobot_channels.consumer import Consumer
 from octobot_channels.producer import Producer
-from tools import get_logger
+from octobot_commons.logging.logging_util import get_logger
 
 """
 A Channel ****

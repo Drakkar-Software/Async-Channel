@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from tools.singleton import Singleton
+from octobot_commons.singleton import Singleton
 
 
 @Singleton

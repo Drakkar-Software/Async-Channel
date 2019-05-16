@@ -17,7 +17,7 @@ import asyncio
 from abc import ABCMeta, abstractmethod
 from asyncio import Queue, Task
 
-from tools import get_logger
+from octobot_commons.logging.logging_util import get_logger
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE
 
