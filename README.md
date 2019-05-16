@@ -1,1 +1,1 @@
-# OctoBot-Core
+# OctoBot-Channels
