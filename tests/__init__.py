@@ -13,11 +13,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from typing import Callable, NewType
-
-PROJECT_NAME = "OctoBot-Channels"
-VERSION = "0.0.1"  # major.minor.revision
-
-CONSUMER_CALLBACK_TYPE = NewType('CallbackType', Callable[..., None])
-
-CHANNEL_WILDCARD = "*"
