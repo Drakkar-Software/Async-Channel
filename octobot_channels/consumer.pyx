@@ -1,3 +1,4 @@
+#cython: language_level=2
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,27 +15,22 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
-from abc import ABCMeta, abstractmethod
-from asyncio import Queue, Task
+from queue import Queue
 
 from octobot_commons.logging.logging_util import get_logger
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE
 
-
-class Consumer:
-    __metaclass__ = ABCMeta
-
+cdef class Consumer:
     def __init__(self, callback: CONSUMER_CALLBACK_TYPE, size: int = 0, filter_size: bool = False):
         self.logger = get_logger(self.__class__.__name__)
 
-        self.queue: Queue = Queue(maxsize=size)
-        self.callback: CONSUMER_CALLBACK_TYPE = callback
-        self.consume_task: Task = None
-        self.should_stop: bool = False
-        self.filter_size: bool = filter_size
+        self.queue = Queue(maxsize=size)
+        self.callback = callback
+        self.consume_task = None
+        self.should_stop = False
+        self.filter_size = filter_size
 
-    @abstractmethod
     async def consume(self):
         """
         Should implement self.queue.get() in a while loop
@@ -46,23 +42,23 @@ class Consumer:
         """
         raise NotImplemented("consume is not implemented")
 
-    def start(self):
+    cdef void start(self):
         """
         Should be implemented for consumer's non-triggered tasks
         :return:
         """
         pass
 
-    def stop(self):
+    cdef void stop(self):
         """
         Stops non-triggered tasks management
         :return:
         """
         self.should_stop = True
 
-    def create_task(self):
+    cdef void create_task(self):
         self.consume_task = asyncio.create_task(self.consume())
 
-    def run(self):
+    cdef void run(self):
         self.start()
         self.create_task()

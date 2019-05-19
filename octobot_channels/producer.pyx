@@ -1,3 +1,4 @@
+#cython: language_level=2
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,25 +15,15 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
-from abc import ABCMeta
-from asyncio import Task
-from typing import Iterable
 
-from octobot_channels.consumer import Consumer
 from octobot_commons.logging.logging_util import get_logger
 
-
-class Producer:
-    __metaclass__ = ABCMeta
-
+cdef class Producer:
     def __init__(self, channel):
         self.channel = channel
         self.logger = get_logger(self.__class__.__name__)
-
-        # List of consumer queues to be fill
-        self.consumers: Iterable[Consumer] = None
-        self.produce_task: Task = None
-        self.should_stop: bool = False
+        self.produce_task = None
+        self.should_stop = False
 
     async def send(self, **kwargs):
         """
@@ -73,7 +64,7 @@ class Producer:
         """
         self.should_stop = True
 
-    def create_task(self):
+    cdef void create_task(self):
         self.produce_task = asyncio.create_task(self.start())
 
     async def run(self):

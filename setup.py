@@ -14,13 +14,19 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 # from distutils.extension import Extension
+from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 from setuptools import find_packages
 from setuptools import setup, Extension
 
 from octobot_channels import PROJECT_NAME, VERSION
 
-ext_modules = []
+ext_modules = [
+    Extension("octobot_channels.consumer", ["octobot_channels/consumer.pyx"]),
+    Extension("octobot_channels.producer", ["octobot_channels/producer.pyx"]),
+    Extension("octobot_channels.channels.channel", ["octobot_channels/channels/channel.pyx"]),
+    Extension("octobot_channels.channels.exchange_channel", ["octobot_channels/channels/exchange_channel.pyx"]),
+]
 
 PACKAGES = find_packages(exclude=["tests"])
 
@@ -49,7 +55,7 @@ setup(
     data_files=[],
     setup_requires=['Cython'],
     python_requires=REQUIRES_PYTHON,
-    ext_modules=ext_modules,
+    ext_modules=cythonize(ext_modules),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Operating System :: OS Independent',

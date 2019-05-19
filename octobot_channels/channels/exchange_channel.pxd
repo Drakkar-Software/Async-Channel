@@ -1,3 +1,4 @@
+#cython: language_level=2
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -13,12 +14,25 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from abc import ABCMeta
+from octobot_channels.channels.channel cimport Channel, Channels
+from octobot_channels.consumer cimport Consumer
 
+cdef class ExchangeChannel(Channel):
+    cdef object exchange_manager # TODO replace
+    cdef object exchange # TODO replace
 
-class ExchangeUpdater:
-    __metaclass__ = ABCMeta
+    cdef int filter_send_counter
+    cdef bint should_send_filter
 
-    def __init__(self):
-        # TODO
-        pass
+    cdef void will_send(self)
+    cdef void has_send(self)
+
+    cdef list get_consumers_by_timeframe(self, object time_frame, str symbol)
+
+    cdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol, object time_frame)
+
+    @staticmethod
+    cdef void _init_consumer_if_necessary(list consumer_list, str key)
+
+cdef class ExchangeChannels(Channels):
+    pass

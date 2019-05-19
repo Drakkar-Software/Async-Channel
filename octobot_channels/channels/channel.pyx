@@ -1,3 +1,4 @@
+#cython: language_level=2
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -13,35 +14,28 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from abc import abstractmethod, ABCMeta
-from typing import Dict
+
+from octobot_commons.logging.logging_util import get_logger
+from typing import List
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE
 from octobot_channels.channels.channel_instances import ChannelInstances
-from octobot_channels.consumer import Consumer
-from octobot_channels.producer import Producer
-from octobot_commons.logging.logging_util import get_logger
 
 """
 A Channel ****
 """
 
 
-class Channel:
-    __metaclass__ = ABCMeta
-
-    CHANNEL_NAMES_SEPARATORS = "#"
-
+cdef class Channel(object):
     def __init__(self):
-        self.producer: Producer = None
-        self.consumers: Dict[Consumer] = {}
+        self.producer = None
+        self.consumers = []
         self.logger = get_logger(self.__class__.__name__)
 
     @classmethod
-    def get_name(cls):
+    def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    @abstractmethod
     async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs):
         """
         Create an appropriate consumer instance for this channel
@@ -51,7 +45,7 @@ class Channel:
         """
         raise NotImplemented("new consumer is not implemented")
 
-    def get_consumers(self, **kwargs):
+    def get_consumers(self, **kwargs) -> List:
         """
         Should be overwritten according to the class needs
         :param kwargs:
@@ -81,9 +75,9 @@ class Channel:
             await self.producer.run()
 
 
-class Channels:
+cdef class Channels:
     @staticmethod
-    def set_chan(chan: Channel, name: str = None):
+    def set_chan(Channel chan, str name) -> None:
         chan_name = chan.get_name() if name else name
         if chan_name not in ChannelInstances.instance().channels:
             ChannelInstances.instance().channels[chan_name] = chan
@@ -91,5 +85,5 @@ class Channels:
             raise ValueError(f"Channel {chan_name} already exists.")
 
     @staticmethod
-    def get_chan(chan_name: str, **kwargs) -> Channel:
+    def get_chan(str chan_name, **kwargs) -> Channel:
         return ChannelInstances.instance().channels[chan_name]
