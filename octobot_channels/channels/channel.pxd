@@ -20,7 +20,7 @@ from octobot_channels.producer cimport Producer
 
 cdef class Channel(object):
     cdef Producer producer
-    cdef list consumers
+    cdef dict consumers
     cdef object logger
 
 cdef class Channels:

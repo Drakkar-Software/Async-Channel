@@ -20,7 +20,7 @@ Handles strategy evaluations
 from asyncio import CancelledError
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE
-from octobot_channels.channels.exchange_channel import ExchangeChannel
+from octobot_channels.channels.exchange.exchange_channel import ExchangeChannel
 from octobot_channels.consumer import Consumer
 from octobot_channels.producer import Producer
 

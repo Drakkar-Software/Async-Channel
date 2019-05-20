@@ -14,17 +14,26 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_channels.channels.channel cimport Channel, Channels
+from octobot_channels.consumer cimport Consumer
 
-cdef class Consumer:
-    cdef object logger          # object type = Logger
-    cdef object queue           # object type = asyncio.Queue
-    cdef object callback        # object type = CONSUMER_CALLBACK_TYPE
-    cdef object consume_task    # object type = asyncio.Task
+cdef class ExchangeChannel(Channel):
+    cdef object exchange_manager # TODO replace
+    cdef object exchange # TODO replace
 
-    cdef bint should_stop
-    cdef bint filter_size
+    cdef int filter_send_counter
+    cdef bint should_send_filter
 
-    cdef void start(self)
-    cdef void stop(self)
-    cdef void create_task(self)
-    cdef void run(self)
+    cdef void will_send(self)
+    cdef void has_send(self)
+
+    cdef object get_consumers(self, str symbol)
+    cdef list get_consumers_by_timeframe(self, object time_frame, str symbol)
+
+    cdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol =*, object time_frame =*)
+
+    @staticmethod
+    cdef void _init_consumer_if_necessary(list consumer_list, str key)
+
+cdef class ExchangeChannels(Channels):
+    pass

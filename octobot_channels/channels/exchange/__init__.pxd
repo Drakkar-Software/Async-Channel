@@ -1,4 +1,3 @@
-#cython: language_level=2
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,17 +13,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-cdef class Consumer:
-    cdef object logger          # object type = Logger
-    cdef object queue           # object type = asyncio.Queue
-    cdef object callback        # object type = CONSUMER_CALLBACK_TYPE
-    cdef object consume_task    # object type = asyncio.Task
-
-    cdef bint should_stop
-    cdef bint filter_size
-
-    cdef void start(self)
-    cdef void stop(self)
-    cdef void create_task(self)
-    cdef void run(self)

@@ -29,7 +29,7 @@ A Channel ****
 cdef class Channel(object):
     def __init__(self):
         self.producer = None
-        self.consumers = []
+        self.consumers = {}
         self.logger = get_logger(self.__class__.__name__)
 
     @classmethod

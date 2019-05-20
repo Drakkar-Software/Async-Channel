@@ -14,7 +14,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from typing import List
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE, CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
@@ -44,7 +43,7 @@ cdef class ExchangeChannel(Channel):
             self.filter_send_counter = 0
             self.should_send_filter = False
 
-    def get_consumers(self, str symbol) -> List:
+    cdef object get_consumers(self, str symbol):
         if not symbol:
             symbol = CHANNEL_WILDCARD
         try:
@@ -72,7 +71,7 @@ cdef class ExchangeChannel(Channel):
             ExchangeChannel._init_consumer_if_necessary(self.consumers[symbol], time_frame)
             return self.consumers[symbol][time_frame]
 
-    cdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol, object time_frame):
+    cdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol = CHANNEL_WILDCARD, object time_frame = None):
         if symbol:
             # create dict and list if required
             ExchangeChannel._init_consumer_if_necessary(self.consumers, symbol)
@@ -84,7 +83,7 @@ cdef class ExchangeChannel(Channel):
             else:
                 self.consumers[symbol].append(consumer)
         else:
-            self.consumers = [consumer]
+            self.consumers[CHANNEL_WILDCARD] = [consumer]
         consumer.run()
         self.logger.info(f"Consumer started for symbol {symbol}")
 

@@ -15,13 +15,13 @@
 #  License along with this library.
 from asyncio import CancelledError
 
-from octobot_channels import CHANNEL_WILDCARD, CONSUMER_CALLBACK_TYPE
-from octobot_channels.channels.exchange_channel import ExchangeChannel
-from octobot_channels.consumer import Consumer
-from octobot_channels.producer import Producer
+from octobot_channels import CHANNEL_WILDCARD
+from octobot_channels.channels.exchange.exchange_channel cimport ExchangeChannel
+from octobot_channels.consumer cimport Consumer
+from octobot_channels.producer cimport Producer
 
 
-class RecentTradeProducer(Producer):
+cdef class RecentTradeProducer(Producer):
     async def push(self, symbol, recent_trade, forced=False):
         await self.perform(symbol, recent_trade, forced=forced)
 
@@ -47,7 +47,7 @@ class RecentTradeProducer(Producer):
             })
 
 
-class RecentTradeConsumer(Consumer):
+cdef class RecentTradeConsumer(Consumer):
     async def consume(self):
         while not self.should_stop:
             try:
@@ -57,11 +57,12 @@ class RecentTradeConsumer(Consumer):
                 self.logger.exception(f"Exception when calling callback : {e}")
 
 
-class RecentTradeChannel(ExchangeChannel):
+cdef class RecentTradeChannel(ExchangeChannel):
     FILTER_SIZE = 10
 
-    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE,
-                     size: int = 0,
-                     symbol: str = CHANNEL_WILDCARD,
-                     filter_size: bool = False):
+    cdef void new_consumer(self,
+                           object callback,
+                           int size = 0,
+                           str symbol = CHANNEL_WILDCARD,
+                           bint filter_size = False):
         self._add_new_consumer_and_run(RecentTradeConsumer(callback, size=size, filter_size=filter_size), symbol=symbol)

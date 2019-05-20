@@ -15,45 +15,47 @@
 #  License along with this library.
 
 """
-Handles matrix changes
+Handles balance changes
 """
 from asyncio import CancelledError
 
-from octobot_channels import CONSUMER_CALLBACK_TYPE
-from octobot_channels.channels.exchange.exchange_channel import ExchangeChannel
-from octobot_channels.consumer import Consumer
-from octobot_channels.producer import Producer
+from octobot_channels.channels.exchange.exchange_channel cimport ExchangeChannel
+from octobot_channels.consumer cimport Consumer
+from octobot_channels.producer cimport Producer
 
 
-class StrategyProducer(Producer):
-    async def push(self, evaluation):
-        await self.perform(evaluation)
+cdef class BalanceProducer(Producer):
+    async def push(self, balance):
+        await self.perform(balance)
 
-    async def perform(self, evaluation):
+    async def perform(self, balance):
         try:
-            await self.send(evaluation)
+            # if personnal_data.portfolio_is_initialized()
+            self.channel.exchange_manager.get_personal_data().set_portfolio(balance)  # TODO check if full or just update
+            await self.send(balance)
         except CancelledError:
             self.logger.info("Update tasks cancelled.")
         except Exception as e:
             self.logger.error(f"exception when triggering update: {e}")
             self.logger.exception(e)
 
-    async def send(self, evaluation):
-        if self.channel.consumer:
-            await self.channel.consumer.queue.put({"evaluation": evaluation})
+    async def send(self, balance):
+        for consumer in self.channel.get_consumers():
+            consumer.queue.put({
+                "balance": balance
+            })
 
 
-class StrategyConsumer(Consumer):
+cdef class BalanceConsumer(Consumer):
     async def consume(self):
         while not self.should_stop:
             try:
                 data = await self.queue.get()
-                await self.callback(evaluation=data["evaluation"])
-                # TODO watch for evaluation to trigger trading mode producer
+                await self.callback(balance=data["balance"])
             except Exception as e:
                 self.logger.exception(f"Exception when calling callback : {e}")
 
 
-class StrategyChannel(ExchangeChannel):
-    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0):
-        self._add_new_consumer_and_run(StrategyConsumer(callback, size=size))
+cdef class BalanceChannel(ExchangeChannel):
+    cdef void new_consumer(self, object callback, int size = 0):
+        self._add_new_consumer_and_run(BalanceConsumer(callback, size=size))
