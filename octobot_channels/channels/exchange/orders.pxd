@@ -26,4 +26,4 @@ cdef class OrdersConsumer(Consumer):
     pass
 
 cdef class OrdersChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size =*, str symbol =*)
+    pass

@@ -27,4 +27,4 @@ cdef class OHLCVConsumer(Consumer):
 
 
 cdef class OHLCVChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size =*, str symbol =*, object time_frame =*)
+    pass

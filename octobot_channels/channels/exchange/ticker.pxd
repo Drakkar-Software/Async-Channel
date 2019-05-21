@@ -26,4 +26,4 @@ cdef class TickerConsumer(Consumer):
     pass
 
 cdef class TickerChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size =*, str symbol =*)
+    pass

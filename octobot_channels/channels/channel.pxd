@@ -19,9 +19,9 @@ from octobot_channels.producer cimport Producer
 
 
 cdef class Channel(object):
-    cdef Producer producer
-    cdef dict consumers
-    cdef object logger
+    cdef public Producer producer
+    cdef public dict consumers
+    cdef public object logger
 
 cdef class Channels:
     pass

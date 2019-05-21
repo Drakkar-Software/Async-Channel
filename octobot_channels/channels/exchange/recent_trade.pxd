@@ -28,4 +28,4 @@ cdef class RecentTradeConsumer(Consumer):
 
 
 cdef class RecentTradeChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size =*, str symbol =*, bint filter_size =*)
+    pass

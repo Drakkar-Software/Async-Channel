@@ -72,7 +72,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     ext_modules=cythonize(ext_modules),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',

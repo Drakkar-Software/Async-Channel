@@ -32,7 +32,7 @@ cdef class ExchangeChannel(Channel):
         self.filter_send_counter = 0
         self.should_send_filter = False
 
-    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, **kwargs):
+    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, **kwargs):
         raise NotImplemented("new consumer is not implemented")
 
     cdef void will_send(self):
@@ -88,7 +88,7 @@ cdef class ExchangeChannel(Channel):
         self.logger.info(f"Consumer started for symbol {symbol}")
 
     @staticmethod
-    cdef void _init_consumer_if_necessary(list consumer_list, str key):
+    cdef void _init_consumer_if_necessary(dict consumer_list, str key):
         if key not in consumer_list:
             consumer_list[key] = []
 

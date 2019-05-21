@@ -19,6 +19,7 @@ Handles balance changes
 """
 from asyncio import CancelledError
 
+from octobot_channels import CONSUMER_CALLBACK_TYPE
 from octobot_channels.channels.exchange.exchange_channel cimport ExchangeChannel
 from octobot_channels.consumer cimport Consumer
 from octobot_channels.producer cimport Producer
@@ -57,5 +58,5 @@ cdef class BalanceConsumer(Consumer):
 
 
 cdef class BalanceChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size = 0):
+    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size:int = 0):
         self._add_new_consumer_and_run(BalanceConsumer(callback, size=size))

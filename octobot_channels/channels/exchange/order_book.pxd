@@ -28,4 +28,4 @@ cdef class OrderBookConsumer(Consumer):
 
 
 cdef class OrderBookChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size =*, str symbol =*)
+    pass

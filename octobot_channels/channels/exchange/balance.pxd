@@ -31,4 +31,4 @@ cdef class BalanceConsumer(Consumer):
     pass
 
 cdef class BalanceChannel(ExchangeChannel):
-    cdef void new_consumer(self, object callback, int size =*)
+    pass

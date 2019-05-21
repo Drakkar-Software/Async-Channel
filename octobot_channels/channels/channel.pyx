@@ -36,7 +36,7 @@ cdef class Channel(object):
     def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs):
+    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs):
         """
         Create an appropriate consumer instance for this channel
         :param callback: method that should be called when consuming the queue
