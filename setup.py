@@ -35,7 +35,7 @@ packages_list = ["octobot_channels.consumer",
                  "octobot_channels.channels.exchange.ticker"]
 
 PACKAGE_DATA = {
-    package: [f"{package.replace('.', '/')}.pxd"]
+    package: [f"{package.replace('.', '/')}.pxd", f"{package.replace('.', '/')}.pyx"]
     for package in packages_list
 }
 
