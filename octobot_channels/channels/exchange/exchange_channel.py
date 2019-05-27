@@ -1,4 +1,4 @@
-#cython: language_level=2
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -15,13 +15,13 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
+from octobot_channels.channels.channel import Channel, Channels
+
 from octobot_channels import CONSUMER_CALLBACK_TYPE, CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
-from octobot_channels.channels.channel cimport Channel, Channels
-from octobot_channels.consumer cimport Consumer
 
 
-cdef class ExchangeChannel(Channel):
+class ExchangeChannel(Channel):
     FILTER_SIZE = 1
 
     def __init__(self, exchange_manager):
@@ -35,15 +35,15 @@ cdef class ExchangeChannel(Channel):
     def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, **kwargs):
         raise NotImplemented("new consumer is not implemented")
 
-    cdef void will_send(self):
+    def will_send(self):
         self.filter_send_counter += 1
 
-    cdef void has_send(self):
+    def has_send(self):
         if self.should_send_filter:
             self.filter_send_counter = 0
             self.should_send_filter = False
 
-    cdef object get_consumers(self, str symbol):
+    def get_consumers(self, symbol):
         if not symbol:
             symbol = CHANNEL_WILDCARD
         try:
@@ -52,33 +52,32 @@ cdef class ExchangeChannel(Channel):
                     for consumer in self.consumers[symbol]
                     if not consumer.filter_size or self.should_send_filter]
         except KeyError:
-            ExchangeChannel._init_consumer_if_necessary(self.consumers, symbol)
+            self._init_consumer_if_necessary(self.consumers, symbol)
             return self.consumers[symbol]
 
-    cdef list get_consumers_by_timeframe(self, object time_frame, str symbol):
+    def get_consumers_by_timeframe(self, time_frame, symbol):
         if not symbol:
             symbol = CHANNEL_WILDCARD
-        cdef int should_send_filter
         try:
-            should_send_filter = self.filter_send_counter >= self.FILTER_SIZE
+            should_send_filter: int = self.filter_send_counter >= self.FILTER_SIZE
             if should_send_filter:
                 self.filter_send_counter = 0
             return [consumer
                     for consumer in self.consumers[symbol][time_frame]
                     if not consumer.filter_size or should_send_filter]
         except KeyError:
-            ExchangeChannel._init_consumer_if_necessary(self.consumers, symbol)
-            ExchangeChannel._init_consumer_if_necessary(self.consumers[symbol], time_frame)
+            self._init_consumer_if_necessary(self.consumers, symbol)
+            self._init_consumer_if_necessary(self.consumers[symbol], time_frame)
             return self.consumers[symbol][time_frame]
 
-    cdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol = CHANNEL_WILDCARD, object time_frame = None):
+    def _add_new_consumer_and_run(self, consumer, symbol=CHANNEL_WILDCARD, time_frame=None):
         if symbol:
             # create dict and list if required
-            ExchangeChannel._init_consumer_if_necessary(self.consumers, symbol)
+            self._init_consumer_if_necessary(self.consumers, symbol)
 
             if time_frame:
                 # create dict and list if required
-                ExchangeChannel._init_consumer_if_necessary(self.consumers[symbol], time_frame)
+                self._init_consumer_if_necessary(self.consumers[symbol], time_frame)
                 self.consumers[symbol][time_frame].append(consumer)
             else:
                 self.consumers[symbol].append(consumer)
@@ -88,14 +87,14 @@ cdef class ExchangeChannel(Channel):
         self.logger.info(f"Consumer started for symbol {symbol}")
 
     @staticmethod
-    cdef void _init_consumer_if_necessary(dict consumer_list, str key):
+    def _init_consumer_if_necessary(consumer_list: dict, key: str) -> None:
         if key not in consumer_list:
             consumer_list[key] = []
 
 
-cdef class ExchangeChannels(Channels):
+class ExchangeChannels(Channels):
     @staticmethod
-    def set_chan(ExchangeChannel chan, str name) -> None:
+    def set_chan(chan: ExchangeChannel, name: str) -> None:
         chan_name = chan.get_name() if name else name
 
         try:
@@ -110,5 +109,5 @@ cdef class ExchangeChannels(Channels):
             raise ValueError(f"Channel {chan_name} already exists.")
 
     @staticmethod
-    def get_chan(str chan_name, str exchange_name) -> ExchangeChannel:
+    def get_chan(chan_name: str, exchange_name: str) -> ExchangeChannel:
         return ChannelInstances.instance().channels[exchange_name][chan_name]

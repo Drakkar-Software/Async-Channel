@@ -1,4 +1,4 @@
-#cython: language_level=2
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -15,50 +15,58 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
-from queue import Queue
 
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels import CONSUMER_CALLBACK_TYPE
 
-cdef class Consumer:
-    def __init__(self, callback: CONSUMER_CALLBACK_TYPE, size: int = 0, filter_size: bool = False):
+class Producer:
+    def __init__(self, channel):
+        self.channel = channel
         self.logger = get_logger(self.__class__.__name__)
-
-        self.queue = Queue(maxsize=size)
-        self.callback = callback
-        self.consume_task = None
+        self.produce_task = None
         self.should_stop = False
-        self.filter_size = filter_size
 
-    async def consume(self):
+    async def send(self, **kwargs):
         """
-        Should implement self.queue.get() in a while loop
-
-        while not self.should_stop:
-            self.callback(await self.queue.get())
-
+        Send to each consumer data though its queue
+        :param kwargs:
         :return:
         """
-        raise NotImplemented("consume is not implemented")
+        for consumer in self.consumers:
+            await consumer.queue.put(kwargs)
 
-    cdef void start(self):
+    async def push(self, **kwargs):
         """
-        Should be implemented for consumer's non-triggered tasks
-        :return:
+        Push notification that new data should be sent implementation
+        When nothing should be done on data : self.send()
+        :return: None
         """
         pass
 
-    cdef void stop(self):
+    async def start(self):
+        """
+        Should be implemented for producer's non-triggered tasks
+        :return: None
+        """
+        pass
+
+    async def perform(self, **kwargs):
+        """
+        Should implement producer's non-triggered tasks
+        Can be use to force producer to perform tasks
+        :return: None
+        """
+        pass
+
+    async def stop(self):
         """
         Stops non-triggered tasks management
-        :return:
+        :return: None
         """
         self.should_stop = True
 
-    cdef void create_task(self):
-        self.consume_task = asyncio.create_task(self.consume())
+    def create_task(self):
+        self.produce_task = asyncio.create_task(self.start())
 
-    cdef void run(self):
-        self.start()
+    async def run(self):
         self.create_task()

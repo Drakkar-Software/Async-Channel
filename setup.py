@@ -34,13 +34,8 @@ packages_list = ["octobot_channels.consumer",
                  "octobot_channels.channels.exchange.recent_trade",
                  "octobot_channels.channels.exchange.ticker"]
 
-PACKAGE_DATA = {
-    package: [f"{package.replace('.', '/')}.pxd", f"{package.replace('.', '/')}.pyx"]
-    for package in packages_list
-}
-
 ext_modules = [
-    Extension(package, [f"{package.replace('.', '/')}.pyx"])
+    Extension(package, [f"{package.replace('.', '/')}.py"])
     for package in packages_list]
 
 # long description from README file
@@ -59,7 +54,6 @@ setup(
     author_email='drakkar-software@protonmail.com',
     description='OctoBot project channels module',
     packages=PACKAGES,
-    package_data=PACKAGE_DATA,
     include_package_data=True,
     long_description=DESCRIPTION,
     install_requires=REQUIRED,

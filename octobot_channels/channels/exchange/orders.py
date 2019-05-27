@@ -13,50 +13,48 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-"""
-Handles balance changes
-"""
 from asyncio import CancelledError
 
-from octobot_channels import CONSUMER_CALLBACK_TYPE
-from octobot_channels.channels.exchange.exchange_channel cimport ExchangeChannel
-from octobot_channels.consumer cimport Consumer
-from octobot_channels.producer cimport Producer
+from octobot_channels import CHANNEL_WILDCARD, CONSUMER_CALLBACK_TYPE
+from octobot_channels.channels.exchange.exchange_channel import ExchangeChannel
+from octobot_channels.consumer import Consumer
+from octobot_channels.producer import Producer
 
 
-cdef class BalanceProducer(Producer):
-    async def push(self, balance):
-        await self.perform(balance)
+class OrdersProducer(Producer):
+    async def push(self, symbol, order):
+        await self.perform(symbol, order)
 
-    async def perform(self, balance):
+    async def perform(self, symbol, order):
         try:
-            # if personnal_data.portfolio_is_initialized()
-            self.channel.exchange_manager.get_personal_data().set_portfolio(balance)  # TODO check if full or just update
-            await self.send(balance)
+            if CHANNEL_WILDCARD in self.channel.consumers or symbol in self.channel.consumers:  # and personnal_data.orders_are_initialized()
+                self.channel.exchange_manager.get_personal_data().upsert_order(order.id, order)  # TODO check if exists
+                await self.send(symbol, order)
+                await self.send(CHANNEL_WILDCARD, order)
         except CancelledError:
             self.logger.info("Update tasks cancelled.")
         except Exception as e:
             self.logger.error(f"exception when triggering update: {e}")
             self.logger.exception(e)
 
-    async def send(self, balance):
-        for consumer in self.channel.get_consumers():
+    async def send(self, symbol, order):
+        for consumer in self.channel.get_consumers(symbol=symbol):
             consumer.queue.put({
-                "balance": balance
+                "symbol": symbol,
+                "order": order
             })
 
 
-cdef class BalanceConsumer(Consumer):
+class OrdersConsumer(Consumer):
     async def consume(self):
         while not self.should_stop:
             try:
                 data = await self.queue.get()
-                await self.callback(balance=data["balance"])
+                await self.callback(symbol=data["symbol"], order=data["order"])
             except Exception as e:
                 self.logger.exception(f"Exception when calling callback : {e}")
 
 
-cdef class BalanceChannel(ExchangeChannel):
-    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size:int = 0):
-        self._add_new_consumer_and_run(BalanceConsumer(callback, size=size))
+class OrdersChannel(ExchangeChannel):
+    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size: int = 0, symbol: str = CHANNEL_WILDCARD):
+        self._add_new_consumer_and_run(OrdersConsumer(callback, size=size), symbol=symbol)

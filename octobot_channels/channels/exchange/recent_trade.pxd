@@ -1,3 +1,4 @@
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -22,10 +23,8 @@ from octobot_channels.producer cimport Producer
 cdef class RecentTradeProducer(Producer):
     pass
 
-
 cdef class RecentTradeConsumer(Consumer):
     pass
-
 
 cdef class RecentTradeChannel(ExchangeChannel):
     pass

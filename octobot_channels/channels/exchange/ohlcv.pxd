@@ -1,3 +1,4 @@
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -24,7 +25,6 @@ cdef class OHLCVProducer(Producer):
 
 cdef class OHLCVConsumer(Consumer):
     pass
-
 
 cdef class OHLCVChannel(ExchangeChannel):
     pass

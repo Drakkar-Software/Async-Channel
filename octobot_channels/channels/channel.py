@@ -1,4 +1,4 @@
-#cython: language_level=2
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -26,7 +26,7 @@ A Channel ****
 """
 
 
-cdef class Channel(object):
+class Channel(object):
     def __init__(self):
         self.producer = None
         self.consumers = {}
@@ -75,9 +75,9 @@ cdef class Channel(object):
             await self.producer.run()
 
 
-cdef class Channels:
+class Channels:
     @staticmethod
-    def set_chan(Channel chan, str name) -> None:
+    def set_chan(chan: Channel, name: str):
         chan_name = chan.get_name() if name else name
         if chan_name not in ChannelInstances.instance().channels:
             ChannelInstances.instance().channels[chan_name] = chan
@@ -85,5 +85,5 @@ cdef class Channels:
             raise ValueError(f"Channel {chan_name} already exists.")
 
     @staticmethod
-    def get_chan(str chan_name, **kwargs) -> Channel:
+    def get_chan(chan_name: str, **kwargs) -> Channel:
         return ChannelInstances.instance().channels[chan_name]

@@ -16,12 +16,12 @@
 from asyncio import CancelledError
 
 from octobot_channels import CHANNEL_WILDCARD, CONSUMER_CALLBACK_TYPE
-from octobot_channels.channels.exchange.exchange_channel cimport ExchangeChannel
-from octobot_channels.consumer cimport Consumer
-from octobot_channels.producer cimport Producer
+from octobot_channels.channels.exchange.exchange_channel import ExchangeChannel
+from octobot_channels.consumer import Consumer
+from octobot_channels.producer import Producer
 
 
-cdef class OHLCVProducer(Producer):
+class OHLCVProducer(Producer):
     async def push(self, time_frame, symbol, candle):
         await self.perform(symbol, time_frame, candle)
 
@@ -52,7 +52,7 @@ cdef class OHLCVProducer(Producer):
             })
 
 
-cdef class OHLCVConsumer(Consumer):
+class OHLCVConsumer(Consumer):
     async def consume(self):
         while not self.should_stop:
             try:
@@ -62,6 +62,6 @@ cdef class OHLCVConsumer(Consumer):
                 self.logger.exception(f"Exception when calling callback : {e}")
 
 
-cdef class OHLCVChannel(ExchangeChannel):
+class OHLCVChannel(ExchangeChannel):
     def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size:int = 0, symbol:str = CHANNEL_WILDCARD, time_frame = None):
         self._add_new_consumer_and_run(OHLCVConsumer(callback, size=size), symbol=symbol, time_frame=time_frame)

@@ -16,12 +16,12 @@
 from asyncio import CancelledError
 
 from octobot_channels import CHANNEL_WILDCARD, CONSUMER_CALLBACK_TYPE
-from octobot_channels.channels.exchange.exchange_channel cimport ExchangeChannel
-from octobot_channels.consumer cimport Consumer
-from octobot_channels.producer cimport Producer
+from octobot_channels.channels.exchange.exchange_channel import ExchangeChannel
+from octobot_channels.consumer import Consumer
+from octobot_channels.producer import Producer
 
 
-cdef class RecentTradeProducer(Producer):
+class RecentTradeProducer(Producer):
     async def push(self, symbol, recent_trade, forced=False):
         await self.perform(symbol, recent_trade, forced=forced)
 
@@ -47,7 +47,7 @@ cdef class RecentTradeProducer(Producer):
             })
 
 
-cdef class RecentTradeConsumer(Consumer):
+class RecentTradeConsumer(Consumer):
     async def consume(self):
         while not self.should_stop:
             try:
@@ -57,7 +57,7 @@ cdef class RecentTradeConsumer(Consumer):
                 self.logger.exception(f"Exception when calling callback : {e}")
 
 
-cdef class RecentTradeChannel(ExchangeChannel):
+class RecentTradeChannel(ExchangeChannel):
     FILTER_SIZE = 10
 
     def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE,

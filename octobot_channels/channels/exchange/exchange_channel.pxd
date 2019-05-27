@@ -1,4 +1,4 @@
-#cython: language_level=2
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -24,16 +24,12 @@ cdef class ExchangeChannel(Channel):
     cdef int filter_send_counter
     cdef bint should_send_filter
 
-    cdef void will_send(self)
-    cdef void has_send(self)
+    cpdef void will_send(self)
+    cpdef void has_send(self)
 
-    cdef object get_consumers(self, str symbol)
-    cdef list get_consumers_by_timeframe(self, object time_frame, str symbol)
-
-    cdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol =*, object time_frame =*)
-
-    @staticmethod
-    cdef void _init_consumer_if_necessary(dict consumer_list, str key)
+    cpdef object get_consumers(self, str symbol)
+    cpdef list get_consumers_by_timeframe(self, object time_frame, str symbol)
+    cpdef void _add_new_consumer_and_run(self, Consumer consumer, str symbol =*, object time_frame =*)
 
 cdef class ExchangeChannels(Channels):
     pass

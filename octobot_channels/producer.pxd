@@ -1,4 +1,4 @@
-#cython: language_level=2
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -26,4 +26,4 @@ cdef class Producer:
 
     cdef bint should_stop
 
-    cdef void create_task(self)
+    cpdef void create_task(self)

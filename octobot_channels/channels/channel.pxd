@@ -1,4 +1,4 @@
-#cython: language_level=2
+# cython: language_level=3
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -24,4 +24,4 @@ cdef class Channel(object):
     cdef public object logger
 
 cdef class Channels:
-    pass
+     pass
