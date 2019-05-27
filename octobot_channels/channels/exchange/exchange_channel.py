@@ -14,6 +14,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_commons.logging.logging_util import get_logger
 
 from octobot_channels.channels.channel import Channel, Channels
 
@@ -110,4 +111,8 @@ class ExchangeChannels(Channels):
 
     @staticmethod
     def get_chan(chan_name: str, exchange_name: str) -> ExchangeChannel:
-        return ChannelInstances.instance().channels[exchange_name][chan_name]
+        try:
+            return ChannelInstances.instance().channels[exchange_name][chan_name]
+        except KeyError:
+            get_logger(__class__.__name__).error(f"Channel {chan_name} not found on {exchange_name}")
+            return None

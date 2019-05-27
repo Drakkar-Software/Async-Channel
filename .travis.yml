@@ -25,7 +25,7 @@ deploy:
       secure: 2KlzIQmvzteG7NQHV/V8AIdUKWjCkECEpvvodIN6eQxiOB+1AtRbOqKLIjtER0hahIwhpIIXz5Lt6VpNzqRiTLA7lJshGutVOyCzAtNlJxdZ7Jkr9mQw6CV4TWXXoNuF4XMgZcmwgloCClUCBYEPgSIKmmYfSUsIA3aOz94x9+B1deEq1z9ypJURqyNsrSFaYoUfOISK+7qVkFkvvLNVyD53Kos4bcf050XOphiL9rX4iE1mjDh4xU1U0N7G5v/kt+/ppoWj/lsKFaaO7K5JBvoU21UGLM9UXNeBObNy0OqJyYj4uPEs22rXStTYUc/4HRXBjZjVylBQ9nOE/JD/l/cQ2Kdgp77T6JaLPXhfeIi0LISpbhgWgibtKfHzCxgEZNW2GbfVWPkgx8cSy5pOy9oiCpmqsX87Cg5sOxvc65hbn0b5rCpvKIhuwur4ZRKQ62RqJSvF1f7vPrcT8AqgGWg7i2Ho70Vmb32FehSL/GiF7yufjxbC0hdtq7SyrncEWJM302eVw/nqabQqSS8UAbpP4kPmazjYgzleTQf0xT8UU4KFXc1DpggFRNuRAw3LziPLhsMQTRDHdKxINueD8BcaqURGZiQ3vQjxa0YbjFhSvi29KRPDA9t485dIYClUufWzN+Z41HYFnQ5jvA79R0goGRWv7xJ1aa5S/K1s/Po=
     skip_existing: true
     skip_cleanup: true
-    distributions: "sdist bdist_wheel"
+    distributions: "sdist"
     on:
       repo: Drakkar-Software/OctoBot-Channels
       branch: master

@@ -27,7 +27,6 @@ from octobot_channels.producer cimport Producer
 cdef class BalanceProducer(Producer):
     pass
 
-
 cdef class BalanceConsumer(Consumer):
     pass
 
