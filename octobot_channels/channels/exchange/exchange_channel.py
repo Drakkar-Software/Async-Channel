@@ -99,10 +99,10 @@ class ExchangeChannels(Channels):
         chan_name = chan.get_name() if name else name
 
         try:
-            exchange_chan = ChannelInstances.instance().channels[chan.exchange_manager.exchange.get_name()]
+            exchange_chan = ChannelInstances.instance().channels[chan.exchange_manager.exchange.name]
         except KeyError:
-            ChannelInstances.instance().channels[chan.exchange_manager.exchange.get_name()] = {}
-            exchange_chan = ChannelInstances.instance().channels[chan.exchange_manager.exchange.get_name()]
+            ChannelInstances.instance().channels[chan.exchange_manager.exchange.name] = {}
+            exchange_chan = ChannelInstances.instance().channels[chan.exchange_manager.exchange.name]
 
         if chan_name not in exchange_chan:
             exchange_chan[chan_name] = chan
