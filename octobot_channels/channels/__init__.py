@@ -13,20 +13,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_channels.channels.exchange.balance import BalanceChannel
-from octobot_channels.channels.exchange.ohlcv import OHLCVChannel
-from octobot_channels.channels.exchange.order_book import OrderBookChannel
-from octobot_channels.channels.exchange.orders import OrdersChannel
-from octobot_channels.channels.exchange.recent_trade import RecentTradeChannel
-from octobot_channels.channels.exchange.ticker import TickerChannel
 
 # General channels
 # TODO
-
-# Exchange channels
-TICKER_CHANNEL = TickerChannel.get_name()
-RECENT_TRADES_CHANNEL = RecentTradeChannel.get_name()
-ORDER_BOOK_CHANNEL = OrderBookChannel.get_name()
-OHLCV_CHANNEL = OHLCVChannel.get_name()
-ORDERS_CHANNEL = OrdersChannel.get_name()
-BALANCE_CHANNEL = BalanceChannel.get_name()
