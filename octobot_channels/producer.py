@@ -21,16 +21,31 @@ from octobot_commons.logging.logging_util import get_logger
 
 class Producer:
     def __init__(self, channel):
-        self.channel = channel
         self.logger = get_logger(self.__class__.__name__)
+
+        # Related channel instance
+        self.channel = channel
+
+        # List of subscribed consumers
+        self.consumers = []
+
+        """
+        Should only be used with .cancel()
+        """
         self.produce_task = None
+
+        """
+        Should be used as the perform while loop condition
+            while(self.should_stop):
+                ...
+        """
         self.should_stop = False
 
     async def send(self, **kwargs):
         """
         Send to each consumer data though its queue
         :param kwargs:
-        :return:
+        :return: None
         """
         for consumer in self.consumers:
             await consumer.queue.put(kwargs)
@@ -58,6 +73,13 @@ class Producer:
         """
         pass
 
+    async def modify(self, **kwargs):
+        """
+        Should be implemented when producer can be modified during perform()
+        :return: None
+        """
+        pass
+
     async def stop(self):
         """
         Stops non-triggered tasks management
@@ -66,7 +88,15 @@ class Producer:
         self.should_stop = True
 
     def create_task(self):
+        """
+        Creates a new asyncio task that contains start() execution
+        :return: None
+        """
         self.produce_task = asyncio.create_task(self.start())
 
     async def run(self):
+        """
+        Start the producer main task
+        :return: None
+        """
         self.create_task()
