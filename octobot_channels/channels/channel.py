@@ -22,15 +22,16 @@ from octobot_channels import CONSUMER_CALLBACK_TYPE
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 """
-A Channel ****
+TODO
+A Channel is 
 """
 
 
 class Channel(object):
     def __init__(self):
+        self.logger = get_logger(self.__class__.__name__)
         self.producer = None
         self.consumers = {}
-        self.logger = get_logger(self.__class__.__name__)
 
     @classmethod
     def get_name(cls) -> str:
@@ -45,11 +46,11 @@ class Channel(object):
         """
         raise NotImplemented("new consumer is not implemented")
 
-    def get_consumers(self, **kwargs) -> List:
+    def get_consumers(self, **kwargs) -> dict:
         """
         Should be overwritten according to the class needs
         :param kwargs:
-        :return:
+        :return: the consumers dict
         """
         return self.consumers
 

@@ -13,14 +13,11 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from typing import NewType, Callable
 
-from octobot_commons.singleton import Singleton
+PROJECT_NAME = "OctoBot-Channels"
+VERSION = "1.0.6"  # major.minor.revision
 
+CONSUMER_CALLBACK_TYPE = NewType('CallbackType', Callable[..., None])
 
-@Singleton
-class ChannelInstances:
-    """
-    Singleton that contains Channel instances
-    """
-    def __init__(self):
-        self.channels = {}
+CHANNEL_WILDCARD = "*"

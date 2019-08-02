@@ -1,6 +1,6 @@
 import pytest
 
-from octobot_channels.channels.channel import Channels, Channel
+from octobot_channels.channels import Channels, Channel
 
 TEST_CHANNEL = "Test"
 
