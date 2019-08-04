@@ -99,4 +99,5 @@ class Producer:
         Start the producer main task
         :return: None
         """
+        self.channel.register_producer(self)
         self.create_task()

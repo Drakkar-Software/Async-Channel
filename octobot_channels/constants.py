@@ -16,7 +16,7 @@
 from typing import NewType, Callable
 
 PROJECT_NAME = "OctoBot-Channels"
-VERSION = "1.0.6"  # major.minor.revision
+VERSION = "1.0.7"  # major.minor.revision
 
 CONSUMER_CALLBACK_TYPE = NewType('CallbackType', Callable[..., None])
 
