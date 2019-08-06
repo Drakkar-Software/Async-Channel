@@ -17,6 +17,10 @@
 
 async def create_all_subclasses_channel(channel_class, channels_class, **kwargs):
     for to_be_created_channel_class in channel_class.__subclasses__():
-        created_channel = to_be_created_channel_class(**kwargs)
-        channels_class.set_chan(created_channel, name=to_be_created_channel_class.get_name())
-        await created_channel.start()
+        await create_channel_instance(to_be_created_channel_class, channels_class, **kwargs)
+
+
+async def create_channel_instance(channel_class, channels_class, **kwargs):
+    created_channel = channel_class(**kwargs)
+    channels_class.set_chan(created_channel, name=channel_class.get_name())
+    await created_channel.start()
