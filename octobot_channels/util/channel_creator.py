@@ -13,11 +13,10 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from typing import NewType, Callable
 
-PROJECT_NAME = "OctoBot-Channels"
-VERSION = "1.0.8"  # major.minor.revision
 
-CONSUMER_CALLBACK_TYPE = NewType('CallbackType', Callable[..., None])
-
-CHANNEL_WILDCARD = "*"
+async def create_all_subclasses_channel(channel_class, channels_class, **kwargs):
+    for to_be_created_channel_class in channel_class.__subclasses__():
+        created_channel = to_be_created_channel_class(**kwargs)
+        channels_class.set_chan(created_channel, name=to_be_created_channel_class.get_name())
+        await created_channel.start()
