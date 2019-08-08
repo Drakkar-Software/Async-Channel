@@ -27,10 +27,20 @@ A Channel is
 
 
 class Channel(object):
+    # Channel producer class
+    PRODUCER_CLASS = None
+
     def __init__(self):
         self.logger = get_logger(self.__class__.__name__)
+
+        # Channel subscribed producers list
         self.producers = []
+
+        # Channel subscribed consumers dict
         self.consumers = {}
+
+        # Used to perform global send from non-producer context
+        self.internal_producer = None
 
     @classmethod
     def get_name(cls) -> str:
@@ -45,12 +55,12 @@ class Channel(object):
         """
         raise NotImplemented("new consumer is not implemented")
 
-    def register_producer(self, producer, **kwargs):
+    def register_producer(self, producer, **kwargs) -> None:
         """
         Add the producer to producers list
-        Can be overwritten to perform additionnal action when registering
+        Can be overwritten to perform additional action when registering
         :param Producer producer: created channel producer to register
-        :param kwargs:
+        :param kwargs: additional arguments available for overwritten methods
         :return: None
         """
         self.producers.append(producer)
@@ -59,11 +69,11 @@ class Channel(object):
         """
         Should be overwritten according to the class needs
         :param kwargs:
-        :return: the consumers dict
+        :return: the subscribed consumers dict
         """
         return self.consumers
 
-    async def start(self):
+    async def start(self) -> None:
         """
         Call each registered consumers start method
         :return: None
@@ -71,7 +81,7 @@ class Channel(object):
         for consumer in [consumer.values() for consumer in self.consumers.values()]:
             await consumer.start()
 
-    async def stop(self):
+    async def stop(self) -> None:
         """
         Call each registered consumers and producers stop method
         :return: None
@@ -82,7 +92,7 @@ class Channel(object):
         for producer in self.producers:
             await producer.stop()
 
-    async def run(self):
+    async def run(self) -> None:
         """
         Call each registered consumers run method
         :return: None
@@ -90,7 +100,7 @@ class Channel(object):
         for consumer in [consumer.values() for consumer in self.consumers.values()]:
             await consumer.run()
 
-    async def modify(self, **kwargs):
+    async def modify(self, **kwargs) -> None:
         """
         Call each registered producers modify method
         :return: None
@@ -98,10 +108,20 @@ class Channel(object):
         for producer in self.producers:
             await producer.modify(**kwargs)
 
+    def get_internal_producer(self, **kwargs) -> object:
+        """
+        Returns internal producer if exists else creates it
+        :param kwargs: arguments for internal producer __init__
+        :return: internal producer instance
+        """
+        if not self.internal_producer:
+            self.internal_producer = self.PRODUCER_CLASS(self, **kwargs)
+        return self.internal_producer
+
 
 class Channels:
     @staticmethod
-    def set_chan(chan: Channel, name: str):
+    def set_chan(chan: Channel, name: str) -> None:
         """
         Set a new Channel instance in the channels list according to channel name
         :param chan: new Channel instance

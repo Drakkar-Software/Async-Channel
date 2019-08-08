@@ -14,11 +14,16 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_channels.producer cimport Producer
 
 cdef class Channel(object):
+    cdef object logger
+
     cdef public list producers
+
     cdef public dict consumers
-    cdef public object logger
+
+    cdef public Producer internal_producer
 
 cdef class Channels:
      pass
