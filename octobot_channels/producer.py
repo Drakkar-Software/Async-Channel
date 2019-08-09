@@ -26,9 +26,6 @@ class Producer:
         # Related channel instance
         self.channel = channel
 
-        # List of subscribed consumers
-        self.consumers = []
-
         """
         Should only be used with .cancel()
         """
@@ -47,8 +44,15 @@ class Producer:
         :param kwargs:
         :return: None
         """
-        for consumer in self.consumers:
-            await consumer.queue.put(kwargs)
+        """
+        The implementation should use 'self.channel.get_consumers'
+        Example
+            for consumer in self.channel.get_consumers():
+                await consumer.queue.put({
+                    "my_key": my_key_value
+                })
+        """
+        pass
 
     async def push(self, **kwargs):
         """

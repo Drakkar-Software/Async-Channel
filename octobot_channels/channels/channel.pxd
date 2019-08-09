@@ -25,5 +25,8 @@ cdef class Channel(object):
 
     cdef public Producer internal_producer
 
+    @staticmethod
+    cdef void __init_consumer_if_necessary(dict consumer_list, str key, bint is_dict=*)
+
 cdef class Channels:
      pass

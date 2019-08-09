@@ -55,6 +55,33 @@ class Channel(object):
         """
         raise NotImplemented("new consumer is not implemented")
 
+    def __add_new_consumer_and_run(self, consumer, **kwargs):
+        """
+        Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
+        :param consumer: the consumer to add
+        :param kwargs: additional params for consumer list
+        :return: None
+        """
+        """
+        The implementation should add the consumer to self.consumers and call consumer run() method
+        Example
+            self.consumers["consumer_key_id"] = [consumer]
+            consumer.run()
+        """
+        consumer.run()
+
+    @staticmethod
+    def __init_consumer_if_necessary(consumer_list, key, is_dict=False):
+        """
+        Should be called by '__add_new_consumer_and_run' to create the consumer list
+        :param consumer_list: current consumer list
+        :param key: key to add if not exists
+        :param is_dict: instantiates with a dict if True else list
+        :return: None
+        """
+        if key not in consumer_list:
+            consumer_list[key] = [] if not is_dict else {}
+
     def register_producer(self, producer, **kwargs) -> None:
         """
         Add the producer to producers list
