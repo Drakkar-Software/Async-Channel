@@ -21,8 +21,10 @@ from octobot_channels import CONSUMER_CALLBACK_TYPE
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 """
-TODO
-A Channel is 
+A Channel is the object to connect a producer / producers class(es) to a consumer / consumers class(es)
+It contains a registered consumers dict to notify every consumer when a producer 'send' something.
+It contains a registered producers list to allow producer modification through 'modify'.
+To access to channels a 'Channels' singleton is created to manage instances. 
 """
 
 
@@ -46,16 +48,16 @@ class Channel(object):
     def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs):
+    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs) -> None:
         """
-        Create an appropriate consumer instance for this channel
+        Create an appropriate consumer instance for this channel and add it to the consumer list
         :param callback: method that should be called when consuming the queue
         :param size: queue size, default 0
-        :return: a new consumer instance
+        :return: None
         """
         raise NotImplemented("new consumer is not implemented")
 
-    def __add_new_consumer_and_run(self, consumer, **kwargs):
+    def __add_new_consumer_and_run(self, consumer, **kwargs) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
         :param consumer: the consumer to add
@@ -71,7 +73,7 @@ class Channel(object):
         consumer.run()
 
     @staticmethod
-    def __init_consumer_if_necessary(consumer_list, key, is_dict=False):
+    def __init_consumer_if_necessary(consumer_list: dict, key: str, is_dict: bool = False) -> None:
         """
         Should be called by '__add_new_consumer_and_run' to create the consumer list
         :param consumer_list: current consumer list
@@ -95,7 +97,7 @@ class Channel(object):
     def get_consumers(self, **kwargs) -> dict:
         """
         Should be overwritten according to the class needs
-        :param kwargs:
+        :param kwargs: consumers list filter params
         :return: the subscribed consumers dict
         """
         return self.consumers
@@ -135,7 +137,7 @@ class Channel(object):
         for producer in self.producers:
             await producer.modify(**kwargs)
 
-    def get_internal_producer(self, **kwargs) -> object:
+    def get_internal_producer(self, **kwargs) -> PRODUCER_CLASS:
         """
         Returns internal producer if exists else creates it
         :param kwargs: arguments for internal producer __init__

@@ -21,6 +21,10 @@ from octobot_commons.logging.logging_util import get_logger
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE
 
+"""
+A channel Consumer
+"""
+
 
 class Consumer:
     def __init__(self, callback: CONSUMER_CALLBACK_TYPE, size: int = 0, filter_size: bool = False):

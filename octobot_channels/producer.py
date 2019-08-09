@@ -18,6 +18,10 @@ import asyncio
 
 from octobot_commons.logging.logging_util import get_logger
 
+"""
+A channel Producer
+"""
+
 
 class Producer:
     def __init__(self, channel):
