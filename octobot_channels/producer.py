@@ -42,9 +42,10 @@ class Producer:
         """
         self.should_stop = False
 
-    async def send(self, **kwargs):
+    async def send(self, data, **kwargs):
         """
         Send to each consumer data though its queue
+        :param data: data to be put into consumers queues
         :param kwargs:
         :return: None
         """
@@ -56,7 +57,8 @@ class Producer:
                     "my_key": my_key_value
                 })
         """
-        pass
+        for consumer in self.channel.get_consumers():
+            consumer.queue.put(data)
 
     async def push(self, **kwargs):
         """
@@ -94,6 +96,8 @@ class Producer:
         :return: None
         """
         self.should_stop = True
+        if self.produce_task:
+            self.produce_task.cancel()
 
     def create_task(self):
         """

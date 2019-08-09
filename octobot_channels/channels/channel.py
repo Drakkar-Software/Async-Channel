@@ -14,6 +14,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from typing import Iterable
 
 from octobot_commons.logging.logging_util import get_logger
 
@@ -32,6 +33,9 @@ class Channel(object):
     # Channel producer class
     PRODUCER_CLASS = None
 
+    # Channel consumer class
+    CONSUMER_CLASS = None
+
     def __init__(self):
         self.logger = get_logger(self.__class__.__name__)
 
@@ -48,16 +52,16 @@ class Channel(object):
     def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs) -> None:
+    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs) -> None:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
         :param callback: method that should be called when consuming the queue
         :param size: queue size, default 0
         :return: None
         """
-        raise NotImplemented("new consumer is not implemented")
+        await self.__add_new_consumer_and_run(self.CONSUMER_CLASS(callback))
 
-    def __add_new_consumer_and_run(self, consumer, **kwargs) -> None:
+    async def __add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
         :param consumer: the consumer to add
@@ -70,10 +74,12 @@ class Channel(object):
             self.consumers["consumer_key_id"] = [consumer]
             consumer.run()
         """
-        consumer.run()
+        Channel.init_consumer_if_necessary(self.consumers, self.CONSUMER_CLASS.__name__)
+        self.consumers[self.CONSUMER_CLASS.__name__].append(consumer)
+        await consumer.run()
 
     @staticmethod
-    def __init_consumer_if_necessary(consumer_list: dict, key: str, is_dict: bool = False) -> None:
+    def init_consumer_if_necessary(consumer_list: dict, key: str, is_dict: bool = False) -> None:
         """
         Should be called by '__add_new_consumer_and_run' to create the consumer list
         :param consumer_list: current consumer list
@@ -94,20 +100,20 @@ class Channel(object):
         """
         self.producers.append(producer)
 
-    def get_consumers(self, **kwargs) -> dict:
+    def get_consumers(self, **kwargs) -> Iterable:
         """
         Should be overwritten according to the class needs
         :param kwargs: consumers list filter params
         :return: the subscribed consumers dict
         """
-        return self.consumers
+        return [consumer for consumers in self.consumers.values() for consumer in consumers]
 
     async def start(self) -> None:
         """
         Call each registered consumers start method
         :return: None
         """
-        for consumer in [consumer.values() for consumer in self.consumers.values()]:
+        for consumer in self.get_consumers():
             await consumer.start()
 
     async def stop(self) -> None:
@@ -115,7 +121,7 @@ class Channel(object):
         Call each registered consumers and producers stop method
         :return: None
         """
-        for consumer in [consumer.values() for consumer in self.consumers.values()]:
+        for consumer in self.get_consumers():
             await consumer.stop()
 
         for producer in self.producers:
@@ -126,7 +132,7 @@ class Channel(object):
         Call each registered consumers run method
         :return: None
         """
-        for consumer in [consumer.values() for consumer in self.consumers.values()]:
+        for consumer in self.get_consumers():
             await consumer.run()
 
     async def modify(self, **kwargs) -> None:
@@ -144,13 +150,16 @@ class Channel(object):
         :return: internal producer instance
         """
         if not self.internal_producer:
-            self.internal_producer = self.PRODUCER_CLASS(self, **kwargs)
+            try:
+                self.internal_producer = self.PRODUCER_CLASS(self, **kwargs)
+            except TypeError:
+                self.logger.exception("PRODUCER_CLASS not defined")
         return self.internal_producer
 
 
 class Channels:
     @staticmethod
-    def set_chan(chan: Channel, name: str) -> None:
+    def set_chan(chan, name) -> None:
         """
         Set a new Channel instance in the channels list according to channel name
         :param chan: new Channel instance
@@ -162,6 +171,16 @@ class Channels:
             ChannelInstances.instance().channels[chan_name] = chan
         else:
             raise ValueError(f"Channel {chan_name} already exists.")
+
+    @staticmethod
+    def del_chan(name) -> None:
+        """
+        Delete a Channel instance from the channels list according to channel name
+        :param name: name of the channel to delete
+        :return: None
+        """
+        if name in ChannelInstances.instance().channels:
+            ChannelInstances.instance().channels.pop(name, None)
 
     @staticmethod
     def get_chan(chan_name: str, **kwargs) -> Channel:

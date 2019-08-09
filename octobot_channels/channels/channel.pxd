@@ -26,4 +26,8 @@ cdef class Channel(object):
     cdef public Producer internal_producer
 
 cdef class Channels:
-     pass
+    @staticmethod
+    cdef void set_chan(Channel chan, str name)
+
+    @staticmethod
+    cdef void del_chan(str name)

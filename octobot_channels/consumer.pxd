@@ -17,14 +17,11 @@
 
 cdef class Consumer:
     cdef object logger          # object type = Logger
-    cdef object queue           # object type = asyncio.Queue
+    cdef public object queue    # object type = asyncio.Queue
     cdef object callback        # object type = CONSUMER_CALLBACK_TYPE
     cdef object consume_task    # object type = asyncio.Task
 
     cdef bint should_stop
-    cdef bint filter_size
+    cdef public bint filter_size
 
-    cpdef void start(self)
-    cpdef void stop(self)
     cpdef void create_task(self)
-    cpdef void run(self)

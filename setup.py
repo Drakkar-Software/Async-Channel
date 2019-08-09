@@ -32,8 +32,8 @@ ext_modules = [
     for package in packages_list]
 
 # long description from README file
-with open('README.md', encoding='utf-8') as f:
-    DESCRIPTION = f.read()
+# with open('README.md', encoding='utf-8') as f:
+#     DESCRIPTION = f.read()
 
 REQUIRED = open('requirements.txt').read()
 REQUIRES_PYTHON = '>=3.7'
@@ -48,7 +48,7 @@ setup(
     description='OctoBot project channels module',
     packages=PACKAGES,
     include_package_data=True,
-    long_description=DESCRIPTION,
+    # long_description=DESCRIPTION,
     install_requires=REQUIRED,
     cmdclass={'build_ext': build_ext},
     tests_require=["pytest"],
@@ -59,7 +59,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     ext_modules=cythonize(ext_modules),
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',

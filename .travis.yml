@@ -15,6 +15,7 @@ matrix:
       python: nightly
       language: python
       script:
+        - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
         - python3 setup.py install
 
 deploy:

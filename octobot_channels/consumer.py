@@ -54,28 +54,30 @@ class Consumer:
 
     async def consume(self):
         """
-        Should implement self.queue.get() in a while loop
-
-        while not self.should_stop:
-            self.callback(await self.queue.get())
-
+        Should be overwritten with a self.queue.get() in a while loop
         :return: None
         """
-        raise NotImplemented("consume is not implemented")
+        while not self.should_stop:
+            try:
+                await self.callback(**(await self.queue.get()))
+            except Exception as e:
+                self.logger.exception(f"Exception when calling callback : {e}")
 
-    def start(self):
+    async def start(self):
         """
         Should be implemented for consumer's non-triggered tasks
         :return: None
         """
-        pass
+        self.should_stop = False
 
-    def stop(self):
+    async def stop(self):
         """
         Stops non-triggered tasks management
         :return: None
         """
         self.should_stop = True
+        if self.consume_task:
+            self.consume_task.cancel()
 
     def create_task(self):
         """
@@ -84,11 +86,11 @@ class Consumer:
         """
         self.consume_task = asyncio.create_task(self.consume())
 
-    def run(self):
+    async def run(self):
         """
         - Initialize the consumer
         - Start the consumer main task
         :return: None
         """
-        self.start()
+        await self.start()
         self.create_task()
