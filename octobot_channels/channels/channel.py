@@ -79,7 +79,7 @@ class Channel(object):
         await consumer.run()
 
     @staticmethod
-    def init_consumer_if_necessary(consumer_list: Iterable, key: str, is_dict: bool = False) -> None:
+    def init_consumer_if_necessary(consumer_list: Iterable, key: object, is_dict: bool = False) -> None:
         """
         Should be called by '__add_new_consumer_and_run' to create the consumer list
         :param consumer_list: current consumer list
