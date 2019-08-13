@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.3] - 2019-08-12
+## [1.1.4] - 2019-08-13
+### Fixed
+- Channel is_paused attribute to public
+
+## [1.1.3] - 2019-08-13
 ### Added
 - Producer pause and resume methods
 - Channel producers pause/resume management

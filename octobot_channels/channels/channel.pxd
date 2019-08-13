@@ -25,7 +25,7 @@ cdef class Channel(object):
 
     cdef public Producer internal_producer
 
-    cdef bint is_paused
+    cdef public bint is_paused
 
 cdef class Channels:
     @staticmethod
