@@ -18,12 +18,12 @@
 from octobot_channels.channels.channel cimport Channel
 
 cdef class Producer:
-    cdef Channel channel
-    cdef object logger          # object type = logger
-    cdef object produce_task    # object type = asyncio.Task
+    cdef public Channel channel
+    cdef public object logger          # object type = logger
+    cdef public object produce_task    # object type = asyncio.Task
 
-    cdef list consumers
+    cdef public list consumers
 
-    cdef bint should_stop
+    cdef public bint should_stop
 
     cpdef void create_task(self)
