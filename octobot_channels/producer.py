@@ -42,7 +42,7 @@ class Producer:
         """
         self.should_stop = False
 
-    async def send(self, data, **kwargs):
+    async def send(self, data, **kwargs) -> None:
         """
         Send to each consumer data though its queue
         :param data: data to be put into consumers queues
@@ -60,7 +60,7 @@ class Producer:
         for consumer in self.channel.get_consumers():
             consumer.queue.put(data)
 
-    async def push(self, **kwargs):
+    async def push(self, **kwargs) -> None:
         """
         Push notification that new data should be sent implementation
         When nothing should be done on data : self.send()
@@ -68,14 +68,28 @@ class Producer:
         """
         pass
 
-    async def start(self):
+    async def start(self) -> None:
         """
         Should be implemented for producer's non-triggered tasks
         :return: None
         """
         pass
 
-    async def perform(self, **kwargs):
+    async def pause(self, **kwargs) -> None:
+        """
+        Called when the channel runs out of consumer
+        :return: None
+        """
+        pass
+
+    async def resume(self, **kwargs) -> None:
+        """
+        Called when the channel is no longer out of consumer
+        :return: None
+        """
+        pass
+
+    async def perform(self, **kwargs) -> None:
         """
         Should implement producer's non-triggered tasks
         Can be use to force producer to perform tasks
@@ -83,7 +97,7 @@ class Producer:
         """
         pass
 
-    async def modify(self, **kwargs):
+    async def modify(self, **kwargs) -> None:
         """
         Should be implemented when producer can be modified during perform()
         :return: None
@@ -99,17 +113,18 @@ class Producer:
         if self.produce_task:
             self.produce_task.cancel()
 
-    def create_task(self):
+    def create_task(self) -> None:
         """
         Creates a new asyncio task that contains start() execution
         :return: None
         """
         self.produce_task = asyncio.create_task(self.start())
 
-    async def run(self):
+    async def run(self) -> None:
         """
         Start the producer main task
+        Should call 'self.channel.register_producer'
         :return: None
         """
-        self.channel.register_producer(self)
+        await self.channel.register_producer(self)
         self.create_task()

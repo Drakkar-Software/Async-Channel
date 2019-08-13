@@ -25,6 +25,8 @@ cdef class Channel(object):
 
     cdef public Producer internal_producer
 
+    cdef bint is_paused
+
 cdef class Channels:
     @staticmethod
     cdef void set_chan(Channel chan, str name)

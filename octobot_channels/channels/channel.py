@@ -48,18 +48,25 @@ class Channel(object):
         # Used to perform global send from non-producer context
         self.internal_producer = None
 
+        # Used to save producers state (paused or not)
+        self.is_paused = True
+
     @classmethod
     def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs) -> None:
+    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
+        Should end by calling '__check_producers_state'
         :param callback: method that should be called when consuming the queue
         :param size: queue size, default 0
-        :return: None
+        :return: consumer instance created
         """
-        await self.__add_new_consumer_and_run(self.CONSUMER_CLASS(callback))
+        consumer = self.CONSUMER_CLASS(callback)
+        await self.__add_new_consumer_and_run(consumer)
+        await self.__check_producers_state()
+        return consumer
 
     async def __add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """
@@ -90,15 +97,32 @@ class Channel(object):
         if key not in consumer_list:
             consumer_list[key] = [] if not is_dict else {}
 
-    def register_producer(self, producer, **kwargs) -> None:
+    async def remove_consumer(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """
-        Add the producer to producers list
-        Can be overwritten to perform additional action when registering
-        :param Producer producer: created channel producer to register
-        :param kwargs: additional arguments available for overwritten methods
+        Should be overwritten according to the class needs
+        Should end by calling '__check_producers_state' and then 'consumer.stop'
+        :param consumer: consumer instance to remove from consumers list
+        :param kwargs: consumers list filter params
         :return: None
         """
-        self.producers.append(producer)
+        if consumer in self.consumers[self.CONSUMER_CLASS.__name__]:
+            self.consumers[self.CONSUMER_CLASS.__name__].remove(consumer)
+            await self.__check_producers_state()
+            await consumer.stop()
+
+    async def __check_producers_state(self, **kwargs) -> None:
+        """
+        Checks if producers should be paused or resumed after a consumer addition or removal
+        :return: None
+        """
+        if not self.get_consumers() and not self.is_paused:
+            self.is_paused = True
+            for producer in self.get_producers():
+                await producer.pause()
+        elif self.get_consumers() and self.is_paused:
+            self.is_paused = False
+            for producer in self.get_producers():
+                await producer.resume()
 
     def get_consumers(self, **kwargs) -> Iterable:
         """
@@ -107,6 +131,38 @@ class Channel(object):
         :return: the subscribed consumers dict
         """
         return [consumer for consumers in self.consumers.values() for consumer in consumers]
+
+    async def register_producer(self, producer, **kwargs) -> None:
+        """
+        Add the producer to producers list
+        Can be overwritten to perform additional action when registering
+        Should end by calling 'pause' if self.is_paused
+        :param Producer producer: created channel producer to register
+        :param kwargs: additional arguments available for overwritten methods
+        :return: None
+        """
+        self.producers.append(producer)
+        if self.is_paused:
+            await producer.pause()
+
+    def unregister_producer(self, producer, **kwargs) -> None:
+        """
+        Remove the producer from producers list
+        Can be overwritten to perform additional action when registering
+        :param Producer producer: created channel producer to unregister
+        :param kwargs: additional arguments available for overwritten methods
+        :return: None
+        """
+        if producer in self.producers:
+            self.producers.remove(producer)
+
+    def get_producers(self, **kwargs) -> Iterable:
+        """
+        Should be overwritten according to the class needs
+        :param kwargs: producers list filter params
+        :return: channel producers iterable
+        """
+        return self.producers
 
     async def start(self) -> None:
         """
@@ -124,7 +180,7 @@ class Channel(object):
         for consumer in self.get_consumers():
             await consumer.stop()
 
-        for producer in self.producers:
+        for producer in self.get_producers():
             await producer.stop()
 
     async def run(self) -> None:
@@ -140,7 +196,7 @@ class Channel(object):
         Call each registered producers modify method
         :return: None
         """
-        for producer in self.producers:
+        for producer in self.get_producers():
             await producer.modify(**kwargs)
 
     def get_internal_producer(self, **kwargs) -> PRODUCER_CLASS:

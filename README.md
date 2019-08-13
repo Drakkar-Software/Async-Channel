@@ -1,4 +1,4 @@
-# OctoBot-Channels [1.1.2](https://github.com/Drakkar-Software/OctoBot-Channels/blob/master/CHANGELOG.md)
+# OctoBot-Channels [1.1.3](https://github.com/Drakkar-Software/OctoBot-Channels/blob/master/CHANGELOG.md)
 [![PyPI](https://img.shields.io/pypi/v/OctoBot-Channels.svg)](https://pypi.python.org/pypi/OctoBot-Channels/)
 [![Build Status](https://api.travis-ci.com/Drakkar-Software/OctoBot-Channels.svg?branch=master)](https://travis-ci.org/Drakkar-Software/OctoBot-Channels) 
 [![Build status](https://ci.appveyor.com/api/projects/status/erg9ebvtco73x5h4?svg=true)](https://ci.appveyor.com/project/Herklos/octobot-channels)
@@ -37,6 +37,7 @@ await Channels.get_chan("Awesome").new_consumer(callback)
 
 # Creates a producer that send data to the consumer through the channel
 producer = TestProducer(Channels.get_chan("Awesome"))
+await producer.run()
 await producer.send("test")
 
 # Stops the channel with all its producers and consumers
