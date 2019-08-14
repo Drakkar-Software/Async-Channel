@@ -32,6 +32,11 @@ ext_modules = [
     Extension(package, [f"{package.replace('.', '/')}.py"])
     for package in packages_list]
 
+setup_requires = [
+    "Cython",
+    "OctoBot-Commons"
+]
+
 # long description from README file
 # with open('README.md', encoding='utf-8') as f:
 #     DESCRIPTION = f.read()
@@ -56,7 +61,7 @@ setup(
     test_suite="tests",
     zip_safe=False,
     data_files=[],
-    setup_requires=['Cython'],
+    setup_requires=setup_requires,
     python_requires=REQUIRES_PYTHON,
     ext_modules=cythonize(ext_modules),
     classifiers=[
