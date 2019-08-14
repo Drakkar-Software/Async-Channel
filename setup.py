@@ -25,7 +25,8 @@ PACKAGES = find_packages(exclude=["tests"])
 
 packages_list = ["octobot_channels.consumer",
                  "octobot_channels.producer",
-                 "octobot_channels.channels.channel"]
+                 "octobot_channels.channels.channel",
+                 "octobot_channels.channels.channel_instances"]
 
 ext_modules = [
     Extension(package, [f"{package.replace('.', '/')}.py"])
