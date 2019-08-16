@@ -27,9 +27,6 @@ cdef class Channel(object):
 
     cdef public bint is_paused
 
-cdef class Channels:
-    @staticmethod
-    cdef void set_chan(Channel chan, str name)
+cpdef void set_chan(Channel chan, str name)
 
-    @staticmethod
-    cdef void del_chan(str name)
+cpdef void del_chan(str name)

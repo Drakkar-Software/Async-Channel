@@ -213,37 +213,35 @@ class Channel(object):
         return self.internal_producer
 
 
-class Channels:
-    @staticmethod
-    def set_chan(chan, name) -> None:
-        """
-        Set a new Channel instance in the channels list according to channel name
-        :param chan: new Channel instance
-        :param name: name of the channel
-        :return: None
-        """
-        chan_name = chan.get_name() if name else name
-        if chan_name not in ChannelInstances.instance().channels:
-            ChannelInstances.instance().channels[chan_name] = chan
-        else:
-            raise ValueError(f"Channel {chan_name} already exists.")
+def set_chan(chan, name) -> None:
+    """
+    Set a new Channel instance in the channels list according to channel name
+    :param chan: new Channel instance
+    :param name: name of the channel
+    :return: None
+    """
+    chan_name = chan.get_name() if name else name
+    if chan_name not in ChannelInstances.instance().channels:
+        ChannelInstances.instance().channels[chan_name] = chan
+    else:
+        raise ValueError(f"Channel {chan_name} already exists.")
 
-    @staticmethod
-    def del_chan(name) -> None:
-        """
-        Delete a Channel instance from the channels list according to channel name
-        :param name: name of the channel to delete
-        :return: None
-        """
-        if name in ChannelInstances.instance().channels:
-            ChannelInstances.instance().channels.pop(name, None)
 
-    @staticmethod
-    def get_chan(chan_name: str, **kwargs) -> Channel:
-        """
-        Return the channel instance from channel name
-        :param chan_name: the channel name
-        :param kwargs:
-        :return: the Channel instance
-        """
-        return ChannelInstances.instance().channels[chan_name]
+def del_chan(name) -> None:
+    """
+    Delete a Channel instance from the channels list according to channel name
+    :param name: name of the channel to delete
+    :return: None
+    """
+    if name in ChannelInstances.instance().channels:
+        ChannelInstances.instance().channels.pop(name, None)
+
+
+def get_chan(chan_name: str, **kwargs) -> Channel:
+    """
+    Return the channel instance from channel name
+    :param chan_name: the channel name
+    :param kwargs:
+    :return: the Channel instance
+    """
+    return ChannelInstances.instance().channels[chan_name]
