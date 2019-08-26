@@ -58,7 +58,7 @@ class Producer:
                 })
         """
         for consumer in self.channel.get_consumers():
-            consumer.queue.put(data)
+            await consumer.queue.put(data)
 
     async def push(self, **kwargs) -> None:
         """
