@@ -55,15 +55,19 @@ class Channel(object):
     def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE, size=0, **kwargs) -> CONSUMER_CLASS:
+    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE,
+                           consumer_instance: object = None,
+                           size: int = 0,
+                           **kwargs) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
         Should end by calling '__check_producers_state'
         :param callback: method that should be called when consuming the queue
         :param size: queue size, default 0
+        :param consumer_instance: consumer instance to use if specified
         :return: consumer instance created
         """
-        consumer = self.CONSUMER_CLASS(callback)
+        consumer = consumer_instance if consumer_instance else self.CONSUMER_CLASS(callback)
         await self.__add_new_consumer_and_run(consumer)
         await self.__check_producers_state()
         return consumer

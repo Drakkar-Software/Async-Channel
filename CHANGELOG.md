@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.10] - 2019-08-27
+### Added
+- Consumer instance param in channel new_consumer to handle a new consumer with an already created instance
+
 ## [1.1.9] - 2019-08-26
 ### Fixed
 - Queue to async
