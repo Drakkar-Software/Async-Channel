@@ -25,3 +25,6 @@ cdef class Consumer:
     cdef public bint filter_size
 
     cpdef void create_task(self)
+
+cdef class InternalConsumer(Consumer):
+    pass

@@ -94,3 +94,14 @@ class Consumer:
         """
         await self.start()
         self.create_task()
+
+
+class InternalConsumer(Consumer):
+    def __init__(self):
+        super().__init__(None)
+
+        # Method to be called when performing task is done
+        self.callback = self.perform
+
+    async def perform(self, **kwargs):
+        raise NotImplementedError("perform is not implemented")
