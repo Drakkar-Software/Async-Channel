@@ -13,3 +13,29 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import asyncio
+
+from octobot_channels import Producer, Consumer
+from octobot_channels.channels import Channel
+
+TEST_CHANNEL = "Test"
+EMPTY_TEST_CHANNEL = "EmptyTest"
+CONSUMER_KEY = "test"
+
+
+class EmptyTestConsumer(Consumer):
+    pass
+
+
+class EmptyTestProducer(Producer):
+    async def start(self):
+        await asyncio.sleep(100000)
+
+
+class EmptyTestChannel(Channel):
+    CONSUMER_CLASS = EmptyTestConsumer
+    PRODUCER_CLASS = EmptyTestProducer
+
+
+async def empty_test_callback():
+    pass
