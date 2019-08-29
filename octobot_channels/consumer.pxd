@@ -16,10 +16,10 @@
 #  License along with this library.
 
 cdef class Consumer:
-    cdef public object logger          # object type = Logger
-    cdef public object queue    # object type = asyncio.Queue
-    cdef public object callback        # object type = CONSUMER_CALLBACK_TYPE
-    cdef public object consume_task    # object type = asyncio.Task
+    cdef public object logger  # object type = Logger
+    cdef public object queue  # object type = asyncio.Queue
+    cdef public object callback  # object type = CONSUMER_CALLBACK_TYPE
+    cdef public object consume_task  # object type = asyncio.Task
 
     cdef public bint should_stop
     cdef public bint filter_size

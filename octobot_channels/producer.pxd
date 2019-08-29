@@ -19,8 +19,8 @@ from octobot_channels.channels.channel cimport Channel
 
 cdef class Producer:
     cdef public Channel channel
-    cdef public object logger          # object type = logger
-    cdef public object produce_task    # object type = asyncio.Task
+    cdef public object logger  # object type = logger
+    cdef public object produce_task  # object type = asyncio.Task
 
     cdef public list consumers
 
