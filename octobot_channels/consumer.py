@@ -103,12 +103,5 @@ class InternalConsumer(Consumer):
         # Method to be called when performing task is done
         self.callback = self.perform
 
-    async def consume(self):
-        """
-        Override Consumer.consume to do nothing -> replaced by perform
-        :return: None
-        """
-        pass
-
     async def perform(self, **kwargs):
         raise NotImplementedError("perform is not implemented")

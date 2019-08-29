@@ -16,7 +16,7 @@
 
 import pytest
 
-from octobot_channels import Consumer, Producer
+from octobot_channels import Consumer, Producer, InternalConsumer
 from octobot_channels.channels import Channel, get_chan, del_chan, set_chan
 from octobot_channels.util import create_channel_instance
 
@@ -168,3 +168,19 @@ async def test_resume_producer():
     await create_channel_instance(TestChannel, set_chan)
     await TestProducer(get_chan(TEST_CHANNEL)).run()
     await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+
+
+@pytest.mark.asyncio
+async def test_internal_consumer():
+    class TestInternalConsumer(InternalConsumer):
+        async def perform(self, data):
+            await get_chan(TEST_CHANNEL).stop()
+
+    class TestChannel(Channel):
+        PRODUCER_CLASS = EmptyTestProducer
+        CONSUMER_CLASS = TestInternalConsumer
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    await get_chan(TEST_CHANNEL).new_consumer(internal_consumer=TestInternalConsumer())
+    await get_chan(TEST_CHANNEL).get_internal_producer().send({})

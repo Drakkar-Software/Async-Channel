@@ -55,7 +55,8 @@ class Channel(object):
     def get_name(cls) -> str:
         return cls.__name__.replace('Channel', '')
 
-    async def new_consumer(self, callback: CONSUMER_CALLBACK_TYPE,
+    async def new_consumer(self,
+                           callback: CONSUMER_CALLBACK_TYPE = None,
                            internal_consumer: object = None,
                            size: int = 0,
                            **kwargs) -> CONSUMER_CLASS:
