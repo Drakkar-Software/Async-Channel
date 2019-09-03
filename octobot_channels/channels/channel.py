@@ -131,10 +131,11 @@ class Channel(object):
         :param kwargs: consumers list filter params
         :return: None
         """
-        if consumer in self.consumers:
-            self.consumers.remove(consumer)
-            await self.__check_producers_state()
-            await consumer.stop()
+        for c in self.consumers:
+            if consumer == c[self.INSTANCE_KEY]:
+                self.consumers.remove(c)
+                await self.__check_producers_state()
+                await consumer.stop()
 
     async def __check_producers_state(self, **kwargs) -> None:
         """

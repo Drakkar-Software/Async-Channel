@@ -47,6 +47,7 @@ async def test_new_consumer_without_filters():
     await create_channel_instance(EmptyTestChannel, set_chan)
     consumer = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback)
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumers() == [consumer]
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
@@ -59,6 +60,18 @@ async def test_new_consumer_with_filters():
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 2}) == []
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test2": 2}) == []
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1}) == [consumer]
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_remove_consumer():
+    del_chan(EMPTY_TEST_CHANNEL)
+    await create_channel_instance(EmptyTestChannel, set_chan)
+    consumer = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback)
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumers() == [consumer]
+    await get_chan(EMPTY_TEST_CHANNEL).remove_consumer(consumer)
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumers() == []
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
@@ -69,6 +82,7 @@ async def test_unregister_producer():
     producer = EmptyTestProducer(None)
     await get_chan(EMPTY_TEST_CHANNEL).register_producer(producer)
     assert get_chan(EMPTY_TEST_CHANNEL).producers == [producer]
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
@@ -81,3 +95,4 @@ async def test_register_producer():
     assert get_chan(EMPTY_TEST_CHANNEL).producers == [producer]
     get_chan(EMPTY_TEST_CHANNEL).unregister_producer(producer)
     assert get_chan(EMPTY_TEST_CHANNEL).producers == []
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
