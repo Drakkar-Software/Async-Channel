@@ -21,11 +21,17 @@ cdef class Channel(object):
 
     cdef public list producers
 
-    cdef public dict consumers
+    cdef public list consumers
 
     cdef public Producer internal_producer
 
     cdef public bint is_paused
+
+    cpdef void add_new_consumer(self, object consumer, dict consumer_filters)
+
+    cdef list get_consumer_from_filters(self, dict consumer_filters)
+
+    cdef bint __check_filters(self, dict consumer_filters, dict expected_filters)
 
 cpdef void set_chan(Channel chan, str name)
 

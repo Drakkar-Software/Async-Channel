@@ -36,14 +36,17 @@ class Channel(object):
     # Channel consumer class
     CONSUMER_CLASS = None
 
+    # Consumer instance in consumer filters
+    INSTANCE_KEY = "consumer_instance"
+
     def __init__(self):
         self.logger = get_logger(self.__class__.__name__)
 
         # Channel subscribed producers list
         self.producers = []
 
-        # Channel subscribed consumers dict
-        self.consumers = {}
+        # Channel subscribed consumers list
+        self.consumers = []
 
         # Used to perform global send from non-producer context
         self.internal_producer = None
@@ -57,50 +60,68 @@ class Channel(object):
 
     async def new_consumer(self,
                            callback: CONSUMER_CALLBACK_TYPE = None,
+                           consumer_filters: dict = None,
                            internal_consumer: object = None,
                            size: int = 0,
+                           filter_size: bool = False,
                            **kwargs) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
         Should end by calling '__check_producers_state'
         :param callback: method that should be called when consuming the queue
+        :param consumer_filters: the consumer filters
         :param size: queue size, default 0
         :param internal_consumer: internal consumer instance to use if specified
+        :param filter_size: if the consumer wants a filtered flow
         :return: consumer instance created
         """
         consumer = internal_consumer if internal_consumer else self.CONSUMER_CLASS(callback)
-        await self.__add_new_consumer_and_run(consumer)
+        await self.__add_new_consumer_and_run(consumer, consumer_filters)
         await self.__check_producers_state()
         return consumer
 
-    async def __add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
+    async def __add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
         :param consumer: the consumer to add
         :param kwargs: additional params for consumer list
         :return: None
         """
-        """
-        The implementation should add the consumer to self.consumers and call consumer run() method
-        Example
-            self.consumers["consumer_key_id"] = [consumer]
-            consumer.run()
-        """
-        Channel.init_consumer_if_necessary(self.consumers, self.CONSUMER_CLASS.__name__)
-        self.consumers[self.CONSUMER_CLASS.__name__].append(consumer)
+        if consumer_filters is None:
+            consumer_filters = {}
+
+        self.add_new_consumer(consumer, consumer_filters)
         await consumer.run()
 
-    @staticmethod
-    def init_consumer_if_necessary(consumer_list: Iterable, key: object, is_dict: bool = False) -> None:
+    def add_new_consumer(self, consumer, consumer_filters) -> None:
         """
-        Should be called by '__add_new_consumer_and_run' to create the consumer list
-        :param consumer_list: current consumer list
-        :param key: key to add if not exists
-        :param is_dict: instantiates with a dict if True else list
+        Add a new consumer to consumer list with filters
+        :param consumer: the consumer to add
+        :param consumer_filters: the consumer selection filters (used by 'get_consumer_from_filters')
         :return: None
         """
-        if key not in consumer_list:
-            consumer_list[key] = [] if not is_dict else {}
+        consumer_filters[self.INSTANCE_KEY] = consumer
+        self.consumers.append(consumer_filters)
+
+    def get_consumer_from_filters(self, consumer_filters) -> list:
+        """
+        Returns the consumers that match the selection
+        :param consumer_filters: listed consumer filters
+        :return: the list of the filtered consumers
+        """
+        return [consumer[self.INSTANCE_KEY]
+                for consumer in self.consumers
+                if self.__check_filters(consumer, consumer_filters)]
+
+    def __check_filters(self, consumer_filters, expected_filters) -> bool:
+        """
+        Checks if the consumer match the specified filters
+        :param consumer_filters: consumer filters
+        :param expected_filters: selected filters
+        :return: True if the consumer match the selection, else False
+        """
+        expected_filters[self.INSTANCE_KEY] = consumer_filters[self.INSTANCE_KEY]
+        return expected_filters == consumer_filters
 
     async def remove_consumer(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """
@@ -110,8 +131,8 @@ class Channel(object):
         :param kwargs: consumers list filter params
         :return: None
         """
-        if consumer in self.consumers[self.CONSUMER_CLASS.__name__]:
-            self.consumers[self.CONSUMER_CLASS.__name__].remove(consumer)
+        if consumer in self.consumers:
+            self.consumers.remove(consumer)
             await self.__check_producers_state()
             await consumer.stop()
 
@@ -133,9 +154,9 @@ class Channel(object):
         """
         Should be overwritten according to the class needs
         :param kwargs: consumers list filter params
-        :return: the subscribed consumers dict
+        :return: the subscribed consumers list
         """
-        return [consumer for consumers in self.consumers.values() for consumer in consumers]
+        return [consumer[self.INSTANCE_KEY] for consumer in self.consumers]
 
     async def register_producer(self, producer, **kwargs) -> None:
         """
