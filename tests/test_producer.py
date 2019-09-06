@@ -16,7 +16,7 @@
 
 import pytest
 
-from octobot_channels import Consumer, Producer
+from octobot_channels import Consumer, Producer, SupervisedConsumer
 from octobot_channels.channels import Channel, get_chan, del_chan, set_chan
 from octobot_channels.util import create_channel_instance
 from tests import EmptyTestConsumer, TEST_CHANNEL, empty_test_callback, EmptyTestProducer
@@ -64,9 +64,7 @@ async def test_send_producer_without_consumer():
 @pytest.mark.asyncio
 async def test_send_producer_with_consumer():
     class TestConsumer(Consumer):
-        async def consume(self):
-            while not self.should_stop:
-                await self.callback(**(await self.queue.get()))
+        pass
 
     class TestChannel(Channel):
         PRODUCER_CLASS = EmptyTestProducer
@@ -131,3 +129,24 @@ async def test_resume_producer():
     await create_channel_instance(TestChannel, set_chan)
     await TestProducer(get_chan(TEST_CHANNEL)).run()
     await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+
+
+@pytest.mark.asyncio
+async def test_resume_producer():
+    class TestSupervisedConsumer(SupervisedConsumer):
+        pass
+
+    class TestChannel(Channel):
+        PRODUCER_CLASS = EmptyTestProducer
+        CONSUMER_CLASS = TestSupervisedConsumer
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
+    await producer.run()
+    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+    await producer.send({"data": "test"})
+    await producer.wait_for_processing()
+    await get_chan(TEST_CHANNEL).stop()

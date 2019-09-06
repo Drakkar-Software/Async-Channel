@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
-from asyncio import Queue
+from asyncio import Queue, CancelledError
 
 from octobot_commons.logging.logging_util import get_logger
 
@@ -105,3 +105,23 @@ class InternalConsumer(Consumer):
 
     async def perform(self, **kwargs):
         raise NotImplementedError("perform is not implemented")
+
+
+class SupervisedConsumer(Consumer):
+    async def consume(self):
+        """
+        Can be overwritten with a while loop that contains :
+        - self.queue.get()
+        - finally: self.queue.task_done()
+        :return: None
+        """
+        while not self.should_stop:
+            try:
+                await self.callback(**(await self.queue.get()))
+            except Exception as e:
+                self.logger.exception(f"Exception when calling callback : {e}")
+            finally:
+                try:
+                    self.queue.task_done()
+                except ValueError:  # when task_done() is called when the Exception was CancelledError
+                    pass

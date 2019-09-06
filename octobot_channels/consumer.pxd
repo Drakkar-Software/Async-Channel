@@ -28,3 +28,6 @@ cdef class Consumer:
 
 cdef class InternalConsumer(Consumer):
     pass
+
+cdef class SupervisedConsumer(Consumer):
+    pass
