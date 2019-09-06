@@ -59,18 +59,35 @@ class Consumer:
         """
         while not self.should_stop:
             try:
-                await self.callback(**(await self.queue.get()))
+                await self.perform(await self.queue.get())
             except Exception as e:
                 self.logger.exception(f"Exception when calling callback : {e}")
+            finally:
+                await self.consume_ends()
 
-    async def start(self):
+    async def perform(self, kwargs) -> None:
+        """
+        Should be overwritten to handle queue data
+        :param kwargs: queue get content
+        :return: None
+        """
+        await self.callback(**kwargs)
+
+    async def consume_ends(self) -> None:
+        """
+        Should be overwritten to handle consumption ends
+        :return: None
+        """
+        pass
+
+    async def start(self) -> None:
         """
         Should be implemented for consumer's non-triggered tasks
         :return: None
         """
         self.should_stop = False
 
-    async def stop(self):
+    async def stop(self) -> None:
         """
         Stops non-triggered tasks management
         :return: None
@@ -79,14 +96,14 @@ class Consumer:
         if self.consume_task:
             self.consume_task.cancel()
 
-    def create_task(self):
+    def create_task(self) -> None:
         """
         Creates a new asyncio task that contains start() execution
         :return: None
         """
         self.consume_task = asyncio.create_task(self.consume())
 
-    async def run(self):
+    async def run(self) -> None:
         """
         - Initialize the consumer
         - Start the consumer main task
@@ -100,28 +117,13 @@ class InternalConsumer(Consumer):
     def __init__(self):
         super().__init__(None)
 
-        # Method to be called when performing task is done
-        self.callback = self.perform
-
-    async def perform(self, **kwargs):
+    async def perform(self, kwargs):
         raise NotImplementedError("perform is not implemented")
 
 
 class SupervisedConsumer(Consumer):
-    async def consume(self):
-        """
-        Can be overwritten with a while loop that contains :
-        - self.queue.get()
-        - finally: self.queue.task_done()
-        :return: None
-        """
-        while not self.should_stop:
-            try:
-                await self.callback(**(await self.queue.get()))
-            except Exception as e:
-                self.logger.exception(f"Exception when calling callback : {e}")
-            finally:
-                try:
-                    self.queue.task_done()
-                except ValueError:  # when task_done() is called when the Exception was CancelledError
-                    pass
+    async def consume_ends(self) -> None:
+        try:
+            self.queue.task_done()
+        except ValueError:  # when task_done() is called when the Exception was CancelledError
+            pass

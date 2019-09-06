@@ -13,20 +13,54 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import asyncio
 
 import pytest
+from asyncmock import AsyncMock, patch
 
-from octobot_channels import InternalConsumer, SupervisedConsumer
+from octobot_channels import InternalConsumer, SupervisedConsumer, Consumer
 from octobot_channels.channels import Channel, get_chan, del_chan, set_chan
 from octobot_channels.util import create_channel_instance
-from tests import TEST_CHANNEL, EmptyTestProducer, empty_test_callback
+from tests import TEST_CHANNEL, EmptyTestProducer, empty_test_callback, EmptyTestConsumer, mock_was_called_once
+
+
+async def init_consumer_test():
+    class TestChannel(Channel):
+        PRODUCER_CLASS = EmptyTestProducer
+        CONSUMER_CLASS = EmptyTestConsumer
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
+    await producer.run()
+    return await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+
+
+@pytest.mark.asyncio
+async def test_perform_called():
+    consumer = await init_consumer_test()
+    with patch.object(consumer, 'perform', new=AsyncMock()) as mocked_consume_ends:
+        await get_chan(TEST_CHANNEL).get_internal_producer().send({})
+        await mock_was_called_once(mocked_consume_ends)
+
+    await get_chan(TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_consume_ends_called():
+    consumer = await init_consumer_test()
+    with patch.object(consumer, 'consume_ends', new=AsyncMock()) as mocked_consume_ends:
+        await get_chan(TEST_CHANNEL).get_internal_producer().send({})
+        await mock_was_called_once(mocked_consume_ends)
+
+    await get_chan(TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
 async def test_internal_consumer():
     class TestInternalConsumer(InternalConsumer):
-        async def perform(self):
-            await get_chan(TEST_CHANNEL).stop()
+        async def perform(self, kwargs):
+            pass
 
     class TestChannel(Channel):
         PRODUCER_CLASS = EmptyTestProducer
@@ -36,8 +70,14 @@ async def test_internal_consumer():
     await create_channel_instance(TestChannel, set_chan)
     producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
     await producer.run()
-    await get_chan(TEST_CHANNEL).new_consumer(internal_consumer=TestInternalConsumer())
-    await get_chan(TEST_CHANNEL).get_internal_producer().send({})
+    consumer = TestInternalConsumer()
+    await get_chan(TEST_CHANNEL).new_consumer(internal_consumer=consumer)
+
+    with patch.object(consumer, 'perform', new=AsyncMock()) as mocked_consume_ends:
+        await get_chan(TEST_CHANNEL).get_internal_producer().send({})
+        await mock_was_called_once(mocked_consume_ends)
+
+    await get_chan(TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio

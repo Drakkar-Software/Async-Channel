@@ -39,3 +39,8 @@ class EmptyTestChannel(Channel):
 
 async def empty_test_callback():
     pass
+
+
+async def mock_was_called_once(mocked_method):
+    await asyncio.sleep(0.1)
+    mocked_method.assert_called_once()
