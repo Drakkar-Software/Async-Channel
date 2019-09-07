@@ -104,6 +104,17 @@ class Channel(object):
         self.consumers.append(consumer_filters)
 
     def get_consumer_from_filters(self, consumer_filters) -> list:
+        return self.__filter_consumers(consumer_filters)
+
+    def get_consumers(self) -> list:
+        """
+        Returns all consumers instance
+        Can be overwritten according to the class needs
+        :return: the subscribed consumers list
+        """
+        return [consumer[self.INSTANCE_KEY] for consumer in self.consumers]
+
+    def __filter_consumers(self, consumer_filters) -> list:
         """
         Returns the consumers that match the selection
         :param consumer_filters: listed consumer filters
@@ -150,14 +161,6 @@ class Channel(object):
             self.is_paused = False
             for producer in self.get_producers():
                 await producer.resume()
-
-    def get_consumers(self, **kwargs) -> Iterable:
-        """
-        Should be overwritten according to the class needs
-        :param kwargs: consumers list filter params
-        :return: the subscribed consumers list
-        """
-        return [consumer[self.INSTANCE_KEY] for consumer in self.consumers]
 
     async def register_producer(self, producer, **kwargs) -> None:
         """
