@@ -15,6 +15,8 @@
 #  License along with this library.
 
 import pytest
+from octobot_channels import CHANNEL_WILDCARD
+
 from octobot_channels.util import create_channel_instance
 
 from octobot_channels.channels import Channel, get_chan, del_chan, set_chan
@@ -56,10 +58,69 @@ async def test_new_consumer_with_filters():
     await create_channel_instance(EmptyTestChannel, set_chan)
     consumer = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback, {"test_key": 1})
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumers() == [consumer]
-    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({}) == [consumer]   # returns all if empty
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 2}) == []
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test2": 2}) == []
     assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1}) == [consumer]
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_new_consumer_with_expected_wildcard_filters():
+    del_chan(EMPTY_TEST_CHANNEL)
+    await create_channel_instance(EmptyTestChannel, set_chan)
+    consumer = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback, {"test_key": 1,
+                                                                                     "test_key_2": "abc"})
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumers() == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({}) == [consumer]   # returns all if empty
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": "abc"}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": 1, "test_key_2": "abc", "test_key_3": 45}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": 1, "test_key_2": "abc", "test_key_3": CHANNEL_WILDCARD}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 4, "test_key_2": "bc"}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": CHANNEL_WILDCARD}) == [
+        consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 3, "test_key_2": CHANNEL_WILDCARD}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": "abc"}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": "a"}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": CHANNEL_WILDCARD}) == [consumer]
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_new_consumer_with_consumer_wildcard_filters():
+    del_chan(EMPTY_TEST_CHANNEL)
+    await create_channel_instance(EmptyTestChannel, set_chan)
+    consumer = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback, {"test_key": 1,
+                                                                                     "test_key_2": "abc",
+                                                                                     "test_key_3": CHANNEL_WILDCARD})
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumers() == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({}) == [consumer]  # returns all if empty
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": "abc"}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": 1, "test_key_2": "abc", "test_key_3": 45}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": 1, "test_key_2": "abc", "test_key_3": CHANNEL_WILDCARD}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 4, "test_key_2": "bc"}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": CHANNEL_WILDCARD}) == [
+        consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_2": CHANNEL_WILDCARD}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_3": CHANNEL_WILDCARD}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_3": "e"}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 3, "test_key_2": CHANNEL_WILDCARD}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": "abc"}) == [consumer]
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": "a"}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": "a", "test_key_3": CHANNEL_WILDCARD}) == []
+    assert get_chan(EMPTY_TEST_CHANNEL).get_consumer_from_filters(
+        {"test_key": CHANNEL_WILDCARD, "test_key_2": CHANNEL_WILDCARD}) == [consumer]
     await get_chan(EMPTY_TEST_CHANNEL).stop()
 
 

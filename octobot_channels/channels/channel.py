@@ -18,7 +18,7 @@ from typing import Iterable
 
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels import CONSUMER_CALLBACK_TYPE
+from octobot_channels import CONSUMER_CALLBACK_TYPE, CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 """
@@ -117,6 +117,7 @@ class Channel(object):
     def __filter_consumers(self, consumer_filters) -> list:
         """
         Returns the consumers that match the selection
+        Returns all consumer instances if consumer_filter is empty
         :param consumer_filters: listed consumer filters
         :return: the list of the filtered consumers
         """
@@ -127,12 +128,14 @@ class Channel(object):
     def __check_filters(self, consumer_filters, expected_filters) -> bool:
         """
         Checks if the consumer match the specified filters
+        Returns True if expected_filters is empty
         :param consumer_filters: consumer filters
         :param expected_filters: selected filters
         :return: True if the consumer match the selection, else False
         """
-        expected_filters[self.INSTANCE_KEY] = consumer_filters[self.INSTANCE_KEY]
-        return expected_filters == consumer_filters
+        return all([k in consumer_filters and
+                    (v == CHANNEL_WILDCARD or consumer_filters[k] in [v, CHANNEL_WILDCARD])
+                    for k, v in expected_filters.items()])
 
     async def remove_consumer(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """
