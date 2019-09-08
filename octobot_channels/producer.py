@@ -104,7 +104,7 @@ class Producer:
         """
         pass
 
-    async def wait_for_processing(self, **kwargs) -> None:
+    async def wait_for_processing(self) -> None:
         """
         Should be used only with SupervisedConsumers
         It will wait until all consumers have notified that their consume() method have ended
