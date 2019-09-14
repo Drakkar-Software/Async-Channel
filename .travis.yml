@@ -11,13 +11,22 @@ install:
 
 matrix:
   include:
-    - name: "Linux - Python 3 nightly"
+    - name: "Linux - Python 3 nightly - Python sources"
       os: linux
       python: nightly
       language: python
       script:
         - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+
+    - name: "Linux - Python 3 nightly - Installed"
+      os: linux
+      python: nightly
+      language: python
+      script:
+#        - python3 setup.py build_ext --inplace
         - python3 setup.py install
+        - rm -rf octobot_channels
+        - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
 
 deploy:
   - provider: pypi

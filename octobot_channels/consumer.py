@@ -15,11 +15,10 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
-from asyncio import Queue, CancelledError
-
-from octobot_commons.logging.logging_util import get_logger
+from asyncio import Queue
 
 from octobot_channels import CONSUMER_CALLBACK_TYPE
+from octobot_commons.logging.logging_util import get_logger
 
 """
 A channel Consumer
