@@ -14,20 +14,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_commons.singleton.singleton_class cimport Singleton
 
-cdef class Consumer:
-    cdef public object logger  # object type = Logger
-    cdef public object queue  # object type = asyncio.Queue
-    cdef public object callback  # object type = callable
-    cdef public object consume_task  # object type = asyncio.Task
-
-    cdef public bint should_stop
-    cdef public bint filter_size
-
-    cpdef void create_task(self)
-
-cdef class InternalConsumer(Consumer):
-    pass
-
-cdef class SupervisedConsumer(Consumer):
-    pass
+cdef class ChannelInstances(Singleton):
+    cdef public dict channels

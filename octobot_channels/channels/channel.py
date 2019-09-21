@@ -18,7 +18,7 @@ from typing import Iterable
 
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels import CONSUMER_CALLBACK_TYPE, CHANNEL_WILDCARD
+from octobot_channels import CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 """
@@ -59,7 +59,7 @@ class Channel(object):
         return cls.__name__.replace('Channel', '')
 
     async def new_consumer(self,
-                           callback: CONSUMER_CALLBACK_TYPE = None,
+                           callback: object = None,
                            consumer_filters: dict = None,
                            internal_consumer: object = None,
                            size: int = 0,

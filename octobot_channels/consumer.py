@@ -17,7 +17,6 @@
 import asyncio
 from asyncio import Queue
 
-from octobot_channels import CONSUMER_CALLBACK_TYPE
 from octobot_commons.logging.logging_util import get_logger
 
 """
@@ -26,7 +25,7 @@ A channel Consumer
 
 
 class Consumer:
-    def __init__(self, callback: CONSUMER_CALLBACK_TYPE, size: int = 0, filter_size: bool = False):
+    def __init__(self, callback: object, size: int = 0, filter_size: bool = False):
         self.logger = get_logger(self.__class__.__name__)
 
         # Consumer data queue. It contains producer's work (received through Producer.send()).
