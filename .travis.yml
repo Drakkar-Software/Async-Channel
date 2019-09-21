@@ -12,7 +12,8 @@ env:
     - PACKAGE_FOLDER=octobot_channels
 
 install:
-  - python3 -m pip install --upgrade --only-binary=Cython -r dev_requirements.txt
+  - python3 -m pip install --upgrade --only-binary=Cython Cython
+  - python3 -m pip install -r dev_requirements.txt
   - python3 -m pip install OctoBot-Commons # TODO remove it
 
 matrix:
@@ -31,9 +32,10 @@ matrix:
       python: nightly
       language: python
       script:
+#        - python3 -m pip install codecov
         - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
-      after_success:
-        - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then bash codecov; fi
+#      after_success:
+#        - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then bash codecov; fi
 
     - name: "Linux - Python 3 nightly - Installed"
       stage: test
@@ -47,6 +49,8 @@ matrix:
 
     - name: "Linux - Python 3 nightly - Deploy"
       stage: deploy
+      script:
+        - ls
       deploy:
         - provider: pypi
           password:

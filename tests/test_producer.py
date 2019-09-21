@@ -15,9 +15,10 @@
 #  License along with this library.
 
 import pytest
+from octobot_channels.consumer import Consumer, SupervisedConsumer
 
-from octobot_channels import Consumer, Producer, SupervisedConsumer
-from octobot_channels.channels import Channel, get_chan, del_chan, set_chan
+from octobot_channels.channels.channel import Channel, get_chan, del_chan, set_chan
+from octobot_channels.producer import Producer
 from octobot_channels.util import create_channel_instance
 from tests import EmptyTestConsumer, TEST_CHANNEL, empty_test_callback, EmptyTestProducer
 

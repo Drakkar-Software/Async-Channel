@@ -17,8 +17,8 @@
 import pytest
 from asyncmock import AsyncMock, patch
 
-from octobot_channels import InternalConsumer, SupervisedConsumer
-from octobot_channels.channels import Channel, get_chan, del_chan, set_chan
+from octobot_channels.consumer import InternalConsumer, SupervisedConsumer
+from octobot_channels.channels.channel import Channel, get_chan, del_chan, set_chan
 from octobot_channels.util import create_channel_instance
 from tests import TEST_CHANNEL, EmptyTestProducer, empty_test_callback, EmptyTestConsumer, mock_was_called_once
 

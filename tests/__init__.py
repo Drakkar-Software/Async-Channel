@@ -15,8 +15,10 @@
 #  License along with this library.
 import asyncio
 
-from octobot_channels import Producer, Consumer
-from octobot_channels.channels import Channel
+from octobot_channels.channels.channel import Channel
+
+from octobot_channels.consumer import Consumer
+from octobot_channels.producer import Producer
 
 TEST_CHANNEL = "Test"
 EMPTY_TEST_CHANNEL = "EmptyTest"

@@ -15,5 +15,3 @@
 #  License along with this library.
 
 from .constants import *
-from .consumer import *
-from .producer import *
