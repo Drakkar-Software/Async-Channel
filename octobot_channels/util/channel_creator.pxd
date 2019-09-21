@@ -14,7 +14,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_commons.singleton.singleton_class cimport Singleton
-
-cdef class ChannelInstances(Singleton):
-    cdef public dict channels
