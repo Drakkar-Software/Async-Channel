@@ -17,9 +17,7 @@
 import pytest
 
 from octobot_channels.channels.channel import Channel, del_chan, get_chan, set_chan
-
 from octobot_channels import CHANNEL_WILDCARD
-
 from octobot_channels.util import create_channel_instance
 
 from tests import TEST_CHANNEL, EMPTY_TEST_CHANNEL, EmptyTestChannel, empty_test_callback, EmptyTestProducer
@@ -32,6 +30,30 @@ async def test_get_chan():
 
     del_chan(TEST_CHANNEL)
     await create_channel_instance(TestChannel, set_chan)
+    await get_chan(TEST_CHANNEL).stop()
+
+
+# @pytest.mark.asyncio
+# async def test_set_chan():
+#     class TestChannel(Channel):
+#         pass
+#
+#     del_chan(TEST_CHANNEL)
+#     await create_channel_instance(TestChannel, set_chan)
+#     with pytest.raises(TypeError):
+#         set_chan(TestChannel(), name=TestChannel.get_name())
+#     await get_chan(TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_get_internal_producer():
+    class TestChannel(Channel):
+        pass
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    with pytest.raises(TypeError):
+        get_chan(TEST_CHANNEL).get_internal_producer()
     await get_chan(TEST_CHANNEL).stop()
 
 

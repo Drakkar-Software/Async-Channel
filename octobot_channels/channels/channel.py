@@ -243,6 +243,7 @@ class Channel(object):
                 self.internal_producer = self.PRODUCER_CLASS(self, **kwargs)
             except TypeError:
                 self.logger.exception("PRODUCER_CLASS not defined")
+                raise TypeError
         return self.internal_producer
 
 

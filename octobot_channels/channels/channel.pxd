@@ -20,7 +20,6 @@ cdef class Channel(object):
     cdef object logger
 
     cdef public list producers
-
     cdef public list consumers
 
     cdef public Producer internal_producer

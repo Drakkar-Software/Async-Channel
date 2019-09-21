@@ -22,8 +22,6 @@ cdef class Producer:
     cdef public object logger  # object type = logger
     cdef public object produce_task  # object type = asyncio.Task
 
-    cdef public list consumers
-
     cdef public bint should_stop
 
     cpdef void create_task(self)
