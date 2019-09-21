@@ -151,7 +151,7 @@ class Channel(object):
                 await self.__check_producers_state()
                 await consumer.stop()
 
-    async def __check_producers_state(self, **kwargs) -> None:
+    async def __check_producers_state(self) -> None:
         """
         Checks if producers should be paused or resumed after a consumer addition or removal
         :return: None

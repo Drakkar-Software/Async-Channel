@@ -31,6 +31,12 @@ class EmptyTestProducer(Producer):
     async def start(self):
         await asyncio.sleep(100000)
 
+    async def pause(self, **kwargs):
+        pass
+
+    async def resume(self, **kwargs):
+        pass
+
 
 class EmptyTestChannel(Channel):
     CONSUMER_CLASS = EmptyTestConsumer
