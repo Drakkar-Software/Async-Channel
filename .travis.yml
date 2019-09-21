@@ -5,6 +5,12 @@ os: linux
 language: python
 cache: pip
 python: 3.7-dev
+env:
+  global:
+    - GH_REPO=Drakkar-Software/OctoBot-Channels
+    - DEPLOY_BRANCH=master
+    - PACKAGE_FOLDER=octobot_channels
+
 install:
   - python3 -m pip install --upgrade --only-binary=Cython -r dev_requirements.txt
   - python3 -m pip install OctoBot-Commons # TODO remove it
@@ -26,6 +32,8 @@ matrix:
       language: python
       script:
         - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+      after_success:
+        - if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then bash codecov; fi
 
     - name: "Linux - Python 3 nightly - Installed"
       stage: test
@@ -34,20 +42,22 @@ matrix:
       language: python
       script:
         - python3 setup.py install
-        - rm -rf octobot_channels
+        - rm -rf $PACKAGE_FOLDER
         - pytest tests
 
-deploy:
-  - provider: pypi
-    password:
-      secure: 3PbsWVHI9YmNnqiyZkKOhjcn6G/k4N8RkTK4WoWPpEehpBookiKOPjp/icVrpO0JF65nLc32jmelhpuVMXiMQbvkz3YHDd2296eSKRYbXeEWx7hAnkH1ePzZb7Un8YmwHe8WVUKMZ+lX+KiesoowmdIoApfgbiWekP9C1wyNwaNz0kwDncyfkJ6V0cqg/zFSfpMEoeocHh73rI99gz9PCMJjFoeoB1yaupCRhz7/1F/CCg4hhtYdbYVi0lcWexQ7aJ25Nkq5dIYppu/HpvdcwufF9gNC2K5DcqjvExDZ85HehkSURbbyjUVpHufzZOqOKZuBWDlc2iQaf1fN1tTuKm8DnjmpdvAEd76SpJG+Lxh0EDWTE3sksBAEqM1ol5nMu5FTqXLBzIviIJa7XVdmJD6J+7RT/MI4lcTGWK/s8iDbAtAqn9KADHO61nDBHZQK/tkDdQMWEkHs/9Y1PTBl/zpdcuwV2hw/dwsEJban4A6WeCrSyJdlmff5zfRpAEtoNyh+GCbJdVcF0bXaIZyC6azKfhW6dWVGDF6cXzuQ0uZURCwW/2wZfGkCGxOXaYKKF/LvSoKv2Wo7xw6pP/L3NK74Ysdgy+H1H1XI3lGjdjr2vglDzTcCgzrximlyjumZqeq1tAcXC3KCdvLKDIYe98rW78f6i4mJoKFLhugd7XA=
-    user:
-      secure: 2KlzIQmvzteG7NQHV/V8AIdUKWjCkECEpvvodIN6eQxiOB+1AtRbOqKLIjtER0hahIwhpIIXz5Lt6VpNzqRiTLA7lJshGutVOyCzAtNlJxdZ7Jkr9mQw6CV4TWXXoNuF4XMgZcmwgloCClUCBYEPgSIKmmYfSUsIA3aOz94x9+B1deEq1z9ypJURqyNsrSFaYoUfOISK+7qVkFkvvLNVyD53Kos4bcf050XOphiL9rX4iE1mjDh4xU1U0N7G5v/kt+/ppoWj/lsKFaaO7K5JBvoU21UGLM9UXNeBObNy0OqJyYj4uPEs22rXStTYUc/4HRXBjZjVylBQ9nOE/JD/l/cQ2Kdgp77T6JaLPXhfeIi0LISpbhgWgibtKfHzCxgEZNW2GbfVWPkgx8cSy5pOy9oiCpmqsX87Cg5sOxvc65hbn0b5rCpvKIhuwur4ZRKQ62RqJSvF1f7vPrcT8AqgGWg7i2Ho70Vmb32FehSL/GiF7yufjxbC0hdtq7SyrncEWJM302eVw/nqabQqSS8UAbpP4kPmazjYgzleTQf0xT8UU4KFXc1DpggFRNuRAw3LziPLhsMQTRDHdKxINueD8BcaqURGZiQ3vQjxa0YbjFhSvi29KRPDA9t485dIYClUufWzN+Z41HYFnQ5jvA79R0goGRWv7xJ1aa5S/K1s/Po=
-    skip_existing: true
-    skip_cleanup: true
-    distributions: "sdist"
-    on:
-      repo: Drakkar-Software/OctoBot-Channels
-      branch: master
-      tags: true
-      condition: $TRAVIS_OS_NAME = 'linux'
+    - name: "Linux - Python 3 nightly - Deploy"
+      stage: deploy
+      deploy:
+        - provider: pypi
+          password:
+            secure: 3PbsWVHI9YmNnqiyZkKOhjcn6G/k4N8RkTK4WoWPpEehpBookiKOPjp/icVrpO0JF65nLc32jmelhpuVMXiMQbvkz3YHDd2296eSKRYbXeEWx7hAnkH1ePzZb7Un8YmwHe8WVUKMZ+lX+KiesoowmdIoApfgbiWekP9C1wyNwaNz0kwDncyfkJ6V0cqg/zFSfpMEoeocHh73rI99gz9PCMJjFoeoB1yaupCRhz7/1F/CCg4hhtYdbYVi0lcWexQ7aJ25Nkq5dIYppu/HpvdcwufF9gNC2K5DcqjvExDZ85HehkSURbbyjUVpHufzZOqOKZuBWDlc2iQaf1fN1tTuKm8DnjmpdvAEd76SpJG+Lxh0EDWTE3sksBAEqM1ol5nMu5FTqXLBzIviIJa7XVdmJD6J+7RT/MI4lcTGWK/s8iDbAtAqn9KADHO61nDBHZQK/tkDdQMWEkHs/9Y1PTBl/zpdcuwV2hw/dwsEJban4A6WeCrSyJdlmff5zfRpAEtoNyh+GCbJdVcF0bXaIZyC6azKfhW6dWVGDF6cXzuQ0uZURCwW/2wZfGkCGxOXaYKKF/LvSoKv2Wo7xw6pP/L3NK74Ysdgy+H1H1XI3lGjdjr2vglDzTcCgzrximlyjumZqeq1tAcXC3KCdvLKDIYe98rW78f6i4mJoKFLhugd7XA=
+          user:
+            secure: 2KlzIQmvzteG7NQHV/V8AIdUKWjCkECEpvvodIN6eQxiOB+1AtRbOqKLIjtER0hahIwhpIIXz5Lt6VpNzqRiTLA7lJshGutVOyCzAtNlJxdZ7Jkr9mQw6CV4TWXXoNuF4XMgZcmwgloCClUCBYEPgSIKmmYfSUsIA3aOz94x9+B1deEq1z9ypJURqyNsrSFaYoUfOISK+7qVkFkvvLNVyD53Kos4bcf050XOphiL9rX4iE1mjDh4xU1U0N7G5v/kt+/ppoWj/lsKFaaO7K5JBvoU21UGLM9UXNeBObNy0OqJyYj4uPEs22rXStTYUc/4HRXBjZjVylBQ9nOE/JD/l/cQ2Kdgp77T6JaLPXhfeIi0LISpbhgWgibtKfHzCxgEZNW2GbfVWPkgx8cSy5pOy9oiCpmqsX87Cg5sOxvc65hbn0b5rCpvKIhuwur4ZRKQ62RqJSvF1f7vPrcT8AqgGWg7i2Ho70Vmb32FehSL/GiF7yufjxbC0hdtq7SyrncEWJM302eVw/nqabQqSS8UAbpP4kPmazjYgzleTQf0xT8UU4KFXc1DpggFRNuRAw3LziPLhsMQTRDHdKxINueD8BcaqURGZiQ3vQjxa0YbjFhSvi29KRPDA9t485dIYClUufWzN+Z41HYFnQ5jvA79R0goGRWv7xJ1aa5S/K1s/Po=
+          skip_existing: true
+          skip_cleanup: true
+          distributions: "sdist"
+          on:
+            repo: $GH_REPO
+            branch: $DEPLOY_BRANCH
+            tags: true
+            condition: $TRAVIS_OS_NAME = 'linux'

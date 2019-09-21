@@ -7,7 +7,7 @@ pytest-xdist
 asyncmock
 
 coverage
-coveralls
+codecov
 
 twine
 pip
