@@ -114,9 +114,10 @@ class Consumer:
 class InternalConsumer(Consumer):
     def __init__(self):
         super().__init__(None)
+        self.callback = self.internal_callback
 
-    async def perform(self, kwargs):
-        raise NotImplementedError("perform is not implemented")
+    async def internal_callback(self, **kwargs):
+        raise NotImplementedError("internal_callback is not implemented")
 
 
 class SupervisedConsumer(Consumer):
