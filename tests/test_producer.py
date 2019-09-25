@@ -30,10 +30,10 @@ async def test_send_internal_producer_without_consumer():
             await super().send(data)
             await get_chan(TEST_CHANNEL).stop()
 
-        async def pause(self, **kwargs):
+        async def pause(self):
             pass
 
-        async def resume(self, **kwargs):
+        async def resume(self):
             pass
 
     class TestChannel(Channel):
@@ -51,10 +51,10 @@ async def test_send_producer_without_consumer():
             await super().send(data)
             await get_chan(TEST_CHANNEL).stop()
 
-        async def pause(self, **kwargs):
+        async def pause(self):
             pass
 
-        async def resume(self, **kwargs):
+        async def resume(self):
             pass
 
     class TestConsumer(Consumer):
@@ -102,10 +102,10 @@ async def test_pause_producer_without_consumers():
         async def pause(self):
             await get_chan(TEST_CHANNEL).stop()
 
-        async def pause(self, **kwargs):
+        async def pause(self):
             pass
 
-        async def resume(self, **kwargs):
+        async def resume(self):
             pass
 
     class TestChannel(Channel):
@@ -123,10 +123,10 @@ async def test_pause_producer_with_removed_consumer():
         async def pause(self):
             await get_chan(TEST_CHANNEL).stop()
 
-        async def pause(self, **kwargs):
+        async def pause(self):
             pass
 
-        async def resume(self, **kwargs):
+        async def resume(self):
             pass
 
     class TestChannel(Channel):
@@ -146,10 +146,10 @@ async def test_resume_producer():
         async def resume(self):
             await get_chan(TEST_CHANNEL).stop()
 
-        async def pause(self, **kwargs):
+        async def pause(self):
             pass
 
-        async def resume(self, **kwargs):
+        async def resume(self):
             pass
 
     class TestChannel(Channel):

@@ -33,10 +33,10 @@ class EmptyTestProducer(Producer):
     async def start(self):
         await asyncio.sleep(100000)
 
-    async def pause(self, **kwargs):
+    async def pause(self):
         pass
 
-    async def resume(self, **kwargs):
+    async def resume(self):
         pass
 
 

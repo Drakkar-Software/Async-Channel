@@ -75,14 +75,14 @@ class Producer:
         """
         pass
 
-    async def pause(self, **kwargs) -> None:
+    async def pause(self) -> None:
         """
         Called when the channel runs out of consumer
         :return: None
         """
         pass
 
-    async def resume(self, **kwargs) -> None:
+    async def resume(self) -> None:
         """
         Called when the channel is no longer out of consumer
         :return: None
