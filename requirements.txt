@@ -1,4 +1,4 @@
-setuptools>=18.0
+setuptools==41.2.0
 cython
 
 OctoBot-Commons
