@@ -14,11 +14,17 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 # from distutils.extension import Extension
+import os
 
 try:
     from Cython.Distutils import build_ext
+    from Cython.Build import cythonize
 except ImportError:
     # create closure for deferred import
+    def cythonize(*args, **kwargs):
+        from Cython.Build import cythonize
+        return cythonize(*args, **kwargs)
+
     def build_ext(*args, **kwargs):
         from Cython.Distutils import build_ext
         return build_ext(*args, **kwargs)
@@ -46,6 +52,7 @@ ext_modules = [
 
 REQUIRED = open('requirements.txt').readlines()
 REQUIRES_PYTHON = '>=3.7'
+CYTHON_DEBUG = False if not os.getenv('CYTHON_DEBUG') else os.getenv('CYTHON_DEBUG')
 
 setup(
     name=PROJECT_NAME,
@@ -63,9 +70,9 @@ setup(
     test_suite="tests",
     zip_safe=False,
     data_files=[],
-    setup_requires=REQUIRED,
+    setup_requires=REQUIRED if not CYTHON_DEBUG else [],
     install_requires=[],
-    ext_modules=ext_modules,
+    ext_modules=cythonize(ext_modules, gdb_debug=CYTHON_DEBUG),
     python_requires=REQUIRES_PYTHON,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
