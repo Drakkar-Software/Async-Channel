@@ -173,7 +173,9 @@ class Channel(object):
         :param kwargs: additional arguments available for overwritten methods
         :return: None
         """
-        self.producers.append(producer)
+        if producer not in self.producers:
+            self.producers.append(producer)
+
         if self.is_paused:
             await producer.pause()
 
