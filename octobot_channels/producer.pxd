@@ -23,5 +23,6 @@ cdef class Producer:
     cdef public object produce_task  # object type = asyncio.Task
 
     cdef public bint should_stop
+    cdef public bint is_running
 
     cpdef void create_task(self)

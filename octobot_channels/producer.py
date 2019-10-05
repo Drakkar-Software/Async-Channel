@@ -42,6 +42,11 @@ class Producer:
         """
         self.should_stop = False
 
+        """
+        Should be used to know if the producer is already started
+        """
+        self.is_running = False
+
     async def send(self, data, **kwargs) -> None:
         """
         Send to each consumer data though its queue
@@ -118,6 +123,7 @@ class Producer:
         :return: None
         """
         self.should_stop = True
+        self.is_running = False
         if self.produce_task:
             self.produce_task.cancel()
 
@@ -126,6 +132,7 @@ class Producer:
         Creates a new asyncio task that contains start() execution
         :return: None
         """
+        self.is_running = True
         self.produce_task = asyncio.create_task(self.start())
 
     async def run(self) -> None:

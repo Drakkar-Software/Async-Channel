@@ -181,3 +181,18 @@ async def test_resume_producer():
     await producer.send({"data": "test"})
     await producer.wait_for_processing()
     await get_chan(TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_producer_is_running():
+    class TestChannel(Channel):
+        PRODUCER_CLASS = EmptyTestProducer
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
+    assert not producer.is_running
+    await producer.run()
+    assert producer.is_running
+    await get_chan(TEST_CHANNEL).stop()
+    assert not producer.is_running
