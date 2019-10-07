@@ -12,9 +12,8 @@ env:
     - PACKAGE_FOLDER=octobot_channels
 
 install:
-  - python3 -m pip install --upgrade --only-binary=Cython Cython
   - python3 -m pip install -r dev_requirements.txt
-  - python3 -m pip install OctoBot-Commons # TODO remove it
+  - python3 -m pip install -r requirements.txt
 
 matrix:
   include:

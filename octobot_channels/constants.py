@@ -15,6 +15,6 @@
 #  License along with this library.
 
 PROJECT_NAME = "OctoBot-Channels"
-VERSION = "1.3.11"  # major.minor.revision
+VERSION = "1.3.12"  # major.minor.revision
 
 CHANNEL_WILDCARD = "*"
