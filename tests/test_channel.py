@@ -33,16 +33,16 @@ async def test_get_chan():
     await get_chan(TEST_CHANNEL).stop()
 
 
-# @pytest.mark.asyncio
-# async def test_set_chan():
-#     class TestChannel(Channel):
-#         pass
-#
-#     del_chan(TEST_CHANNEL)
-#     await create_channel_instance(TestChannel, set_chan)
-#     with pytest.raises(TypeError):
-#         set_chan(TestChannel(), name=TestChannel.get_name())
-#     await get_chan(TEST_CHANNEL).stop()
+@pytest.mark.asyncio
+async def test_set_chan():
+    class TestChannel(Channel):
+        pass
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    with pytest.raises(ValueError):
+        set_chan(TestChannel(), name=TestChannel.get_name())
+    await get_chan(TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio

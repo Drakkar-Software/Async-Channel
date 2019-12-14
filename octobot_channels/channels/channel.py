@@ -248,18 +248,18 @@ class Channel(object):
         return self.internal_producer
 
 
-def set_chan(chan, name) -> None:
+def set_chan(chan, name) -> Channel:
     """
     Set a new Channel instance in the channels list according to channel name
     :param chan: new Channel instance
     :param name: name of the channel
-    :return: None
+    :return: the channel instance if succeed else raise a ValueError
     """
     chan_name = chan.get_name() if name else name
     if chan_name not in ChannelInstances.instance().channels:
         ChannelInstances.instance().channels[chan_name] = chan
-    else:
-        raise ValueError(f"Channel {chan_name} already exists.")
+        return chan
+    raise ValueError(f"Channel {chan_name} already exists.")
 
 
 def del_chan(name) -> None:

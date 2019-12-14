@@ -33,6 +33,6 @@ cdef class Channel(object):
     cdef list __filter_consumers(self, dict consumer_filters)
     cdef bint __check_filters(self, dict consumer_filters, dict expected_filters)
 
-cpdef void set_chan(Channel chan, str name)
+cpdef Channel set_chan(Channel chan, str name)
 
 cpdef void del_chan(str name)
