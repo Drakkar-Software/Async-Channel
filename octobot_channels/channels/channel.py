@@ -66,7 +66,7 @@ class Channel(object):
                            **kwargs) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
-        Should end by calling '__check_producers_state'
+        Should end by calling '_check_producers_state'
         :param callback: method that should be called when consuming the queue
         :param consumer_filters: the consumer filters
         :param size: queue size, default 0
@@ -75,11 +75,11 @@ class Channel(object):
         :return: consumer instance created
         """
         consumer = internal_consumer if internal_consumer else self.CONSUMER_CLASS(callback)
-        await self.__add_new_consumer_and_run(consumer, consumer_filters)
-        await self.__check_producers_state()
+        await self._add_new_consumer_and_run(consumer, consumer_filters)
+        await self._check_producers_state()
         return consumer
 
-    async def __add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs) -> None:
+    async def _add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
         :param consumer: the consumer to add
@@ -103,7 +103,7 @@ class Channel(object):
         self.consumers.append(consumer_filters)
 
     def get_consumer_from_filters(self, consumer_filters) -> list:
-        return self.__filter_consumers(consumer_filters)
+        return self._filter_consumers(consumer_filters)
 
     def get_consumers(self) -> list:
         """
@@ -113,7 +113,7 @@ class Channel(object):
         """
         return [consumer[self.INSTANCE_KEY] for consumer in self.consumers]
 
-    def __filter_consumers(self, consumer_filters) -> list:
+    def _filter_consumers(self, consumer_filters) -> list:
         """
         Returns the consumers that match the selection
         Returns all consumer instances if consumer_filter is empty
@@ -122,9 +122,9 @@ class Channel(object):
         """
         return [consumer[self.INSTANCE_KEY]
                 for consumer in self.consumers
-                if self.__check_filters(consumer, consumer_filters)]
+                if self._check_filters(consumer, consumer_filters)]
 
-    def __check_filters(self, consumer_filters, expected_filters) -> bool:
+    def _check_filters(self, consumer_filters, expected_filters) -> bool:
         """
         Checks if the consumer match the specified filters
         Returns True if expected_filters is empty
@@ -139,7 +139,7 @@ class Channel(object):
     async def remove_consumer(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """
         Should be overwritten according to the class needs
-        Should end by calling '__check_producers_state' and then 'consumer.stop'
+        Should end by calling '_check_producers_state' and then 'consumer.stop'
         :param consumer: consumer instance to remove from consumers list
         :param kwargs: consumers list filter params
         :return: None
@@ -147,10 +147,10 @@ class Channel(object):
         for c in self.consumers:
             if consumer == c[self.INSTANCE_KEY]:
                 self.consumers.remove(c)
-                await self.__check_producers_state()
+                await self._check_producers_state()
                 await consumer.stop()
 
-    async def __check_producers_state(self) -> None:
+    async def _check_producers_state(self) -> None:
         """
         Checks if producers should be paused or resumed after a consumer addition or removal
         :return: None

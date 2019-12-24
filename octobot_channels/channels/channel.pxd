@@ -30,8 +30,8 @@ cdef class Channel(object):
     cpdef list get_consumers(self)
     cpdef list get_consumer_from_filters(self, dict consumer_filters)
 
-    cdef list __filter_consumers(self, dict consumer_filters)
-    cdef bint __check_filters(self, dict consumer_filters, dict expected_filters)
+    cdef list _filter_consumers(self, dict consumer_filters)
+    cdef bint _check_filters(self, dict consumer_filters, dict expected_filters)
 
 cpdef Channel set_chan(Channel chan, str name)
 
