@@ -255,7 +255,7 @@ def set_chan(chan, name) -> Channel:
     :param name: name of the channel
     :return: the channel instance if succeed else raise a ValueError
     """
-    chan_name = chan.get_name() if name else name
+    chan_name = name if name else chan.get_name()
     if chan_name not in ChannelInstances.instance().channels:
         ChannelInstances.instance().channels[chan_name] = chan
         return chan
