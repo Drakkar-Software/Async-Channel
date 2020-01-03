@@ -17,6 +17,7 @@
 import pytest
 
 from octobot_channels.channels.channel import Channel, del_chan, get_chan, set_chan
+from octobot_channels.channels.channel_instances import ChannelInstances
 from octobot_channels import CHANNEL_WILDCARD
 from octobot_channels.util import create_channel_instance
 
@@ -40,6 +41,22 @@ async def test_set_chan():
 
     del_chan(TEST_CHANNEL)
     await create_channel_instance(TestChannel, set_chan)
+    with pytest.raises(ValueError):
+        set_chan(TestChannel(), name=TestChannel.get_name())
+    await get_chan(TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_set_chan_using_default_name():
+    class TestChannel(Channel):
+        pass
+
+    del_chan(TEST_CHANNEL)
+    channel = TestChannel()
+    returned_channel = set_chan(channel, name=None)
+    assert returned_channel is channel
+    assert channel.get_name() is not None
+    assert ChannelInstances.instance().channels[channel.get_name()] == channel
     with pytest.raises(ValueError):
         set_chan(TestChannel(), name=TestChannel.get_name())
     await get_chan(TEST_CHANNEL).stop()
