@@ -4,7 +4,7 @@ sudo: enabled
 os: linux
 language: python
 cache: pip
-python: 3.7-dev
+python: 3.8-dev
 env:
   global:
     - GH_REPO=Drakkar-Software/OctoBot-Channels
@@ -18,35 +18,26 @@ install:
 
 matrix:
   include:
-    - name: "Linux - Python 3 nightly - Cython compilation"
-      stage: build
-      os: linux
-      python: nightly
-      language: python
-      script:
-        - python3 setup.py build_ext --inplace
-
-    - name: "Linux - Python 3 nightly - Python sources"
+    - name: "Linux - Python 3.8-dev - Python sources"
       stage: test
       os: linux
-      python: nightly
       language: python
       script:
         - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
       after_success:
         - if [ $TRAVIS_PULL_REQUEST == "false" ]; then coveralls; fi
 
-    - name: "Linux - Python 3 nightly - Installed"
+    - name: "Linux - Python 3.8-dev - Installed"
       stage: test
       os: linux
-      python: nightly
       language: python
       script:
+        - python3 setup.py build_ext --inplace
         - python3 setup.py install
         - rm -rf $PACKAGE_FOLDER
         - pytest tests
 
-    - name: "Linux - Python 3 nightly - Deploy"
+    - name: "Linux - Python 3 - Deploy"
       stage: deploy
       script:
         - ls
