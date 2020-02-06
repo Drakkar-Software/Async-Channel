@@ -197,3 +197,24 @@ async def test_register_producer():
     get_chan(EMPTY_TEST_CHANNEL).unregister_producer(producer)
     assert get_chan(EMPTY_TEST_CHANNEL).producers == []
     await get_chan(EMPTY_TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
+async def test_flush():
+    del_chan(EMPTY_TEST_CHANNEL)
+    chan = await create_channel_instance(EmptyTestChannel, set_chan)
+    producer = EmptyTestProducer(chan)
+    await chan.register_producer(producer)
+    producer2 = EmptyTestProducer(chan)
+    await chan.register_producer(producer2)
+    producer3 = EmptyTestProducer(chan)
+    chan.internal_producer = producer3
+
+    assert producer3.channel is chan
+    for producer in chan.producers:
+        assert producer.channel is chan
+
+    chan.flush()
+    assert chan.internal_producer.channel is None
+    for producer in chan.producers:
+        assert producer.channel is None
