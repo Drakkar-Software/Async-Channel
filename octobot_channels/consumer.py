@@ -111,6 +111,9 @@ class Consumer:
         await self.start()
         self.create_task()
 
+    def __str__(self):
+        return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
+
 
 class InternalConsumer(Consumer):
     def __init__(self):
