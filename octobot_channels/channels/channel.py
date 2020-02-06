@@ -217,6 +217,12 @@ class Channel(object):
         for producer in self.get_producers():
             await producer.stop()
 
+    def flush(self) -> None:
+        if self.internal_producer is not None:
+            self.internal_producer.channel = None
+        for producer in self.get_producers():
+            producer.channel = None
+
     async def run(self) -> None:
         """
         Call each registered consumers run method

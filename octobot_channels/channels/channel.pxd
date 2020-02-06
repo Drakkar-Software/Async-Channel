@@ -29,6 +29,7 @@ cdef class Channel(object):
     cpdef void add_new_consumer(self, object consumer, dict consumer_filters)
     cpdef list get_consumers(self)
     cpdef list get_consumer_from_filters(self, dict consumer_filters)
+    cpdef void flush(self)
 
     cdef list _filter_consumers(self, dict consumer_filters)
     cdef bint _check_filters(self, dict consumer_filters, dict expected_filters)
