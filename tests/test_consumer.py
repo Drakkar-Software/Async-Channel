@@ -15,7 +15,7 @@
 #  License along with this library.
 
 import pytest
-from asyncmock import AsyncMock, patch
+from mock import AsyncMock, patch
 
 from octobot_channels.consumer import InternalConsumer, SupervisedConsumer
 from octobot_channels.channels.channel import Channel, get_chan, del_chan, set_chan
