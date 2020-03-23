@@ -55,6 +55,10 @@ class Channel(object):
 
     @classmethod
     def get_name(cls) -> str:
+        """
+        Default implementation is to return the name of the class without the 'Channel' substring
+        :returns the channel name
+        """
         return cls.__name__.replace('Channel', '')
 
     async def new_consumer(self,

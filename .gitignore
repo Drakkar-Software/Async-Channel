@@ -103,9 +103,13 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# ide
 .idea
 
+# cython
 *.html
 *.c
-
 cython_debug/
+
+# doc
+docs/build

@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/erg9ebvtco73x5h4?svg=true)](https://ci.appveyor.com/project/Herklos/octobot-channels)
 [![Coverage Status](https://coveralls.io/repos/github/Drakkar-Software/OctoBot-Channels/badge.svg?branch=master)](https://coveralls.io/github/Drakkar-Software/OctoBot-Channels?branch=master)
 
-OctoBot channels package.
+[OctoBot](https://github.com/Drakkar-Software/OctoBot) channels package.
 
 ## Installation
 With python3 : `pip install OctoBot-Channels`
@@ -44,3 +44,6 @@ await producer.send("test")
 # Stops the channel with all its producers and consumers
 # await Channels.get_chan("Awesome").stop()
 ```
+
+# Developer documentation
+On [readthedocs.io](https://octobot-channels.readthedocs.io/en/latest/)
