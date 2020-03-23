@@ -21,6 +21,8 @@ from octobot_channels import CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 """
+channel.py
+====================================
 A Channel is the object to connect a producer / producers class(es) to a consumer / consumers class(es)
 It contains a registered consumers dict to notify every consumer when a producer 'send' something.
 It contains a registered producers list to allow producer modification through 'modify'.
