@@ -28,12 +28,15 @@ cdef class Channel(object):
 
     cpdef void add_new_consumer(self, object consumer, dict consumer_filters)
     cpdef list get_consumers(self)
+    cpdef object get_producers(self)
+    cpdef void unregister_producer(self, Producer producer)
     cpdef list get_consumer_from_filters(self, dict consumer_filters)
     cpdef void flush(self)
 
     cdef list _filter_consumers(self, dict consumer_filters)
-    cdef bint _check_filters(self, dict consumer_filters, dict expected_filters)
 
 cpdef Channel set_chan(Channel chan, str name)
-
 cpdef void del_chan(str name)
+cpdef Channel get_chan(str chan_name)
+
+cdef bint _check_filters(dict consumer_filters, dict expected_filters)

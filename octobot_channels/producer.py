@@ -18,12 +18,15 @@ import asyncio
 
 from octobot_commons.logging.logging_util import get_logger
 
-"""
-A channel Producer
-"""
-
 
 class Producer:
+    """
+    A Producers are responsible for producing some output that may be placed onto the head of a queue.
+    A Consumer will consume this data through the same shared queue.
+    A producer doesn't need to know or care about its consumers.
+    But if there is no space in the queue, it won't be able to share what it has produced.
+    """
+
     def __init__(self, channel):
         self.logger = get_logger(self.__class__.__name__)
 
@@ -47,20 +50,17 @@ class Producer:
         """
         self.is_running = False
 
-    async def send(self, data, **kwargs) -> None:
+    async def send(self, data) -> None:
         """
         Send to each consumer data though its queue
         :param data: data to be put into consumers queues
-        :param kwargs:
-        :return: None
-        """
-        """
+
         The implementation should use 'self.channel.get_consumers'
         Example
-            for consumer in self.channel.get_consumers():
-                await consumer.queue.put({
-                    "my_key": my_key_value
-                })
+            >>> for consumer in self.channel.get_consumers():
+                    await consumer.queue.put({
+                        "my_key": my_key_value
+                    })
         """
         for consumer in self.channel.get_consumers():
             await consumer.queue.put(data)
@@ -69,60 +69,46 @@ class Producer:
         """
         Push notification that new data should be sent implementation
         When nothing should be done on data : self.send()
-        :return: None
         """
-        pass
 
     async def start(self) -> None:
         """
         Should be implemented for producer's non-triggered tasks
-        :return: None
         """
-        pass
 
     async def pause(self) -> None:
         """
         Called when the channel runs out of consumer
-        :return: None
         """
-        pass
 
     async def resume(self) -> None:
         """
         Called when the channel is no longer out of consumer
-        :return: None
         """
-        pass
 
     async def perform(self, **kwargs) -> None:
         """
         Should implement producer's non-triggered tasks
         Can be use to force producer to perform tasks
-        :return: None
         """
-        pass
 
     async def modify(self, **kwargs) -> None:
         """
         Should be implemented when producer can be modified during perform()
-        :return: None
         """
-        pass
 
     async def wait_for_processing(self) -> None:
         """
         Should be used only with SupervisedConsumers
         It will wait until all consumers have notified that their consume() method have ended
-        :return: None
         """
         await asyncio.gather(
             *[consumer.queue.join() for consumer in self.channel.get_consumers()]
         )
 
-    async def stop(self):
+    async def stop(self) -> None:
         """
         Stops non-triggered tasks management
-        :return: None
         """
         self.should_stop = True
         self.is_running = False
@@ -132,7 +118,6 @@ class Producer:
     def create_task(self) -> None:
         """
         Creates a new asyncio task that contains start() execution
-        :return: None
         """
         self.is_running = True
         self.produce_task = asyncio.create_task(self.start())
@@ -141,7 +126,6 @@ class Producer:
         """
         Start the producer main task
         Should call 'self.channel.register_producer'
-        :return: None
         """
         await self.channel.register_producer(self)
         self.create_task()

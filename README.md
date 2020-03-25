@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/erg9ebvtco73x5h4?svg=true)](https://ci.appveyor.com/project/Herklos/octobot-channels)
 [![Coverage Status](https://coveralls.io/repos/github/Drakkar-Software/OctoBot-Channels/badge.svg?branch=master)](https://coveralls.io/github/Drakkar-Software/OctoBot-Channels?branch=master)
 [![Doc Status](https://readthedocs.org/projects/octobot-channels/badge/?version=stable)](https://octobot-channels.readthedocs.io/en/stable/?badge=stable)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [OctoBot](https://github.com/Drakkar-Software/OctoBot) channels package.
 

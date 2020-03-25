@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+# pylint: disable=E0611
 from octobot_commons.singleton.singleton_class import Singleton
 
 
