@@ -20,17 +20,16 @@ from octobot_commons.logging.logging_util import get_logger
 from octobot_channels import CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
 
-"""
-channel.py
-====================================
-A Channel is the object to connect a producer / producers class(es) to a consumer / consumers class(es)
-It contains a registered consumers dict to notify every consumer when a producer 'send' something.
-It contains a registered producers list to allow producer modification through 'modify'.
-To access to channels a 'Channels' singleton is created to manage instances. 
-"""
 
+# pylint: disable=undefined-variable, not-callable
+class Channel:
+    """
+    A Channel is the object to connect a producer / producers class(es) to a consumer / consumers class(es)
+    It contains a registered consumers dict to notify every consumer when a producer 'send' something.
+    It contains a registered producers list to allow producer modification through 'modify'.
+    To access to channels a 'Channels' singleton is created to manage instances.
+    """
 
-class Channel(object):
     # Channel producer class
     PRODUCER_CLASS = None
 
@@ -63,14 +62,13 @@ class Channel(object):
         """
         return cls.__name__.replace("Channel", "")
 
+    # pylint: disable=unused-argument
     async def new_consumer(
         self,
         callback: object = None,
         consumer_filters: dict = None,
         internal_consumer: object = None,
         size: int = 0,
-        filter_size: bool = False,
-        **kwargs,
     ) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
@@ -79,7 +77,6 @@ class Channel(object):
         :param consumer_filters: the consumer filters
         :param size: queue size, default 0
         :param internal_consumer: internal consumer instance to use if specified
-        :param filter_size: if the consumer wants a filtered flow
         :return: consumer instance created
         """
         consumer = (
@@ -115,6 +112,11 @@ class Channel(object):
         self.consumers.append(consumer_filters)
 
     def get_consumer_from_filters(self, consumer_filters) -> list:
+        """
+        Returns the instance filtered consumers list
+        :param consumer_filters: The consumer filters dict
+        :return: the filtered consumer list
+        """
         return self._filter_consumers(consumer_filters)
 
     def get_consumers(self) -> list:
@@ -135,46 +137,24 @@ class Channel(object):
         return [
             consumer[self.INSTANCE_KEY]
             for consumer in self.consumers
-            if self._check_filters(consumer, consumer_filters)
+            if _check_filters(consumer, consumer_filters)
         ]
 
-    def _check_filters(self, consumer_filters, expected_filters) -> bool:
-        """
-        Checks if the consumer match the specified filters
-        Returns True if expected_filters is empty
-        :param consumer_filters: consumer filters
-        :param expected_filters: selected filters
-        :return: True if the consumer match the selection, else False
-        """
-        return all(
-            [
-                k in consumer_filters
-                and (
-                    v == CHANNEL_WILDCARD
-                    or consumer_filters[k] in [v, CHANNEL_WILDCARD]
-                )
-                for k, v in expected_filters.items()
-            ]
-        )
-
-    async def remove_consumer(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
+    async def remove_consumer(self, consumer: CONSUMER_CLASS) -> None:
         """
         Should be overwritten according to the class needs
         Should end by calling '_check_producers_state' and then 'consumer.stop'
         :param consumer: consumer instance to remove from consumers list
-        :param kwargs: consumers list filter params
-        :return: None
         """
-        for c in self.consumers:
-            if consumer == c[self.INSTANCE_KEY]:
-                self.consumers.remove(c)
+        for consumer_candidate in self.consumers:
+            if consumer == consumer_candidate[self.INSTANCE_KEY]:
+                self.consumers.remove(consumer_candidate)
                 await self._check_producers_state()
                 await consumer.stop()
 
     async def _check_producers_state(self) -> None:
         """
         Checks if producers should be paused or resumed after a consumer addition or removal
-        :return: None
         """
         if not self.get_consumers() and not self.is_paused:
             self.is_paused = True
@@ -185,14 +165,12 @@ class Channel(object):
             for producer in self.get_producers():
                 await producer.resume()
 
-    async def register_producer(self, producer, **kwargs) -> None:
+    async def register_producer(self, producer) -> None:
         """
         Add the producer to producers list
         Can be overwritten to perform additional action when registering
         Should end by calling 'pause' if self.is_paused
         :param Producer producer: created channel producer to register
-        :param kwargs: additional arguments available for overwritten methods
-        :return: None
         """
         if producer not in self.producers:
             self.producers.append(producer)
@@ -200,21 +178,18 @@ class Channel(object):
         if self.is_paused:
             await producer.pause()
 
-    def unregister_producer(self, producer, **kwargs) -> None:
+    def unregister_producer(self, producer) -> None:
         """
         Remove the producer from producers list
         Can be overwritten to perform additional action when registering
         :param Producer producer: created channel producer to unregister
-        :param kwargs: additional arguments available for overwritten methods
-        :return: None
         """
         if producer in self.producers:
             self.producers.remove(producer)
 
-    def get_producers(self, **kwargs) -> Iterable:
+    def get_producers(self) -> Iterable:
         """
         Should be overwritten according to the class needs
-        :param kwargs: producers list filter params
         :return: channel producers iterable
         """
         return self.producers
@@ -222,7 +197,6 @@ class Channel(object):
     async def start(self) -> None:
         """
         Call each registered consumers start method
-        :return: None
         """
         for consumer in self.get_consumers():
             await consumer.start()
@@ -230,7 +204,6 @@ class Channel(object):
     async def stop(self) -> None:
         """
         Call each registered consumers and producers stop method
-        :return: None
         """
         for consumer in self.get_consumers():
             await consumer.stop()
@@ -239,6 +212,9 @@ class Channel(object):
             await producer.stop()
 
     def flush(self) -> None:
+        """
+        Flush the channel object before stopping
+        """
         if self.internal_producer is not None:
             self.internal_producer.channel = None
         for producer in self.get_producers():
@@ -247,7 +223,6 @@ class Channel(object):
     async def run(self) -> None:
         """
         Call each registered consumers run method
-        :return: None
         """
         for consumer in self.get_consumers():
             await consumer.run()
@@ -255,7 +230,6 @@ class Channel(object):
     async def modify(self, **kwargs) -> None:
         """
         Call each registered producers modify method
-        :return: None
         """
         for producer in self.get_producers():
             await producer.modify(**kwargs)
@@ -293,17 +267,32 @@ def del_chan(name) -> None:
     """
     Delete a Channel instance from the channels list according to channel name
     :param name: name of the channel to delete
-    :return: None
     """
     if name in ChannelInstances.instance().channels:
         ChannelInstances.instance().channels.pop(name, None)
 
 
-def get_chan(chan_name: str, **kwargs) -> Channel:
+def get_chan(chan_name) -> Channel:
     """
     Return the channel instance from channel name
     :param chan_name: the channel name
-    :param kwargs:
     :return: the Channel instance
     """
     return ChannelInstances.instance().channels[chan_name]
+
+
+def _check_filters(consumer_filters, expected_filters) -> bool:
+    """
+    Checks if the consumer match the specified filters
+    Returns True if expected_filters is empty
+    :param consumer_filters: consumer filters
+    :param expected_filters: selected filters
+    :return: True if the consumer match the selection, else False
+    """
+    return all(
+        [
+            k in consumer_filters
+            and (v == CHANNEL_WILDCARD or consumer_filters[k] in [v, CHANNEL_WILDCARD])
+            for k, v in expected_filters.items()
+        ]
+    )
