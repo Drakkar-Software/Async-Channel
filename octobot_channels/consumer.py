@@ -60,7 +60,9 @@ class Consumer:
             except CancelledError:
                 self.logger.warning("Cancelled task")
             except Exception as e:
-                self.logger.exception(e, True, f"Exception when calling callback on {self}: {e}")
+                self.logger.exception(
+                    e, True, f"Exception when calling callback on {self}: {e}"
+                )
             finally:
                 await self.consume_ends()
 
