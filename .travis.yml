@@ -37,6 +37,14 @@ matrix:
         - rm -rf $PACKAGE_FOLDER
         - pytest tests
 
+    - name: "Linux - Python 3.8-dev - Lint"
+        stage: test
+        os: linux
+        language: python
+        script:
+          - black $PACKAGE_FOLDER --diff --check
+          -
+
     - name: "Linux - Python 3 - Deploy"
       stage: deploy
       script:

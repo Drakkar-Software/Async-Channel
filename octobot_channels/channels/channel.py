@@ -61,15 +61,17 @@ class Channel(object):
         Default implementation is to return the name of the class without the 'Channel' substring
         :returns the channel name
         """
-        return cls.__name__.replace('Channel', '')
+        return cls.__name__.replace("Channel", "")
 
-    async def new_consumer(self,
-                           callback: object = None,
-                           consumer_filters: dict = None,
-                           internal_consumer: object = None,
-                           size: int = 0,
-                           filter_size: bool = False,
-                           **kwargs) -> CONSUMER_CLASS:
+    async def new_consumer(
+        self,
+        callback: object = None,
+        consumer_filters: dict = None,
+        internal_consumer: object = None,
+        size: int = 0,
+        filter_size: bool = False,
+        **kwargs,
+    ) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
         Should end by calling '_check_producers_state'
@@ -80,12 +82,16 @@ class Channel(object):
         :param filter_size: if the consumer wants a filtered flow
         :return: consumer instance created
         """
-        consumer = internal_consumer if internal_consumer else self.CONSUMER_CLASS(callback)
+        consumer = (
+            internal_consumer if internal_consumer else self.CONSUMER_CLASS(callback)
+        )
         await self._add_new_consumer_and_run(consumer, consumer_filters)
         await self._check_producers_state()
         return consumer
 
-    async def _add_new_consumer_and_run(self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs) -> None:
+    async def _add_new_consumer_and_run(
+        self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
+    ) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
         :param consumer: the consumer to add
@@ -126,9 +132,11 @@ class Channel(object):
         :param consumer_filters: listed consumer filters
         :return: the list of the filtered consumers
         """
-        return [consumer[self.INSTANCE_KEY]
-                for consumer in self.consumers
-                if self._check_filters(consumer, consumer_filters)]
+        return [
+            consumer[self.INSTANCE_KEY]
+            for consumer in self.consumers
+            if self._check_filters(consumer, consumer_filters)
+        ]
 
     def _check_filters(self, consumer_filters, expected_filters) -> bool:
         """
@@ -138,9 +146,16 @@ class Channel(object):
         :param expected_filters: selected filters
         :return: True if the consumer match the selection, else False
         """
-        return all([k in consumer_filters and
-                    (v == CHANNEL_WILDCARD or consumer_filters[k] in [v, CHANNEL_WILDCARD])
-                    for k, v in expected_filters.items()])
+        return all(
+            [
+                k in consumer_filters
+                and (
+                    v == CHANNEL_WILDCARD
+                    or consumer_filters[k] in [v, CHANNEL_WILDCARD]
+                )
+                for k, v in expected_filters.items()
+            ]
+        )
 
     async def remove_consumer(self, consumer: CONSUMER_CLASS, **kwargs) -> None:
         """

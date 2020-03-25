@@ -115,7 +115,9 @@ class Producer:
         It will wait until all consumers have notified that their consume() method have ended
         :return: None
         """
-        await asyncio.gather(*[consumer.queue.join() for consumer in self.channel.get_consumers()])
+        await asyncio.gather(
+            *[consumer.queue.join() for consumer in self.channel.get_consumers()]
+        )
 
     async def stop(self):
         """

@@ -18,7 +18,9 @@ from octobot_channels.channels.channel import Channel
 
 async def create_all_subclasses_channel(channel_class, set_chan_method, **kwargs):
     for to_be_created_channel_class in channel_class.__subclasses__():
-        await create_channel_instance(to_be_created_channel_class, set_chan_method, **kwargs)
+        await create_channel_instance(
+            to_be_created_channel_class, set_chan_method, **kwargs
+        )
 
 
 async def create_channel_instance(channel_class, set_chan_method, **kwargs) -> Channel:
