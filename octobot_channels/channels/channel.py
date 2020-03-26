@@ -27,7 +27,7 @@ class Channel:
     A Channel is the object to connect a producer / producers class(es) to a consumer / consumers class(es)
     It contains a registered consumers dict to notify every consumer when a producer 'send' something.
     It contains a registered producers list to allow producer modification through 'modify'.
-    To access to channels a 'Channels' singleton is created to manage instances.
+    To access channels a 'Channels' singleton is created to manage instances.
     """
 
     # Channel producer class
