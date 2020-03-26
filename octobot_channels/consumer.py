@@ -117,7 +117,7 @@ class Consumer:
 
 class InternalConsumer(Consumer):
     """
-    An InternalConsumer is used to loop internally of the class with a callback
+    An InternalConsumer is a classic Consumer except that his callback is declared internally
     """
 
     def __init__(self):
