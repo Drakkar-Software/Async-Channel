@@ -1,6 +1,6 @@
 notifications:
   email: false
-sudo: enabled
+dist: xenial
 os: linux
 language: python
 cache: pip
@@ -10,13 +10,11 @@ env:
     - GH_REPO=Drakkar-Software/OctoBot-Channels
     - DEPLOY_BRANCH=master
     - PACKAGE_FOLDER=octobot_channels
-    - secure: dbjemcRrdth8nq1EUSjpY9Mu7UtfjAKlln7jSeT8duvGPeDhb7VgbPe4Ge2vhKSIz/ccCDO/GKht149BYFxdZXQ5as57cC6lGWYAwzzcySbi9fN+qn0fc8qvs0k/1abzVb16EY2JveK19Cj61oRubfPqs6OdvHV0O+4jN9vjsk0Ll1A0b9T4g+1KRvsjvEdcNbqMPPeKr75MGX4BjiBZiyc9Xah8MaCg9XlRA3CGQuxPMIcQzrzB3suPNexIOYOK2m2RUGzvFzMQ+aJdV8/66ZM3W7Zn6n2xhf4DdRMdPnbZTb5uFskSDKAFYU+/b1Q8u+5MDHoLLE//J0IYXHwm0H3eqgRpBkPpfjNgRfPubObR7BFDWP+s29ttKAao9943yRlbFG63nrdk4GcNbkD9xEuGBTsA4Vn17L6dF8KjB9ctcbSEy1g69vyvWBiD89zNppL8Ebdgq4C4jGQMuBpmjWuoJ7j0M50kmXmuglLJWOz4knax2saKROezvtoyfGVzxnrAe6s9TsylcNvnxgWVgsJfG3bay4StxfhUjjKFh7eJkmOwFmFue1As+VMUtnLg+ELlaI8M+z5OxV3HzS+MIUfJEk1jQOFgjbYJziFmXSunBWzkrO9ZqvSaQVmWg87yWCh2lnjGVCQg9CzFgkAKmHxjNn9tlegVk9ZDTyOIfFQ=
-    - secure: XP0CbBBpbxQhoDRXyhnzCZ1yKLk8zo9NJzDJ4bCAKENS/7l54zd19jvvLDu/JilDlKMMU8MTZP2n5tI656jD4phKrxYpGNgANShqlzyg5l/wuetIBzNId19rR2lHWXPjLjt0DsMWgfQbNvHYRgRHyp2KOJjgUUcavOcqBeOgYJsdgvOHC4Pg68BSxwUjygr0AE0Clu5KDs6KFeEb9n1WQ/VGi+MkGQSHCGcSzEeM8GGNKEKVSvRYI/ucDN8+4Wyagodr4E16+CnWh/h6MqTVc5Ta/nJda3kctVe5OY3cd5QYtPki/odO2YALRL9dRAsbsvDqD7lV+a0HmjHzN83P0YYIUeuLH5pDR/68ugo0qYc6BjQTpevR1MM/soZKHL13j7x3q4VrdWLFPxdYSZCWj6J2JN2N7EpXsZODIo8Dqpu0IAJtUPTnybk0nddq4jJEjtArvAKLFxGbMJ2Ici7zTbRozI1Ews/rcuOyxElEt9hUCtCUbDJvG5jeKYb3B/EMnWLJXI9XUgduCcv/FovSrP7/N/opG9NIIhspErPV9EXRhMY/QaC1qfCW7V6S+qonlcPrqTZsavoMBj5hEMN82u8xmk676NjHUFCfRySOYHgFO9H06CGFi+cnjnDgYoj45lhaI5+vJlD5EmC+Pzw25iYhtEklkYs75kNCvJuSbbs=
 
 install:
   - python3 -m pip install  --prefer-binary -r dev_requirements.txt -r requirements.txt
 
-matrix:
+jobs:
   include:
     - name: "Linux - Python 3.8-dev - Python sources"
       stage: test
@@ -52,11 +50,11 @@ matrix:
         - ls
       deploy:
         - provider: pypi
-          user: __token__
+          username: __token__
           password:
             secure: OdOkfOaJnnsQhpuhQAJDA4nhzXR2qZ9L2+MNv+0X3DcV7Hb4xLGm3i/3Sw6AIy4SGe4KSjzG4jaKDhpBLoIeBHWf4tlDJvfeJ0ZFY2HSC4BxqluW4putQVT90d5j1BSQuoeRpth89aiV+/8rCeyqM6rViz/mLCYQUxfwHxvAm5nlOFL5+CGc9mo4baUtoG3DeGjlgyQZBiePtVcPWRlmqqR/DfMDn9mSZj9b+dKW/aZcTWQfWsIEj1F9kmAF/WQ2dZjlNTTEPx4N3/v0rdsjWzosuRSo4Cilp7o3CfkwPIrffk93TAxhA0XHSxrB9Qt0xpQMX7d4LKgTAhVL39dE1XpidSph2pQ9flYSHopCjFAtKNVYNGWRQoJxrr9MM2+81sVrkKN54ASo7Tu94nPdADXX31edpS6zsJaFHeR1gpQb4rSqG8AbB0cemuok055nnzw6nS3KHxyEqkuGD+GXqxQA3baLrhBrZK+ZwIoVscBbX9eYUr96mePzAUGqvICPcm4lq9g4aboI326IT14P5qQAta0m/6NLtNzrgN/5PMl8VMv13Jruo/z9Dj9BprpVRURv0PV1UPj603iBV0j14Wos+cBJT2IvVEBOrY6cs/S4wPOLu7mg5JEd/4IlXrmmTzK2cVvtE1n1a1FGB+Y+N4uc+2rekazw+EFGNRUezDs=
           skip_existing: true
-          skip_cleanup: true
+          cleanup: true
           distributions: "sdist"
           on:
             repo: $GH_REPO
@@ -65,7 +63,7 @@ matrix:
             condition: $TRAVIS_OS_NAME = 'linux'
         - provider: script
           script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/octobot-pypi-deploy:i686 "i686" "cp37-cp37m" "cp37"
-          skip_cleanup: true
+          cleanup: true
           on:
             repo: "$GH_REPO"
             branch: "$DEPLOY_BRANCH"
@@ -73,7 +71,7 @@ matrix:
             condition: "$TRAVIS_OS_NAME = 'linux'"
         - provider: script
           script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/octobot-pypi-deploy:x86_64 "x86_64" "cp37-cp37m" "cp37"
-          skip_cleanup: true
+          cleanup: true
           on:
             repo: "$GH_REPO"
             branch: "$DEPLOY_BRANCH"
@@ -98,7 +96,7 @@ matrix:
       deploy:
         - provider: script
           script: python3 setup.py bdist_wheel && python3 -m twine upload dist/* -u $PYPI_USERNAME -p $PYPI_PASSWORD --skip-existing
-          skip_cleanup: true
+          cleanup: true
           on:
             repo: "$GH_REPO"
             branch: "$DEPLOY_BRANCH"
