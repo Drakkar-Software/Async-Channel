@@ -14,9 +14,9 @@ With python3 : `pip install OctoBot-Channels`
 ## Usage
 Example
 ```
-from octobot_channels import Consumer, Producer
+from octobot_channels.constants import Consumer, Producer
 from octobot_channels.channels import Channels, Channel
-from octobot_channels.util import create_channel_instance
+from octobot_channels.util.channel_creator import create_channel_instance
 
 class AwesomeProducer(Producer):
     pass

@@ -19,7 +19,7 @@ from octobot_channels.channels.channel_instances import ChannelInstances
 
 from octobot_channels.channels.channel import Channel, del_chan, set_chan, get_chan
 
-from octobot_channels.util import create_channel_instance, create_all_subclasses_channel
+from octobot_channels.util.channel_creator import create_channel_instance, create_all_subclasses_channel
 from tests import TEST_CHANNEL
 
 

@@ -18,8 +18,8 @@ import pytest
 
 from octobot_channels.channels.channel import Channel, del_chan, get_chan, set_chan
 from octobot_channels.channels.channel_instances import ChannelInstances
-from octobot_channels import CHANNEL_WILDCARD
-from octobot_channels.util import create_channel_instance
+from octobot_channels.constants import CHANNEL_WILDCARD
+from octobot_channels.util.channel_creator import create_channel_instance
 
 from tests import TEST_CHANNEL, EMPTY_TEST_CHANNEL, EmptyTestChannel, empty_test_callback, EmptyTestProducer
 

@@ -35,7 +35,7 @@ except ImportError:
 from setuptools import find_packages
 from setuptools import setup, Extension
 
-from octobot_channels import PROJECT_NAME, VERSION
+from octobot_channels.constants import PROJECT_NAME, VERSION
 
 PACKAGES = find_packages(exclude=["tests"])
 
