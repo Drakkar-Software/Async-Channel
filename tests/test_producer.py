@@ -19,7 +19,7 @@ from octobot_channels.consumer import Consumer, SupervisedConsumer
 
 from octobot_channels.channels.channel import Channel, get_chan, del_chan, set_chan
 from octobot_channels.producer import Producer
-from octobot_channels.util import create_channel_instance
+from octobot_channels.util.channel_creator import create_channel_instance
 from tests import EmptyTestConsumer, TEST_CHANNEL, empty_test_callback, EmptyTestProducer
 
 
