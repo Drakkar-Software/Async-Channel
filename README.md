@@ -13,7 +13,7 @@ With python3 : `pip install OctoBot-Channels`
 
 ## Usage
 Example
-```
+```python
 from octobot_channels.constants import Consumer, Producer
 from octobot_channels.channels import Channels, Channel
 from octobot_channels.util.channel_creator import create_channel_instance
