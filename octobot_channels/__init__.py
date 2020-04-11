@@ -13,3 +13,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+PROJECT_NAME = "OctoBot-Channels"
+VERSION = "1.3.23"  # major.minor.revision
