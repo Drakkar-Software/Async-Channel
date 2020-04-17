@@ -80,11 +80,19 @@ class Producer:
         """
         Called when the channel runs out of consumer
         """
+        self.logger.debug("Pausing...")
+        # Triggers itself if not already paused
+        if not self.channel.is_paused:
+            self.channel.is_paused = True
 
     async def resume(self) -> None:
         """
         Called when the channel is no longer out of consumer
         """
+        self.logger.debug("Resuming...")
+        # Triggers itself if not already resumed
+        if self.channel.is_paused:
+            self.channel.is_paused = False
 
     async def perform(self, **kwargs) -> None:
         """
