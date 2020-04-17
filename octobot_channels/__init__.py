@@ -15,4 +15,4 @@
 #  License along with this library.
 
 PROJECT_NAME = "OctoBot-Channels"
-VERSION = "1.3.23"  # major.minor.revision
+VERSION = "1.3.24"  # major.minor.revision
