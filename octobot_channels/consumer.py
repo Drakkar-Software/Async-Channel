@@ -55,7 +55,7 @@ class Consumer:
             try:
                 await self.perform(await self.queue.get())
             except CancelledError:
-                self.logger.warning("Cancelled task")
+                self.logger.debug("Cancelled task")
             except Exception as consume_exception:  # pylint: disable=broad-except
                 self.logger.exception(
                     consume_exception,
