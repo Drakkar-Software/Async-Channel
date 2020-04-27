@@ -293,14 +293,14 @@ def _check_filters(consumer_filters, expected_filters) -> bool:
     :return: True if the consumer match the selection, else False
     """
     try:
-        for k, v in expected_filters.items():
-            if v == CHANNEL_WILDCARD:
+        for key, value in expected_filters.items():
+            if value == CHANNEL_WILDCARD:
                 continue
-            if isinstance(consumer_filters[k], list):
-                if set(consumer_filters[k]) & {v, CHANNEL_WILDCARD}:
+            if isinstance(consumer_filters[key], list):
+                if set(consumer_filters[key]) & {value, CHANNEL_WILDCARD}:
                     continue
                 return False
-            if consumer_filters[k] not in [v, CHANNEL_WILDCARD]:
+            if consumer_filters[key] not in [value, CHANNEL_WILDCARD]:
                 return False
         return True
     except KeyError:
