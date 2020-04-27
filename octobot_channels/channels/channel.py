@@ -114,6 +114,9 @@ class Channel:
     def get_consumer_from_filters(self, consumer_filters) -> list:
         """
         Returns the instance filtered consumers list
+        WARNING:
+            >>> get_consumer_from_filters({"A": 1})
+            Can return a consumer described by {"A": True} because in python 1 == True
         :param consumer_filters: The consumer filters dict
         :return: the filtered consumer list
         """
@@ -289,10 +292,16 @@ def _check_filters(consumer_filters, expected_filters) -> bool:
     :param expected_filters: selected filters
     :return: True if the consumer match the selection, else False
     """
-    return all(
-        [
-            k in consumer_filters
-            and (v == CHANNEL_WILDCARD or consumer_filters[k] in [v, CHANNEL_WILDCARD])
-            for k, v in expected_filters.items()
-        ]
-    )
+    try:
+        for k, v in expected_filters.items():
+            if v == CHANNEL_WILDCARD:
+                continue
+            if isinstance(consumer_filters[k], list):
+                if set(consumer_filters[k]) & {v, CHANNEL_WILDCARD}:
+                    continue
+                return False
+            if consumer_filters[k] not in [v, CHANNEL_WILDCARD]:
+                return False
+        return True
+    except KeyError:
+        return False
