@@ -15,8 +15,10 @@ With python3 : `pip install OctoBot-Channels`
 ## Usage
 Example
 ```python
-from octobot_channels.constants import Consumer, Producer
-from octobot_channels.channels import Channels, Channel
+from octobot_channels.consumer import Consumer
+from octobot_channels.producer import Producer
+from octobot_channels.channels.channel import Channel
+from octobot_channels.channels.channel_instances import Channels
 from octobot_channels.util.channel_creator import create_channel_instance
 
 class AwesomeProducer(Producer):
@@ -26,21 +28,21 @@ class AwesomeConsumer(Consumer):
     pass
 
 class AwesomeChannel(Channel):
-    PRODUCER_CLASS = MyAwesomeProducer
-    CONSUMER_CLASS = MyAwesomeConsumer
+    PRODUCER_CLASS = AwesomeProducer
+    CONSUMER_CLASS = AwesomeConsumer
 
 async def callback(data):
     print("Consumer called !")
     print("Received : " + data)
 
 # Creates the channel
-await create_channel_instance(MyChannel, Channels)
+await create_channel_instance(AwesomeChannel, Channels)
 
 # Add a new consumer to the channel
 await Channels.get_chan("Awesome").new_consumer(callback)
 
 # Creates a producer that send data to the consumer through the channel
-producer = TestProducer(Channels.get_chan("Awesome"))
+producer = AwesomeProducer(Channels.get_chan("Awesome"))
 await producer.run()
 await producer.send("test")
 
