@@ -196,3 +196,23 @@ async def test_producer_is_running():
     assert producer.is_running
     await get_chan(TEST_CHANNEL).stop()
     assert not producer.is_running
+
+
+@pytest.mark.asyncio
+async def test_producer_pause_resume():
+    class TestChannel(Channel):
+        PRODUCER_CLASS = Producer
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan)
+    producer = Producer(get_chan(TEST_CHANNEL))
+    assert producer.channel.is_paused
+    await producer.pause()
+    assert producer.channel.is_paused
+    await producer.resume()
+    assert not producer.channel.is_paused
+    await producer.pause()
+    assert producer.channel.is_paused
+    await producer.resume()
+    assert not producer.channel.is_paused
+    await get_chan(TEST_CHANNEL).stop()
