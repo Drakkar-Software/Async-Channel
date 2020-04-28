@@ -55,8 +55,8 @@ async def test_consume_ends_called():
     await get_chan(TEST_CHANNEL).stop()
 
 
-@pytest.mark.asyncio
-async def test_internal_consumer():
+@pytest.yield_fixture()
+async def internal_consumer():
     class TestInternalConsumer(InternalConsumer):
         async def perform(self, kwargs):
             pass
@@ -69,14 +69,23 @@ async def test_internal_consumer():
     await create_channel_instance(TestChannel, set_chan)
     producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
     await producer.run()
-    consumer = TestInternalConsumer()
-    await get_chan(TEST_CHANNEL).new_consumer(internal_consumer=consumer)
+    yield TestInternalConsumer()
+    await get_chan(TEST_CHANNEL).stop()
 
-    with patch.object(consumer, 'perform', new=AsyncMock()) as mocked_consume_ends:
+
+@pytest.mark.asyncio
+async def test_internal_consumer(internal_consumer):
+    await get_chan(TEST_CHANNEL).new_consumer(internal_consumer=internal_consumer)
+
+    with patch.object(internal_consumer, 'perform', new=AsyncMock()) as mocked_consume_ends:
         await get_chan(TEST_CHANNEL).get_internal_producer().send({})
         await mock_was_called_once(mocked_consume_ends)
 
-    await get_chan(TEST_CHANNEL).stop()
+
+@pytest.mark.asyncio
+async def test_default_internal_consumer_callback(internal_consumer):
+    with pytest.raises(NotImplementedError):
+        await internal_consumer.internal_callback()
 
 
 @pytest.mark.asyncio

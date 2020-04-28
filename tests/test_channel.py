@@ -15,13 +15,15 @@
 #  License along with this library.
 
 import pytest
+from mock import AsyncMock, patch
 
 from octobot_channels.channels.channel import Channel, del_chan, get_chan, set_chan
 from octobot_channels.channels.channel_instances import ChannelInstances
 from octobot_channels.constants import CHANNEL_WILDCARD
 from octobot_channels.util.channel_creator import create_channel_instance
 
-from tests import TEST_CHANNEL, EMPTY_TEST_CHANNEL, EmptyTestChannel, empty_test_callback, EmptyTestProducer
+from tests import TEST_CHANNEL, EMPTY_TEST_CHANNEL, EmptyTestChannel, empty_test_callback, EmptyTestProducer, \
+    mock_was_called_once
 
 
 @pytest.yield_fixture()
@@ -251,3 +253,38 @@ async def test_flush(test_channel):
     assert test_channel.internal_producer.channel is None
     for producer in test_channel.producers:
         assert producer.channel is None
+
+
+@pytest.mark.asyncio
+async def test_start(test_channel):
+    consumer_1 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback)
+    consumer_2 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback)
+    with patch.object(consumer_1, 'start', new=AsyncMock()) as mocked_consumer_1_start:
+        with patch.object(consumer_2, 'start', new=AsyncMock()) as mocked_consumer_2_start:
+            await get_chan(EMPTY_TEST_CHANNEL).start()
+            await mock_was_called_once(mocked_consumer_1_start)
+            await mock_was_called_once(mocked_consumer_2_start)
+
+
+@pytest.mark.asyncio
+async def test_run(test_channel):
+    consumer_1 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback)
+    consumer_2 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(empty_test_callback)
+    with patch.object(consumer_1, 'run', new=AsyncMock()) as mocked_consumer_1_run:
+        with patch.object(consumer_2, 'run', new=AsyncMock()) as mocked_consumer_2_run:
+            await get_chan(EMPTY_TEST_CHANNEL).run()
+            await mock_was_called_once(mocked_consumer_1_run)
+            await mock_was_called_once(mocked_consumer_2_run)
+
+
+@pytest.mark.asyncio
+async def test_modify(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    producer_2 = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer_2)
+    with patch.object(producer, 'modify', new=AsyncMock()) as mocked_producer_1_modify:
+        with patch.object(producer_2, 'modify', new=AsyncMock()) as mocked_producer_2_modify:
+            await get_chan(EMPTY_TEST_CHANNEL).modify()
+            await mock_was_called_once(mocked_producer_1_modify)
+            await mock_was_called_once(mocked_producer_2_modify)
