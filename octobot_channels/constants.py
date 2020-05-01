@@ -15,3 +15,6 @@
 #  License along with this library.
 
 CHANNEL_WILDCARD = "*"
+
+DEFAULT_PRIORITY_LEVEL_VALUE = 1
+DEFAULT_QUEUE_SIZE = 0  # unlimited

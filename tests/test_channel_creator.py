@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from copy import deepcopy
 
 import pytest
 from octobot_channels.channels.channel_instances import ChannelInstances
@@ -34,6 +35,17 @@ async def test_create_channel_instance():
 
 
 @pytest.mark.asyncio
+async def test_create_synchronized_channel_instance():
+    class TestChannel(Channel):
+        pass
+
+    del_chan(TEST_CHANNEL)
+    await create_channel_instance(TestChannel, set_chan, is_synchronized=True)
+    assert get_chan(TEST_CHANNEL).is_synchronized
+    await get_chan(TEST_CHANNEL).stop()
+
+
+@pytest.mark.asyncio
 async def test_create_all_subclasses_channel():
     class TestChannelClass(Channel):
         pass
@@ -44,6 +56,14 @@ async def test_create_all_subclasses_channel():
     class Test2Channel(TestChannelClass):
         pass
 
+    def clean_channels():
+        for channel in deepcopy(ChannelInstances.instance().channels):
+            del_chan(channel)
+
     del_chan(TEST_CHANNEL)
     await create_all_subclasses_channel(TestChannelClass, set_chan)
     assert len(ChannelInstances.instance().channels) == 3  # (EmptyTestChannel, Test1Channel, Test2Channel)
+    clean_channels()
+    await create_all_subclasses_channel(TestChannelClass, set_chan, is_synchronized=True)
+    assert all(get_chan(channel).is_synchronized for channel in ChannelInstances.instance().channels)
+    clean_channels()

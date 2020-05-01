@@ -26,3 +26,4 @@ cdef class Producer:
     cdef public bint is_running
 
     cpdef void create_task(self)
+    cpdef bint is_consumers_queue_empty(self, int priority_level)

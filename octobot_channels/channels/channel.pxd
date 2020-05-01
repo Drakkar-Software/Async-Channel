@@ -25,6 +25,7 @@ cdef class Channel(object):
     cdef public Producer internal_producer
 
     cdef public bint is_paused
+    cdef public bint is_synchronized
 
     cpdef void add_new_consumer(self, object consumer, dict consumer_filters)
     cpdef list get_consumers(self)
