@@ -21,10 +21,12 @@ from octobot_commons.logging.logging_util import get_logger
 
 class Producer:
     """
-    A Producers are responsible for producing some output that may be placed onto the head of a queue.
+    A Producer is responsible for producing some output that may be placed onto the head of a queue.
     A Consumer will consume this data through the same shared queue.
     A producer doesn't need to know or care about its consumers.
     But if there is no space in the queue, it won't be able to share what it has produced.
+    It manages its consumer calls by priority levels
+    When the channel is synchronized priority levels are used to priorities or delay consumer calls
     """
 
     def __init__(self, channel):
@@ -58,9 +60,9 @@ class Producer:
         The implementation should use 'self.channel.get_consumers'
         Example
             >>> for consumer in self.channel.get_consumers():
-                    await consumer.queue.put({
-                        "my_key": my_key_value
-                    })
+            >>>     await consumer.queue.put({
+            >>>         "my_key": my_value
+            >>>     })
         """
         for consumer in self.channel.get_consumers():
             await consumer.queue.put(data)
@@ -114,6 +116,19 @@ class Producer:
             *[consumer.queue.join() for consumer in self.channel.get_consumers()]
         )
 
+    async def synchronized_perform_consumers_queue(self, priority_level) -> None:
+        """
+        Empties the queue synchronously for each consumers
+        :param priority_level: the consumer minimal priority level
+        """
+        for consumer in [
+            consumer
+            for consumer in self.channel.get_consumers()
+            if consumer.priority_level <= priority_level
+        ]:
+            while not consumer.queue.empty():
+                await consumer.perform(await consumer.queue.get())
+
     async def stop(self) -> None:
         """
         Stops non-triggered tasks management
@@ -133,7 +148,21 @@ class Producer:
     async def run(self) -> None:
         """
         Start the producer main task
-        Should call 'self.channel.register_producer'
+        Shouldn't start the producer main task if the channel is synchronized
+        Should always call
+        >>> self.channel.register_producer
         """
         await self.channel.register_producer(self)
-        self.create_task()
+        if not self.channel.is_synchronized:
+            self.create_task()
+
+    def is_consumers_queue_empty(self, priority_level) -> bool:
+        """
+        Check if consumers queue are empty
+        :param priority_level: the consumer minimal priority level
+        :return: the check result
+        """
+        for consumer in self.channel.get_consumers():
+            if consumer.priority_level <= priority_level and not consumer.queue.empty():
+                return False
+        return True

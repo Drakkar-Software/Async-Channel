@@ -17,7 +17,7 @@ from typing import Iterable
 
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels.constants import CHANNEL_WILDCARD
+from octobot_channels.constants import CHANNEL_WILDCARD, DEFAULT_PRIORITY_LEVEL_VALUE
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 
@@ -39,6 +39,9 @@ class Channel:
     # Consumer instance in consumer filters
     INSTANCE_KEY = "consumer_instance"
 
+    # Channel default consumer priority level
+    DEFAULT_PRIORITY_LEVEL = DEFAULT_PRIORITY_LEVEL_VALUE
+
     def __init__(self):
         self.logger = get_logger(self.__class__.__name__)
 
@@ -54,6 +57,9 @@ class Channel:
         # Used to save producers state (paused or not)
         self.is_paused = True
 
+        # Used to synchronize producers and consumer
+        self.is_synchronized = False
+
     @classmethod
     def get_name(cls) -> str:
         """
@@ -62,13 +68,14 @@ class Channel:
         """
         return cls.__name__.replace("Channel", "")
 
-    # pylint: disable=unused-argument
+    # pylint: disable=too-many-arguments
     async def new_consumer(
         self,
         callback: object = None,
         consumer_filters: dict = None,
         internal_consumer: object = None,
         size: int = 0,
+        priority_level: int = DEFAULT_PRIORITY_LEVEL,
     ) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this channel and add it to the consumer list
@@ -76,16 +83,20 @@ class Channel:
         :param callback: method that should be called when consuming the queue
         :param consumer_filters: the consumer filters
         :param size: queue size, default 0
+        :param priority_level: used by Producers the lowest level has the highest priority
         :param internal_consumer: internal consumer instance to use if specified
         :return: consumer instance created
         """
         consumer = (
-            internal_consumer if internal_consumer else self.CONSUMER_CLASS(callback)
+            internal_consumer
+            if internal_consumer
+            else self.CONSUMER_CLASS(callback, size=size, priority_level=priority_level)
         )
         await self._add_new_consumer_and_run(consumer, consumer_filters)
         await self._check_producers_state()
         return consumer
 
+    # pylint: disable=unused-argument
     async def _add_new_consumer_and_run(
         self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
     ) -> None:
@@ -99,7 +110,7 @@ class Channel:
             consumer_filters = {}
 
         self.add_new_consumer(consumer, consumer_filters)
-        await consumer.run()
+        await consumer.run(with_task=not self.is_synchronized)
 
     def add_new_consumer(self, consumer, consumer_filters) -> None:
         """
@@ -228,7 +239,7 @@ class Channel:
         Call each registered consumers run method
         """
         for consumer in self.get_consumers():
-            await consumer.run()
+            await consumer.run(with_task=not self.is_synchronized)
 
     async def modify(self, **kwargs) -> None:
         """

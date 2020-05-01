@@ -22,6 +22,7 @@ cdef class Consumer:
     cdef public object consume_task  # object type = asyncio.Task
 
     cdef public bint should_stop
+    cdef public int priority_level
 
     cpdef void create_task(self)
 

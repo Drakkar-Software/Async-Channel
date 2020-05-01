@@ -18,6 +18,8 @@ from asyncio import Queue, CancelledError
 
 from octobot_commons.logging.logging_util import get_logger
 
+from octobot_channels.constants import DEFAULT_PRIORITY_LEVEL_VALUE, DEFAULT_QUEUE_SIZE
+
 
 class Consumer:
     """
@@ -27,7 +29,12 @@ class Consumer:
     A consumer also responds to channel events like pause and stop.
     """
 
-    def __init__(self, callback: object, size: int = 0):
+    def __init__(
+        self,
+        callback: object,
+        size: int = DEFAULT_QUEUE_SIZE,
+        priority_level: int = DEFAULT_PRIORITY_LEVEL_VALUE,
+    ):
         self.logger = get_logger(self.__class__.__name__)
 
         # Consumer data queue. It contains producer's work (received through Producer.send()).
@@ -46,10 +53,14 @@ class Consumer:
         """
         self.should_stop = False
 
-    async def consume(self):
+        # Default priority level
+        # Used by Producers to call consumers by prioritization
+        # The lowest level has the highest priority
+        self.priority_level = priority_level
+
+    async def consume(self) -> None:
         """
         Should be overwritten with a self.queue.get() in a while loop
-        :return: None
         """
         while not self.should_stop:
             try:
@@ -58,9 +69,9 @@ class Consumer:
                 self.logger.debug("Cancelled task")
             except Exception as consume_exception:  # pylint: disable=broad-except
                 self.logger.exception(
-                    consume_exception,
-                    True,
-                    f"Exception when calling callback on {self}: {consume_exception}",
+                    exception=consume_exception,
+                    publish_error_if_necessary=True,
+                    error_message=f"Exception when calling callback on {self}: {consume_exception}",
                 )
             finally:
                 await self.consume_ends()
@@ -69,27 +80,23 @@ class Consumer:
         """
         Should be overwritten to handle queue data
         :param kwargs: queue get content
-        :return: None
         """
         await self.callback(**kwargs)
 
     async def consume_ends(self) -> None:
         """
         Should be overwritten to handle consumption ends
-        :return: None
         """
 
     async def start(self) -> None:
         """
         Should be implemented for consumer's non-triggered tasks
-        :return: None
         """
         self.should_stop = False
 
     async def stop(self) -> None:
         """
         Stops non-triggered tasks management
-        :return: None
         """
         self.should_stop = True
         if self.consume_task:
@@ -98,18 +105,18 @@ class Consumer:
     def create_task(self) -> None:
         """
         Creates a new asyncio task that contains start() execution
-        :return: None
         """
         self.consume_task = asyncio.create_task(self.consume())
 
-    async def run(self) -> None:
+    async def run(self, with_task=True) -> None:
         """
         - Initialize the consumer
         - Start the consumer main task
-        :return: None
+        :param with_task: If the consumer should run in a task
         """
         await self.start()
-        self.create_task()
+        if with_task:
+            self.create_task()
 
     def __str__(self):
         return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
@@ -143,7 +150,6 @@ class SupervisedConsumer(Consumer):
     async def consume_ends(self) -> None:
         """
         The method called when the work is done
-        :return:
         """
         try:
             self.queue.task_done()

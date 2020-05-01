@@ -52,3 +52,8 @@ async def empty_test_callback():
 async def mock_was_called_once(mocked_method):
     await asyncio.sleep(0.1)
     mocked_method.assert_called_once()
+
+
+async def mock_was_not_called(mocked_method):
+    await asyncio.sleep(0.1)
+    mocked_method.assert_not_called()
