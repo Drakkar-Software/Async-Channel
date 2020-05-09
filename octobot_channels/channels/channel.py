@@ -45,6 +45,9 @@ class Channel:
     def __init__(self):
         self.logger = get_logger(self.__class__.__name__)
 
+        # Channel unique id
+        self.chan_id = None
+
         # Channel subscribed producers list
         self.producers = []
 

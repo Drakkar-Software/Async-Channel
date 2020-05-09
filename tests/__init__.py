@@ -22,6 +22,7 @@ from octobot_channels.producer import Producer
 
 TEST_CHANNEL = "Test"
 EMPTY_TEST_CHANNEL = "EmptyTest"
+EMPTY_TEST_WITH_ID_CHANNEL = "EmptyTestWithId"
 CONSUMER_KEY = "test"
 
 
@@ -57,3 +58,12 @@ async def mock_was_called_once(mocked_method):
 async def mock_was_not_called(mocked_method):
     await asyncio.sleep(0.1)
     mocked_method.assert_not_called()
+
+
+class EmptyTestWithIdChannel(Channel):
+    CONSUMER_CLASS = EmptyTestConsumer
+    PRODUCER_CLASS = EmptyTestProducer
+
+    def __init__(self, test_id):
+        super().__init__()
+        self.chan_id = test_id
