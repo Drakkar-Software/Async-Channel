@@ -19,6 +19,8 @@ from octobot_channels.producer cimport Producer
 cdef class Channel(object):
     cdef object logger
 
+    cdef public str chan_id
+
     cdef public list producers
     cdef public list consumers
 

@@ -16,5 +16,13 @@
 #  License along with this library.
 from octobot_commons.singleton.singleton_class cimport Singleton
 
+from octobot_channels.channels.channel cimport Channel
+
 cdef class ChannelInstances(Singleton):
     cdef public dict channels
+
+cpdef Channel get_chan_at_id(str chan_name, str chan_id)
+cpdef dict get_channels(str chan_id)
+cpdef Channel set_chan_at_id(Channel chan, str name)
+cpdef void del_channel_container(str chan_id)
+cpdef void del_chan_at_id(str name, str chan_id)
