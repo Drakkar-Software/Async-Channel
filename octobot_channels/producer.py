@@ -121,13 +121,19 @@ class Producer:
         Empties the queue synchronously for each consumers
         :param priority_level: the consumer minimal priority level
         """
-        for consumer in [
-            consumer
-            for consumer in self.channel.get_consumers()
-            if consumer.priority_level <= priority_level
-        ]:
+        for consumer in self._get_synchronized_consumers(priority_level):
             while not consumer.queue.empty():
                 await consumer.perform(await consumer.queue.get())
+
+    def _get_synchronized_consumers(self, priority_level):
+        """
+        Yield the consumers to be refreshed by synchronized_perform_consumers_queue
+        :param priority_level: the consumer minimal priority level
+        :return: consumers to be refreshed
+        """
+        for consumer in self.channel.get_consumers():
+            if consumer.priority_level <= priority_level:
+                yield consumer
 
     async def stop(self) -> None:
         """

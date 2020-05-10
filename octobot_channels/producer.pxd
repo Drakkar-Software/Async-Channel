@@ -16,6 +16,7 @@
 #  License along with this library.
 
 from octobot_channels.channels.channel cimport Channel
+from octobot_channels.consumer cimport Consumer
 
 cdef class Producer:
     cdef public Channel channel
@@ -27,3 +28,4 @@ cdef class Producer:
 
     cpdef void create_task(self)
     cpdef bint is_consumers_queue_empty(self, int priority_level)
+    cpdef object _get_synchronized_consumers(self, int priority_level)
