@@ -10,6 +10,7 @@ steps:
 - name: tests
   image: python:3.7
   commands:
+    - export CYTHON_IGNORE=true
     - pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
     - python3 setup.py install
     - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
@@ -26,6 +27,7 @@ steps:
 - name: tests
   image: python:3.7
   commands:
+    - export CYTHON_IGNORE=true
     - pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
     - python3 setup.py install
     - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests

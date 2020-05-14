@@ -15,6 +15,9 @@ pr:
     include:
     - '*'
 
+variables:
+  CYTHON_IGNORE: true
+
 jobs:
 - job: Windows
   pool:
