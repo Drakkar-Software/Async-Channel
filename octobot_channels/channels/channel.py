@@ -18,7 +18,7 @@ from typing import Iterable
 from octobot_commons.enums import ChannelConsumerPriorityLevels
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels.constants import CHANNEL_WILDCARD, DEFAULT_PRIORITY_LEVEL_VALUE
+from octobot_channels.constants import CHANNEL_WILDCARD
 from octobot_channels.channels.channel_instances import ChannelInstances
 
 
@@ -41,7 +41,7 @@ class Channel:
     INSTANCE_KEY = "consumer_instance"
 
     # Channel default consumer priority level
-    DEFAULT_PRIORITY_LEVEL = DEFAULT_PRIORITY_LEVEL_VALUE
+    DEFAULT_PRIORITY_LEVEL = ChannelConsumerPriorityLevels.HIGH.value
 
     def __init__(self):
         self.logger = get_logger(self.__class__.__name__)
