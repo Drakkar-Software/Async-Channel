@@ -15,6 +15,7 @@
 #  License along with this library.
 from typing import Iterable
 
+from octobot_commons.enums import ChannelConsumerPriorityLevels
 from octobot_commons.logging.logging_util import get_logger
 
 from octobot_channels.constants import CHANNEL_WILDCARD, DEFAULT_PRIORITY_LEVEL_VALUE
@@ -173,14 +174,43 @@ class Channel:
         """
         Checks if producers should be paused or resumed after a consumer addition or removal
         """
-        if not self.get_consumers() and not self.is_paused:
+        if self._should_pause_producers():
             self.is_paused = True
             for producer in self.get_producers():
                 await producer.pause()
-        elif self.get_consumers() and self.is_paused:
+            return
+        if self._should_resume_producers():
             self.is_paused = False
             for producer in self.get_producers():
                 await producer.resume()
+
+    def _should_pause_producers(self) -> bool:
+        """
+        Check if channel producers should be paused
+        :return: True if channel producers should be paused
+        """
+        if self.is_paused:
+            return False
+        if not self.get_consumers():
+            return True
+        for consumer in self.get_consumers():
+            if consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value:
+                return False
+        return True
+
+    def _should_resume_producers(self) -> bool:
+        """
+        Check if channel producers should be resumed
+        :return: True if channel producers should be resumed
+        """
+        if not self.is_paused:
+            return False
+        if not self.get_consumers():
+            return False
+        for consumer in self.get_consumers():
+            if consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value:
+                return True
+        return False
 
     async def register_producer(self, producer) -> None:
         """

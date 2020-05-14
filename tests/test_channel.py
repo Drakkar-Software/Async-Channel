@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
 
 import pytest
 from mock import AsyncMock, patch
@@ -21,6 +22,7 @@ from octobot_channels.channels.channel import Channel, del_chan, get_chan, set_c
 from octobot_channels.channels.channel_instances import ChannelInstances
 from octobot_channels.constants import CHANNEL_WILDCARD
 from octobot_channels.util.channel_creator import create_channel_instance
+from octobot_commons.enums import ChannelConsumerPriorityLevels
 
 from tests import TEST_CHANNEL, EMPTY_TEST_CHANNEL, EmptyTestChannel, empty_test_callback, EmptyTestProducer, \
     mock_was_called_once
@@ -288,3 +290,123 @@ async def test_modify(test_channel):
             await get_chan(EMPTY_TEST_CHANNEL).modify()
             await mock_was_called_once(mocked_producer_1_modify)
             await mock_was_called_once(mocked_producer_2_modify)
+
+
+@pytest.mark.asyncio
+async def test_should_pause_producers_with_no_consumers(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    test_channel.is_paused = False
+    if not os.getenv('CYTHON_IGNORE'):
+        assert test_channel._should_pause_producers()
+
+
+@pytest.mark.asyncio
+async def test_should_pause_producers_when_already_paused(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    test_channel.is_paused = True
+    if not os.getenv('CYTHON_IGNORE'):
+        assert not test_channel._should_pause_producers()
+
+
+@pytest.mark.asyncio
+async def test_should_pause_producers_with_priority_consumers(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    consumer_1 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.HIGH.value)
+    consumer_2 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.MEDIUM.value)
+    consumer_3 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    test_channel.is_paused = False
+    if not os.getenv('CYTHON_IGNORE'):
+        assert not test_channel._should_pause_producers()
+    await test_channel.remove_consumer(consumer_1)
+    await test_channel.remove_consumer(consumer_2)
+    await test_channel.remove_consumer(consumer_3)
+
+
+@pytest.mark.asyncio
+async def test_should_pause_producers_with_optional_consumers(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    consumer_1 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    consumer_2 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    consumer_3 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    test_channel.is_paused = False
+    if not os.getenv('CYTHON_IGNORE'):
+        assert test_channel._should_pause_producers()
+    await test_channel.remove_consumer(consumer_1)
+    await test_channel.remove_consumer(consumer_2)
+    await test_channel.remove_consumer(consumer_3)
+
+
+@pytest.mark.asyncio
+async def test_should_resume_producers_with_no_consumers(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    test_channel.is_paused = True
+    if not os.getenv('CYTHON_IGNORE'):
+        assert not test_channel._should_resume_producers()
+
+
+@pytest.mark.asyncio
+async def test_should_resume_producers_when_already_resumed(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    test_channel.is_paused = False
+    if not os.getenv('CYTHON_IGNORE'):
+        assert not test_channel._should_resume_producers()
+
+
+@pytest.mark.asyncio
+async def test_should_resume_producers_with_priority_consumers(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    consumer_1 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.HIGH.value)
+    consumer_2 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.MEDIUM.value)
+    consumer_3 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    test_channel.is_paused = True
+    if not os.getenv('CYTHON_IGNORE'):
+        assert test_channel._should_resume_producers()
+    await test_channel.remove_consumer(consumer_1)
+    await test_channel.remove_consumer(consumer_2)
+    await test_channel.remove_consumer(consumer_3)
+
+
+@pytest.mark.asyncio
+async def test_should_resume_producers_with_optional_consumers(test_channel):
+    producer = EmptyTestProducer(test_channel)
+    await test_channel.register_producer(producer)
+    consumer_1 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    consumer_2 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    consumer_3 = await get_chan(EMPTY_TEST_CHANNEL).new_consumer(
+        empty_test_callback,
+        priority_level=ChannelConsumerPriorityLevels.OPTIONAL.value)
+    test_channel.is_paused = True
+    if not os.getenv('CYTHON_IGNORE'):
+        assert not test_channel._should_resume_producers()
+    await test_channel.remove_consumer(consumer_1)
+    await test_channel.remove_consumer(consumer_2)
+    await test_channel.remove_consumer(consumer_3)

@@ -37,6 +37,8 @@ cdef class Channel(object):
     cpdef void flush(self)
 
     cdef list _filter_consumers(self, dict consumer_filters)
+    cdef bint _should_pause_producers(self)
+    cdef bint _should_resume_producers(self)
 
 cpdef Channel set_chan(Channel chan, str name)
 cpdef void del_chan(str name)

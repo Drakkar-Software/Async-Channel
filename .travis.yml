@@ -30,6 +30,7 @@ jobs:
       os: linux
       language: python
       script:
+        - export CYTHON_IGNORE=true
         - python3 setup.py build_ext --inplace
         - python3 setup.py install
         - rm -rf $PACKAGE_FOLDER
