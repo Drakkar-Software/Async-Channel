@@ -16,9 +16,10 @@
 import asyncio
 from asyncio import Queue, CancelledError
 
+from octobot_commons.enums import ChannelConsumerPriorityLevels
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels.constants import DEFAULT_PRIORITY_LEVEL_VALUE, DEFAULT_QUEUE_SIZE
+from octobot_channels.constants import DEFAULT_QUEUE_SIZE
 
 
 class Consumer:
@@ -33,7 +34,7 @@ class Consumer:
         self,
         callback: object,
         size: int = DEFAULT_QUEUE_SIZE,
-        priority_level: int = DEFAULT_PRIORITY_LEVEL_VALUE,
+        priority_level: int = ChannelConsumerPriorityLevels.HIGH.value,
     ):
         self.logger = get_logger(self.__class__.__name__)
 
