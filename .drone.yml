@@ -1,22 +1,5 @@
 ---
 kind: pipeline
-name: tests-python3.7-arm32
-
-platform:
-  os: linux
-  arch: arm
-
-steps:
-- name: tests
-  image: python:3.7
-  commands:
-    - export CYTHON_IGNORE=true
-    - pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
-    - python3 setup.py install
-    - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
-
----
-kind: pipeline
 name: tests-python3.7-arm64
 
 platform:
@@ -26,9 +9,12 @@ platform:
 steps:
 - name: tests
   image: python:3.7
+  environment:
+    OCTOBOT_PYPI_URL:
+      from_secret: OCTOBOT_PYPI_URL
   commands:
     - export CYTHON_IGNORE=true
-    - pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
+    - pip install --extra-index-url $OCTOBOT_PYPI_URL --prefer-binary -r dev_requirements.txt -r requirements.txt
     - python3 setup.py install
     - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
 
