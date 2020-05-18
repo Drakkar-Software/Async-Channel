@@ -83,6 +83,7 @@ class Producer:
         Called when the channel runs out of consumer
         """
         self.logger.debug("Pausing...")
+        self.is_running = False
         # Triggers itself if not already paused
         if not self.channel.is_paused:
             self.channel.is_paused = True
