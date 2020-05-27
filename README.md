@@ -1,4 +1,4 @@
-# OctoBot-Channels [1.4.7](https://github.com/Drakkar-Software/OctoBot-Channels/blob/master/CHANGELOG.md)
+# OctoBot-Channels [1.4.8](https://github.com/Drakkar-Software/OctoBot-Channels/blob/master/CHANGELOG.md)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6bc3f05475c463189dbd509cfc94afe)](https://app.codacy.com/gh/Drakkar-Software/OctoBot-Channels?utm_source=github.com&utm_medium=referral&utm_content=Drakkar-Software/OctoBot-Channels&utm_campaign=Badge_Grade_Dashboard)
 [![PyPI](https://img.shields.io/pypi/v/OctoBot-Channels.svg)](https://pypi.python.org/pypi/OctoBot-Channels/)
 [![Build Status](https://api.travis-ci.com/Drakkar-Software/OctoBot-Channels.svg?branch=master)](https://travis-ci.com/Drakkar-Software/OctoBot-Channels) 
