@@ -193,10 +193,10 @@ class Channel:
             return False
         if not self.get_consumers():
             return True
-        for consumer in self.get_consumers():
-            if consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value:
-                return False
-        return True
+        return all(
+            consumer.priority_level >= ChannelConsumerPriorityLevels.OPTIONAL.value
+            for consumer in self.get_consumers()
+        )
 
     def _should_resume_producers(self) -> bool:
         """
@@ -207,10 +207,10 @@ class Channel:
             return False
         if not self.get_consumers():
             return False
-        for consumer in self.get_consumers():
-            if consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value:
-                return True
-        return False
+        return any(
+            consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value
+            for consumer in self.get_consumers()
+        )
 
     async def register_producer(self, producer) -> None:
         """

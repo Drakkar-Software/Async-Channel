@@ -163,7 +163,8 @@ class Producer:
         :param priority_level: the consumer minimal priority level
         :return: the check result
         """
-        for consumer in self.channel.get_consumers():
-            if consumer.priority_level <= priority_level and not consumer.queue.empty():
-                return False
-        return True
+        return not any(
+            consumer.priority_level <= priority_level
+            and not consumer.queue.empty()
+            for consumer in self.channel.get_consumers()
+        )
