@@ -55,8 +55,8 @@ def get_channels(chan_id) -> dict:
     """
     try:
         return ChannelInstances.instance().channels[chan_id]
-    except KeyError:
-        raise KeyError(f"Channels not found with chan_id: {chan_id}")
+    except KeyError as exception:
+        raise KeyError(f"Channels not found with chan_id: {chan_id}") from exception
 
 
 def del_channel_container(chan_id) -> None:
@@ -76,8 +76,10 @@ def get_chan_at_id(chan_name, chan_id) -> object:
     """
     try:
         return ChannelInstances.instance().channels[chan_id][chan_name]
-    except KeyError:
-        raise KeyError(f"Channel {chan_name} not found with chan_id: {chan_id}")
+    except KeyError as exception:
+        raise KeyError(
+            f"Channel {chan_name} not found with chan_id: {chan_id}"
+        ) from exception
 
 
 def del_chan_at_id(chan_name, chan_id) -> None:
