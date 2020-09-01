@@ -32,7 +32,7 @@ from tests import TEST_CHANNEL, EMPTY_TEST_CHANNEL, EmptyTestChannel, empty_test
 async def test_channel():
     del_chan(EMPTY_TEST_CHANNEL)
     yield await create_channel_instance(EmptyTestChannel, set_chan)
-    await get_chan(TEST_CHANNEL).stop()
+    await get_chan(EMPTY_TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
