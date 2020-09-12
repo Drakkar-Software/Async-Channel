@@ -13,6 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+"""
+Defines the OctoBot-Channels core class : Channel
+"""
 from typing import Iterable
 
 from octobot_commons.enums import ChannelConsumerPriorityLevels

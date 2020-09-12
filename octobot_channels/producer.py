@@ -14,6 +14,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+"""
+Define OctoBot-Channels Producer class
+"""
 import asyncio
 
 from octobot_commons.logging.logging_util import get_logger

@@ -13,6 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+"""
+Define Channel creation helping methods
+"""
 from typing import ClassVar, Callable
 
 from octobot_channels.channels.channel import Channel
