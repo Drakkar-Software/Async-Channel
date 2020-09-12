@@ -13,6 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+"""
+Define OctoBot-Channels project
+"""
 PROJECT_NAME = "OctoBot-Channels"
 VERSION = "1.4.11"  # major.minor.revision

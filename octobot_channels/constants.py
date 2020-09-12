@@ -13,7 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+"""
+Define OctoBot-Channels global constants
+"""
 CHANNEL_WILDCARD = "*"
 
 DEFAULT_QUEUE_SIZE = 0  # unlimited

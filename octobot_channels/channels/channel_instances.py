@@ -1,4 +1,4 @@
-# pylint: disable=E0611
+# pylint: disable=no-name-in-module
 #  Drakkar-Software OctoBot-Channels
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,6 +14,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+"""
+This module defines created Channels interaction methods
+"""
 from octobot_commons.logging.logging_util import get_logger
 from octobot_commons.singleton.singleton_class import Singleton
 
