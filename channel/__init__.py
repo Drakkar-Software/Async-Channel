@@ -16,5 +16,34 @@
 """
 Define channel project
 """
+
+from channel import constants
+from channel import producer
+from channel import consumer
+
+from channel.constants import (
+    CHANNEL_WILDCARD,
+    DEFAULT_QUEUE_SIZE,
+)
+from channel.producer import (
+    Producer,
+)
+from channel.consumer import (
+    Consumer,
+    InternalConsumer,
+    SupervisedConsumer,
+)
+
 PROJECT_NAME = "channel"
 VERSION = "1.4.11"  # major.minor.revision
+
+__all__ = [
+    "CHANNEL_WILDCARD",
+    "DEFAULT_QUEUE_SIZE",
+    "Producer",
+    "Consumer",
+    "InternalConsumer",
+    "SupervisedConsumer",
+    "PROJECT_NAME",
+    "VERSION",
+]
