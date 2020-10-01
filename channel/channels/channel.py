@@ -16,13 +16,11 @@
 """
 Defines the channel core class : Channel
 """
-from typing import Iterable
+import typing
+import logging
 
-from octobot_commons.enums import ChannelConsumerPriorityLevels
-from octobot_commons.logging.logging_util import get_logger
-
-from channel.constants import CHANNEL_WILDCARD
-from channel.channels.channel_instances import ChannelInstances
+import channel.enums
+import channel.channels.channel_instances as channel_instances
 
 
 # pylint: disable=undefined-variable, not-callable
@@ -44,10 +42,10 @@ class Channel:
     INSTANCE_KEY = "consumer_instance"
 
     # Channel default consumer priority level
-    DEFAULT_PRIORITY_LEVEL = ChannelConsumerPriorityLevels.HIGH.value
+    DEFAULT_PRIORITY_LEVEL = channel.enums.ChannelConsumerPriorityLevels.HIGH.value
 
     def __init__(self):
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         # Channel unique id
         self.chan_id = None
@@ -197,7 +195,10 @@ class Channel:
         if not self.get_consumers():
             return True
         for consumer in self.get_consumers():
-            if consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value:
+            if (
+                consumer.priority_level
+                < channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+            ):
                 return False
         return True
 
@@ -211,7 +212,10 @@ class Channel:
         if not self.get_consumers():
             return False
         for consumer in self.get_consumers():
-            if consumer.priority_level < ChannelConsumerPriorityLevels.OPTIONAL.value:
+            if (
+                consumer.priority_level
+                < channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+            ):
                 return True
         return False
 
@@ -237,7 +241,7 @@ class Channel:
         if producer in self.producers:
             self.producers.remove(producer)
 
-    def get_producers(self) -> Iterable:
+    def get_producers(self) -> typing.Iterable:
         """
         Should be overwritten according to the class needs
         :return: channel producers iterable
@@ -307,8 +311,8 @@ def set_chan(chan, name) -> Channel:
     :return: the channel instance if succeed else raise a ValueError
     """
     chan_name = name if name else chan.get_name()
-    if chan_name not in ChannelInstances.instance().channels:
-        ChannelInstances.instance().channels[chan_name] = chan
+    if chan_name not in channel_instances.ChannelInstances.instance().channels:
+        channel_instances.ChannelInstances.instance().channels[chan_name] = chan
         return chan
     raise ValueError(f"Channel {chan_name} already exists.")
 
@@ -318,8 +322,8 @@ def del_chan(name) -> None:
     Delete a Channel instance from the channels list according to channel name
     :param name: name of the channel to delete
     """
-    if name in ChannelInstances.instance().channels:
-        ChannelInstances.instance().channels.pop(name, None)
+    if name in channel_instances.ChannelInstances.instance().channels:
+        channel_instances.ChannelInstances.instance().channels.pop(name, None)
 
 
 def get_chan(chan_name) -> Channel:
@@ -328,7 +332,7 @@ def get_chan(chan_name) -> Channel:
     :param chan_name: the channel name
     :return: the Channel instance
     """
-    return ChannelInstances.instance().channels[chan_name]
+    return channel_instances.ChannelInstances.instance().channels[chan_name]
 
 
 def _check_filters(consumer_filters, expected_filters) -> bool:
@@ -341,13 +345,13 @@ def _check_filters(consumer_filters, expected_filters) -> bool:
     """
     try:
         for key, value in expected_filters.items():
-            if value == CHANNEL_WILDCARD:
+            if value == channel.CHANNEL_WILDCARD:
                 continue
             if isinstance(consumer_filters[key], list):
-                if set(consumer_filters[key]) & {value, CHANNEL_WILDCARD}:
+                if set(consumer_filters[key]) & {value, channel.CHANNEL_WILDCARD}:
                     continue
                 return False
-            if consumer_filters[key] not in [value, CHANNEL_WILDCARD]:
+            if consumer_filters[key] not in [value, channel.CHANNEL_WILDCARD]:
                 return False
         return True
     except KeyError:

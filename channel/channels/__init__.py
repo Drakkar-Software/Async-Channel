@@ -13,7 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+"""
+Define channel implementation and usage
+"""
 from channel.channels import channel_instances
 from channel.channels import channel
 
@@ -30,7 +32,6 @@ from channel.channels.channel import (
     set_chan,
     del_chan,
     get_chan,
-    CHANNEL_WILDCARD,
 )
 
 __all__ = [
@@ -44,6 +45,4 @@ __all__ = [
     "set_chan",
     "del_chan",
     "get_chan",
-    "CHANNEL_WILDCARD",
 ]
-

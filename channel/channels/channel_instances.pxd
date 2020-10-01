@@ -14,15 +14,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_commons.singleton.singleton_class cimport Singleton
+cimport channel.channels as channels
 
-from channel.channels.channel cimport Channel
-
-cdef class ChannelInstances(Singleton):
+cdef class ChannelInstances:
     cdef public dict channels
 
-cpdef Channel get_chan_at_id(str chan_name, str chan_id)
+cpdef channels.Channel get_chan_at_id(str chan_name, str chan_id)
 cpdef dict get_channels(str chan_id)
-cpdef Channel set_chan_at_id(Channel chan, str name)
+cpdef channels.Channel set_chan_at_id(channels.Channel chan, str name)
 cpdef void del_channel_container(str chan_id)
 cpdef void del_chan_at_id(str name, str chan_id)

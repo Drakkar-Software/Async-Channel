@@ -17,12 +17,9 @@
 Define channel Consumer class
 """
 import asyncio
-from asyncio import Queue, CancelledError
+import logging
 
-from octobot_commons.enums import ChannelConsumerPriorityLevels
-from octobot_commons.logging.logging_util import get_logger
-
-from channel.constants import DEFAULT_QUEUE_SIZE
+import channel.enums
 
 
 class Consumer:
@@ -36,13 +33,13 @@ class Consumer:
     def __init__(
         self,
         callback: object,
-        size: int = DEFAULT_QUEUE_SIZE,
-        priority_level: int = ChannelConsumerPriorityLevels.HIGH.value,
+        size: int = channel.constants.DEFAULT_QUEUE_SIZE,
+        priority_level: int = channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         # Consumer data queue. It contains producer's work (received through Producer.send()).
-        self.queue = Queue(maxsize=size)
+        self.queue = asyncio.Queue(maxsize=size)
 
         # Method to be called when performing task is done
         self.callback = callback
@@ -69,7 +66,7 @@ class Consumer:
         while not self.should_stop:
             try:
                 await self.perform(await self.queue.get())
-            except CancelledError:
+            except asyncio.CancelledError:
                 self.logger.debug("Cancelled task")
             except Exception as consume_exception:  # pylint: disable=broad-except
                 self.logger.exception(

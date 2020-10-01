@@ -13,21 +13,21 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from mock import AsyncMock, patch
+import mock 
 import pytest
 
-from channel.channels.channel import Channel, get_chan, del_chan, set_chan
-from channel.producer import Producer
-from channel.util.channel_creator import create_channel_instance
-from tests import EmptyTestConsumer, mock_was_called_once, mock_was_not_called
+import channel.channels as channels
+import channel.producer as channel_producer
+import channel.util as util
+import tests 
 
 TEST_SYNCHRONIZED_CHANNEL = "TestSynchronized"
 
 
-class TestSynchronizedProducer(Producer):
+class TestSynchronizedProducer(channel_producer.Producer):
     async def send(self, data, **kwargs):
         await super().send(data)
-        await get_chan(TEST_SYNCHRONIZED_CHANNEL).stop()
+        await channels.get_chan(TEST_SYNCHRONIZED_CHANNEL).stop()
 
     async def pause(self):
         pass
@@ -36,15 +36,15 @@ class TestSynchronizedProducer(Producer):
         pass
 
 
-class TestSynchronizedChannel(Channel):
+class TestSynchronizedChannel(channels.Channel):
     PRODUCER_CLASS = TestSynchronizedProducer
-    CONSUMER_CLASS = EmptyTestConsumer
+    CONSUMER_CLASS = tests.EmptyTestConsumer
 
 
 @pytest.yield_fixture()
 async def synchronized_channel():
-    yield await create_channel_instance(TestSynchronizedChannel, set_chan, is_synchronized=True)
-    del_chan(TEST_SYNCHRONIZED_CHANNEL)
+    yield await util.create_channel_instance(TestSynchronizedChannel, channels.set_chan, is_synchronized=True)
+    channels.del_chan(TEST_SYNCHRONIZED_CHANNEL)
 
 
 @pytest.mark.asyncio
@@ -54,14 +54,14 @@ async def test_producer_synchronized_perform_consumers_queue_with_one_consumer(s
 
     test_consumer = await synchronized_channel.new_consumer(callback)
 
-    producer = TestSynchronizedProducer(get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
-    with patch.object(test_consumer, 'callback', new=AsyncMock()) as mocked_test_consumer_callback:
+    with mock.patch.object(test_consumer, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_callback:
         await producer.send({})
-        await mock_was_not_called(mocked_test_consumer_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_callback)
         await producer.synchronized_perform_consumers_queue(1)
-        await mock_was_called_once(mocked_test_consumer_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_callback)
 
 
 @pytest.mark.asyncio
@@ -71,7 +71,7 @@ async def test_synchronized_no_tasks(synchronized_channel):
 
     test_consumer = await synchronized_channel.new_consumer(callback)
 
-    producer = TestSynchronizedProducer(get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     assert test_consumer.consume_task is None
@@ -85,7 +85,7 @@ async def test_is_consumers_queue_empty_with_one_consumer(synchronized_channel):
 
     await synchronized_channel.new_consumer(callback)
 
-    producer = TestSynchronizedProducer(get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     await producer.send({})
@@ -107,7 +107,7 @@ async def test_is_consumers_queue_empty_with_multiple_consumers(synchronized_cha
     await synchronized_channel.new_consumer(callback, priority_level=2)
     await synchronized_channel.new_consumer(callback, priority_level=3)
 
-    producer = TestSynchronizedProducer(get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     await producer.send({})
@@ -139,57 +139,57 @@ async def test_producer_synchronized_perform_consumers_queue_with_multiple_consu
     test_consumer_2_2 = await synchronized_channel.new_consumer(callback, priority_level=2)
     test_consumer_3_1 = await synchronized_channel.new_consumer(callback, priority_level=3)
 
-    producer = TestSynchronizedProducer(get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
-    with patch.object(test_consumer_1_1, 'callback', new=AsyncMock()) as mocked_test_consumer_1_1_callback, \
-            patch.object(test_consumer_1_2, 'callback', new=AsyncMock()) as mocked_test_consumer_1_2_callback, \
-            patch.object(test_consumer_2_1, 'callback', new=AsyncMock()) as mocked_test_consumer_2_1_callback, \
-            patch.object(test_consumer_2_2, 'callback', new=AsyncMock()) as mocked_test_consumer_2_2_callback, \
-            patch.object(test_consumer_3_1, 'callback', new=AsyncMock()) as mocked_test_consumer_3_1_callback:
+    with mock.patch.object(test_consumer_1_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_1_1_callback, \
+            mock.patch.object(test_consumer_1_2, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_1_2_callback, \
+            mock.patch.object(test_consumer_2_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_2_1_callback, \
+            mock.patch.object(test_consumer_2_2, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_2_2_callback, \
+            mock.patch.object(test_consumer_3_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_3_1_callback:
         await producer.send({})
-        await mock_was_not_called(mocked_test_consumer_1_1_callback)
-        await mock_was_not_called(mocked_test_consumer_1_2_callback)
-        await mock_was_not_called(mocked_test_consumer_2_1_callback)
-        await mock_was_not_called(mocked_test_consumer_2_2_callback)
-        await mock_was_not_called(mocked_test_consumer_3_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_1_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_1_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_2_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_2_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_3_1_callback)
         await producer.synchronized_perform_consumers_queue(1)
-        await mock_was_called_once(mocked_test_consumer_1_1_callback)
-        await mock_was_called_once(mocked_test_consumer_1_2_callback)
-        await mock_was_not_called(mocked_test_consumer_2_1_callback)
-        await mock_was_not_called(mocked_test_consumer_2_2_callback)
-        await mock_was_not_called(mocked_test_consumer_3_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_1_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_1_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_2_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_2_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_3_1_callback)
         await producer.synchronized_perform_consumers_queue(2)
-        await mock_was_called_once(mocked_test_consumer_1_1_callback)
-        await mock_was_called_once(mocked_test_consumer_1_2_callback)
-        await mock_was_called_once(mocked_test_consumer_2_1_callback)
-        await mock_was_called_once(mocked_test_consumer_2_2_callback)
-        await mock_was_not_called(mocked_test_consumer_3_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_1_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_1_2_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_2_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_2_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_3_1_callback)
         assert not producer.is_consumers_queue_empty(3)
         await producer.synchronized_perform_consumers_queue(3)
-        await mock_was_called_once(mocked_test_consumer_3_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_3_1_callback)
         assert producer.is_consumers_queue_empty(1)
         assert producer.is_consumers_queue_empty(2)
         assert producer.is_consumers_queue_empty(3)
 
-    with patch.object(test_consumer_1_1, 'callback', new=AsyncMock()) as mocked_test_consumer_1_1_callback, \
-            patch.object(test_consumer_1_2, 'callback', new=AsyncMock()) as mocked_test_consumer_1_2_callback, \
-            patch.object(test_consumer_2_1, 'callback', new=AsyncMock()) as mocked_test_consumer_2_1_callback, \
-            patch.object(test_consumer_2_2, 'callback', new=AsyncMock()) as mocked_test_consumer_2_2_callback, \
-            patch.object(test_consumer_3_1, 'callback', new=AsyncMock()) as mocked_test_consumer_3_1_callback:
+    with mock.patch.object(test_consumer_1_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_1_1_callback, \
+            mock.patch.object(test_consumer_1_2, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_1_2_callback, \
+            mock.patch.object(test_consumer_2_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_2_1_callback, \
+            mock.patch.object(test_consumer_2_2, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_2_2_callback, \
+            mock.patch.object(test_consumer_3_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_3_1_callback:
         await producer.send({})
-        await mock_was_not_called(mocked_test_consumer_1_1_callback)
-        await mock_was_not_called(mocked_test_consumer_1_2_callback)
-        await mock_was_not_called(mocked_test_consumer_2_1_callback)
-        await mock_was_not_called(mocked_test_consumer_2_2_callback)
-        await mock_was_not_called(mocked_test_consumer_3_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_1_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_1_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_2_1_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_2_2_callback)
+        await tests.mock_was_not_called(mocked_test_consumer_3_1_callback)
         assert not producer.is_consumers_queue_empty(2)
         await producer.synchronized_perform_consumers_queue(3)
-        await mock_was_called_once(mocked_test_consumer_1_1_callback)
-        await mock_was_called_once(mocked_test_consumer_1_2_callback)
-        await mock_was_called_once(mocked_test_consumer_2_1_callback)
-        await mock_was_called_once(mocked_test_consumer_2_2_callback)
-        await mock_was_called_once(mocked_test_consumer_3_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_1_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_1_2_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_2_1_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_2_2_callback)
+        await tests.mock_was_called_once(mocked_test_consumer_3_1_callback)
         assert producer.is_consumers_queue_empty(1)
         assert producer.is_consumers_queue_empty(2)
         assert producer.is_consumers_queue_empty(3)

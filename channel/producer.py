@@ -1,4 +1,3 @@
-# cython: language_level=3
 #  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -18,8 +17,7 @@
 Define channel Producer class
 """
 import asyncio
-
-from octobot_commons.logging.logging_util import get_logger
+import logging
 
 
 class Producer:
@@ -33,7 +31,7 @@ class Producer:
     """
 
     def __init__(self, channel):
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         # Related channel instance
         self.channel = channel

@@ -18,16 +18,18 @@ Define channel project
 """
 
 from channel import constants
-from channel import producer
-from channel import consumer
-
 from channel.constants import (
     CHANNEL_WILDCARD,
     DEFAULT_QUEUE_SIZE,
 )
-from channel.producer import (
-    Producer,
-)
+
+from channel import enums
+from channel.enums import ChannelConsumerPriorityLevels
+
+from channel import producer
+from channel.producer import Producer
+
+from channel import consumer
 from channel.consumer import (
     Consumer,
     InternalConsumer,
@@ -35,11 +37,12 @@ from channel.consumer import (
 )
 
 PROJECT_NAME = "channel"
-VERSION = "1.4.11"  # major.minor.revision
+VERSION = "2.0.0"  # major.minor.revision
 
 __all__ = [
     "CHANNEL_WILDCARD",
     "DEFAULT_QUEUE_SIZE",
+    "ChannelConsumerPriorityLevels",
     "Producer",
     "Consumer",
     "InternalConsumer",

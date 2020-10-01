@@ -15,10 +15,9 @@
 #  License along with this library.
 import asyncio
 
-from channel.channels.channel import Channel
-
-from channel.consumer import Consumer
-from channel.producer import Producer
+import channel.channels as channels
+import channel.consumer as channel_consumer
+import channel.producer as producer
 
 TEST_CHANNEL = "Test"
 EMPTY_TEST_CHANNEL = "EmptyTest"
@@ -26,11 +25,11 @@ EMPTY_TEST_WITH_ID_CHANNEL = "EmptyTestWithId"
 CONSUMER_KEY = "test"
 
 
-class EmptyTestConsumer(Consumer):
+class EmptyTestConsumer(channel_consumer.Consumer):
     pass
 
 
-class EmptyTestProducer(Producer):
+class EmptyTestProducer(producer.Producer):
     async def start(self):
         await asyncio.sleep(100000)
 
@@ -41,7 +40,7 @@ class EmptyTestProducer(Producer):
         pass
 
 
-class EmptyTestChannel(Channel):
+class EmptyTestChannel(channels.Channel):
     CONSUMER_CLASS = EmptyTestConsumer
     PRODUCER_CLASS = EmptyTestProducer
 
@@ -60,7 +59,7 @@ async def mock_was_not_called(mocked_method):
     mocked_method.assert_not_called()
 
 
-class EmptyTestWithIdChannel(Channel):
+class EmptyTestWithIdChannel(channels.Channel):
     CONSUMER_CLASS = EmptyTestConsumer
     PRODUCER_CLASS = EmptyTestProducer
 

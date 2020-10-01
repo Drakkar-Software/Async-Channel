@@ -1,4 +1,3 @@
-# cython: language_level=3
 #  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,18 +13,19 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+"""
+Define channel global enums
+"""
 
-from channel.channels cimport channel
-from channel.channels.channel cimport (
-    Channel
-)
+import enum
 
-from channel.channels cimport channel_instances
-from channel.channels.channel_instances cimport (
-    ChannelInstances
-)
 
-__all__ = [
-    "ChannelInstances",
-    "Channel",
-]
+class ChannelConsumerPriorityLevels(enum.Enum):
+    """
+    Channel consumer priority levels
+    """
+
+    HIGH = 0
+    MEDIUM = 1
+    # LOW = 2 not necessary for now
+    OPTIONAL = 2

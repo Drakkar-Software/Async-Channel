@@ -13,7 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+"""
+Define Channel helping methods
+"""
 from channel.util import channel_creator
 
 from channel.util.channel_creator import (
