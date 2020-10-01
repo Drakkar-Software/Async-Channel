@@ -16,14 +16,14 @@
 """
 Define Channel creation helping methods
 """
-from typing import ClassVar, Callable
+import typing
 
-from channel.channels.channel import Channel
+import channel.channels as channels
 
 
 async def create_all_subclasses_channel(
-    channel_class: ClassVar,
-    set_chan_method: Callable,
+    channel_class: typing.ClassVar,
+    set_chan_method: typing.Callable,
     is_synchronized: bool = False,
     **kwargs: dict
 ) -> None:
@@ -44,11 +44,11 @@ async def create_all_subclasses_channel(
 
 
 async def create_channel_instance(
-    channel_class: ClassVar,
-    set_chan_method: Callable,
+    channel_class: typing.ClassVar,
+    set_chan_method: typing.Callable,
     is_synchronized: bool = False,
     **kwargs: dict
-) -> Channel:
+) -> channels.Channel:
     """
     Creates, initialize and start a channel instance
     :param channel_class: The class to instantiate with optional kwargs params

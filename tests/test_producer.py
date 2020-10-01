@@ -15,20 +15,20 @@
 #  License along with this library.
 
 import pytest
-from channel.consumer import Consumer, SupervisedConsumer
 
-from channel.channels.channel import Channel, get_chan, del_chan, set_chan
-from channel.producer import Producer
-from channel.util.channel_creator import create_channel_instance
-from tests import EmptyTestConsumer, TEST_CHANNEL, empty_test_callback, EmptyTestProducer
+import channel.consumer as channel_consumer
+import channel.channels as channels
+import channel.producer as channel_producer
+import channel.util as util
+import tests 
 
 
 @pytest.mark.asyncio
 async def test_send_internal_producer_without_consumer():
-    class TestProducer(Producer):
+    class TestProducer(channel_producer.Producer):
         async def send(self, data, **kwargs):
             await super().send(data)
-            await get_chan(TEST_CHANNEL).stop()
+            await channels.get_chan(tests.TEST_CHANNEL).stop()
 
         async def pause(self):
             pass
@@ -36,20 +36,20 @@ async def test_send_internal_producer_without_consumer():
         async def resume(self):
             pass
 
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         PRODUCER_CLASS = TestProducer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    await get_chan(TEST_CHANNEL).get_internal_producer().send({})
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    await channels.get_chan(tests.TEST_CHANNEL).get_internal_producer().send({})
 
 
 @pytest.mark.asyncio
 async def test_send_producer_without_consumer():
-    class TestProducer(Producer):
+    class TestProducer(channel_producer.Producer):
         async def send(self, data, **kwargs):
             await super().send(data)
-            await get_chan(TEST_CHANNEL).stop()
+            await channels.get_chan(tests.TEST_CHANNEL).stop()
 
         async def pause(self):
             pass
@@ -57,50 +57,50 @@ async def test_send_producer_without_consumer():
         async def resume(self):
             pass
 
-    class TestConsumer(Consumer):
+    class TestConsumer(channel_consumer.Consumer):
         async def consume(self):
             while not self.should_stop:
                 await self.callback(**(await self.queue.get()))
 
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         PRODUCER_CLASS = TestProducer
         CONSUMER_CLASS = TestConsumer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
 
-    producer = TestProducer(get_chan(TEST_CHANNEL))
+    producer = TestProducer(channels.get_chan(tests.TEST_CHANNEL))
     await producer.run()
     await producer.send({})
 
 
 @pytest.mark.asyncio
 async def test_send_producer_with_consumer():
-    class TestConsumer(Consumer):
+    class TestConsumer(channel_consumer.Consumer):
         pass
 
-    class TestChannel(Channel):
-        PRODUCER_CLASS = EmptyTestProducer
+    class TestChannel(channels.Channel):
+        PRODUCER_CLASS = tests.EmptyTestProducer
         CONSUMER_CLASS = TestConsumer
 
     async def callback(data):
         assert data == "test"
-        await get_chan(TEST_CHANNEL).stop()
+        await channels.get_chan(tests.TEST_CHANNEL).stop()
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    await get_chan(TEST_CHANNEL).new_consumer(callback)
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    await channels.get_chan(tests.TEST_CHANNEL).new_consumer(callback)
 
-    producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
+    producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
     await producer.run()
     await producer.send({"data": "test"})
 
 
 @pytest.mark.asyncio
 async def test_pause_producer_without_consumers():
-    class TestProducer(Producer):
+    class TestProducer(channel_producer.Producer):
         async def pause(self):
-            await get_chan(TEST_CHANNEL).stop()
+            await channels.get_chan(tests.TEST_CHANNEL).stop()
 
         async def pause(self):
             pass
@@ -108,20 +108,20 @@ async def test_pause_producer_without_consumers():
         async def resume(self):
             pass
 
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         PRODUCER_CLASS = TestProducer
-        CONSUMER_CLASS = EmptyTestConsumer
+        CONSUMER_CLASS = tests.EmptyTestConsumer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    await TestProducer(get_chan(TEST_CHANNEL)).run()
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    await TestProducer(channels.get_chan(tests.TEST_CHANNEL)).run()
 
 
 @pytest.mark.asyncio
 async def test_pause_producer_with_removed_consumer():
-    class TestProducer(Producer):
+    class TestProducer(channel_producer.Producer):
         async def pause(self):
-            await get_chan(TEST_CHANNEL).stop()
+            await channels.get_chan(tests.TEST_CHANNEL).stop()
 
         async def pause(self):
             pass
@@ -129,22 +129,22 @@ async def test_pause_producer_with_removed_consumer():
         async def resume(self):
             pass
 
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         PRODUCER_CLASS = TestProducer
-        CONSUMER_CLASS = EmptyTestConsumer
+        CONSUMER_CLASS = tests.EmptyTestConsumer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    consumer = await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
-    await TestProducer(get_chan(TEST_CHANNEL)).run()
-    await get_chan(TEST_CHANNEL).remove_consumer(consumer)
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    consumer = await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
+    await TestProducer(channels.get_chan(tests.TEST_CHANNEL)).run()
+    await channels.get_chan(tests.TEST_CHANNEL).remove_consumer(consumer)
 
 
 @pytest.mark.asyncio
 async def test_resume_producer():
-    class TestProducer(Producer):
+    class TestProducer(channel_producer.Producer):
         async def resume(self):
-            await get_chan(TEST_CHANNEL).stop()
+            await channels.get_chan(tests.TEST_CHANNEL).stop()
 
         async def pause(self):
             pass
@@ -152,60 +152,60 @@ async def test_resume_producer():
         async def resume(self):
             pass
 
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         PRODUCER_CLASS = TestProducer
-        CONSUMER_CLASS = EmptyTestConsumer
+        CONSUMER_CLASS = tests.EmptyTestConsumer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    await TestProducer(get_chan(TEST_CHANNEL)).run()
-    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    await TestProducer(channels.get_chan(tests.TEST_CHANNEL)).run()
+    await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
 
 
 @pytest.mark.asyncio
 async def test_resume_producer():
-    class TestSupervisedConsumer(SupervisedConsumer):
+    class TestSupervisedConsumer(channel_consumer.SupervisedConsumer):
         pass
 
-    class TestChannel(Channel):
-        PRODUCER_CLASS = EmptyTestProducer
+    class TestChannel(channels.Channel):
+        PRODUCER_CLASS = tests.EmptyTestProducer
         CONSUMER_CLASS = TestSupervisedConsumer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
     await producer.run()
-    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
-    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
-    await get_chan(TEST_CHANNEL).new_consumer(empty_test_callback)
+    await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
+    await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
+    await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
     await producer.send({"data": "test"})
     await producer.wait_for_processing()
-    await get_chan(TEST_CHANNEL).stop()
+    await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
 async def test_producer_is_running():
-    class TestChannel(Channel):
-        PRODUCER_CLASS = EmptyTestProducer
+    class TestChannel(channels.Channel):
+        PRODUCER_CLASS = tests.EmptyTestProducer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    producer = EmptyTestProducer(get_chan(TEST_CHANNEL))
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
     assert not producer.is_running
     await producer.run()
     assert producer.is_running
-    await get_chan(TEST_CHANNEL).stop()
+    await channels.get_chan(tests.TEST_CHANNEL).stop()
     assert not producer.is_running
 
 
 @pytest.mark.asyncio
 async def test_producer_pause_resume():
-    class TestChannel(Channel):
-        PRODUCER_CLASS = Producer
+    class TestChannel(channels.Channel):
+        PRODUCER_CLASS = channel_producer.Producer
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    producer = Producer(get_chan(TEST_CHANNEL))
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    producer = channel_producer.Producer(channels.get_chan(tests.TEST_CHANNEL))
     assert producer.channel.is_paused
     await producer.pause()
     assert producer.channel.is_paused
@@ -215,4 +215,4 @@ async def test_producer_pause_resume():
     assert producer.channel.is_paused
     await producer.resume()
     assert not producer.channel.is_paused
-    await get_chan(TEST_CHANNEL).stop()
+    await channels.get_chan(tests.TEST_CHANNEL).stop()

@@ -13,41 +13,39 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from copy import deepcopy
+import copy 
 
 import pytest
-from channel.channels.channel_instances import ChannelInstances
+import channel.channels as channels
+import channel.util as util
 
-from channel.channels.channel import Channel, del_chan, set_chan, get_chan
-
-from channel.util.channel_creator import create_channel_instance, create_all_subclasses_channel
-from tests import TEST_CHANNEL
+import tests 
 
 
 @pytest.mark.asyncio
 async def test_create_channel_instance():
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         pass
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan)
-    await get_chan(TEST_CHANNEL).stop()
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
 async def test_create_synchronized_channel_instance():
-    class TestChannel(Channel):
+    class TestChannel(channels.Channel):
         pass
 
-    del_chan(TEST_CHANNEL)
-    await create_channel_instance(TestChannel, set_chan, is_synchronized=True)
-    assert get_chan(TEST_CHANNEL).is_synchronized
-    await get_chan(TEST_CHANNEL).stop()
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan, is_synchronized=True)
+    assert channels.get_chan(tests.TEST_CHANNEL).is_synchronized
+    await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
 async def test_create_all_subclasses_channel():
-    class TestChannelClass(Channel):
+    class TestChannelClass(channels.Channel):
         pass
 
     class Test1Channel(TestChannelClass):
@@ -57,13 +55,13 @@ async def test_create_all_subclasses_channel():
         pass
 
     def clean_channels():
-        for channel in deepcopy(ChannelInstances.instance().channels):
-            del_chan(channel)
+        for channel in copy.deepcopy(channels.ChannelInstances.instance().channels):
+            channels.del_chan(channel)
 
-    del_chan(TEST_CHANNEL)
-    await create_all_subclasses_channel(TestChannelClass, set_chan)
-    assert len(ChannelInstances.instance().channels) == 3  # (EmptyTestChannel, Test1Channel, Test2Channel)
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_all_subclasses_channel(TestChannelClass, channels.set_chan)
+    assert len(channels.ChannelInstances.instance().channels) == 3  # (EmptyTestChannel, Test1Channel, Test2Channel)
     clean_channels()
-    await create_all_subclasses_channel(TestChannelClass, set_chan, is_synchronized=True)
-    assert all(get_chan(channel).is_synchronized for channel in ChannelInstances.instance().channels)
+    await util.create_all_subclasses_channel(TestChannelClass, channels.set_chan, is_synchronized=True)
+    assert all(channels.get_chan(channel).is_synchronized for channel in channels.ChannelInstances.instance().channels)
     clean_channels()

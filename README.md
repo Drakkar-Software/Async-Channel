@@ -1,4 +1,4 @@
-# Channel [1.4.11](https://github.com/Drakkar-Software/channel/blob/master/CHANGELOG.md)
+# Channel [2.0.0](https://github.com/Drakkar-Software/channel/blob/master/CHANGELOG.md)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6bc3f05475c463189dbd509cfc94afe)](https://app.codacy.com/gh/Drakkar-Software/channel?utm_source=github.com&utm_medium=referral&utm_content=Drakkar-Software/channel&utm_campaign=Badge_Grade_Dashboard)
 [![PyPI](https://img.shields.io/pypi/v/channel.svg)](https://pypi.python.org/pypi/channel/)
 [![Build Status](https://api.travis-ci.com/Drakkar-Software/channel.svg?branch=master)](https://travis-ci.com/Drakkar-Software/channel) 

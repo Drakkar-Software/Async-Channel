@@ -1,4 +1,3 @@
-# pylint: disable=no-name-in-module
 #  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -17,14 +16,29 @@
 """
 This module defines created Channels interaction methods
 """
-from octobot_commons.logging.logging_util import get_logger
-from octobot_commons.singleton.singleton_class import Singleton
+import logging
 
 
-class ChannelInstances(Singleton):
+class ChannelInstances:
     """
     Singleton that contains Channel instances
+    Singleton implementation from https://stackoverflow.com/questions/51245056/singleton-is-not-working-in-cython
     """
+
+    _instances = {}
+
+    @classmethod
+    def instance(cls, *args, **kwargs):
+        """
+        Create the instance if not already created
+        Return the class instance
+        :param args: the constructor arguments
+        :param kwargs: the constructor optional arguments
+        :return: the class only instance
+        """
+        if cls not in cls._instances:
+            cls._instances[cls] = cls(*args, **kwargs)
+        return cls._instances[cls]
 
     def __init__(self):
         self.channels = {}
@@ -94,6 +108,6 @@ def del_chan_at_id(chan_name, chan_id) -> None:
     try:
         ChannelInstances.instance().channels[chan_id].pop(chan_name, None)
     except KeyError:
-        get_logger(ChannelInstances.__name__).warning(
+        logging.getLogger(ChannelInstances.__name__).warning(
             f"Can't del chan {chan_name} with chan_id: {chan_id}"
         )

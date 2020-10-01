@@ -15,10 +15,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from channel.channels.channel cimport Channel
-
 cdef class Producer:
-    cdef public Channel channel
+    cdef public object channel # object type = Channel
     cdef public object logger  # object type = logger
     cdef public object produce_task  # object type = asyncio.Task
 

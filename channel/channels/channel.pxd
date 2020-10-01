@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from channel.producer cimport Producer
+cimport channel.producer as producer
 
 cdef class Channel(object):
     cdef object logger
@@ -24,7 +24,7 @@ cdef class Channel(object):
     cdef public list producers
     cdef public list consumers
 
-    cdef public Producer internal_producer
+    cdef public producer.Producer internal_producer
 
     cdef public bint is_paused
     cdef public bint is_synchronized
@@ -32,7 +32,7 @@ cdef class Channel(object):
     cpdef void add_new_consumer(self, object consumer, dict consumer_filters)
     cpdef list get_consumers(self)
     cpdef object get_producers(self)
-    cpdef void unregister_producer(self, Producer producer)
+    cpdef void unregister_producer(self, producer.Producer producer)
     cpdef list get_consumer_from_filters(self, dict consumer_filters)
     cpdef void flush(self)
 
