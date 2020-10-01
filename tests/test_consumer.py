@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -17,9 +17,9 @@
 import pytest
 from mock import AsyncMock, patch
 
-from octobot_channels.consumer import InternalConsumer, SupervisedConsumer
-from octobot_channels.channels.channel import Channel, get_chan, del_chan, set_chan
-from octobot_channels.util.channel_creator import create_channel_instance
+from channel.consumer import InternalConsumer, SupervisedConsumer
+from channel.channels.channel import Channel, get_chan, del_chan, set_chan
+from channel.util.channel_creator import create_channel_instance
 from tests import TEST_CHANNEL, EmptyTestProducer, empty_test_callback, EmptyTestConsumer, mock_was_called_once
 
 

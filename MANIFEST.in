@@ -1,4 +1,4 @@
-recursive-include octobot_channels *.pxd
+recursive-include channel *.pxd
 
 include README.md
 include LICENSE

@@ -1,5 +1,5 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -15,15 +15,19 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from octobot_channels.channels.channel cimport Channel
-
-cdef class Producer:
-    cdef public Channel channel
-    cdef public object logger  # object type = logger
-    cdef public object produce_task  # object type = asyncio.Task
+cdef class Consumer:
+    cdef public object logger  # object type = Logger
+    cdef public object queue  # object type = asyncio.Queue
+    cdef public object callback  # object type = callable
+    cdef public object consume_task  # object type = asyncio.Task
 
     cdef public bint should_stop
-    cdef public bint is_running
+    cdef public int priority_level
 
     cpdef void create_task(self)
-    cpdef bint is_consumers_queue_empty(self, int priority_level)
+
+cdef class InternalConsumer(Consumer):
+    pass
+
+cdef class SupervisedConsumer(Consumer):
+    pass

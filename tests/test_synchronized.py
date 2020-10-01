@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -16,9 +16,9 @@
 from mock import AsyncMock, patch
 import pytest
 
-from octobot_channels.channels.channel import Channel, get_chan, del_chan, set_chan
-from octobot_channels.producer import Producer
-from octobot_channels.util.channel_creator import create_channel_instance
+from channel.channels.channel import Channel, get_chan, del_chan, set_chan
+from channel.producer import Producer
+from channel.util.channel_creator import create_channel_instance
 from tests import EmptyTestConsumer, mock_was_called_once, mock_was_not_called
 
 TEST_SYNCHRONIZED_CHANNEL = "TestSynchronized"

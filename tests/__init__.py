@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -15,10 +15,10 @@
 #  License along with this library.
 import asyncio
 
-from octobot_channels.channels.channel import Channel
+from channel.channels.channel import Channel
 
-from octobot_channels.consumer import Consumer
-from octobot_channels.producer import Producer
+from channel.consumer import Consumer
+from channel.producer import Producer
 
 TEST_CHANNEL = "Test"
 EMPTY_TEST_CHANNEL = "EmptyTest"

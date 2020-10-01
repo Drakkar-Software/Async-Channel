@@ -42,4 +42,4 @@ steps:
     event:
       - tag
     repo:
-      - Drakkar-Software/OctoBot-Channels
+      - Drakkar-Software/channel

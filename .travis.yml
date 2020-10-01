@@ -7,9 +7,9 @@ cache: pip
 python: 3.8-dev
 env:
   global:
-    - GH_REPO=Drakkar-Software/OctoBot-Channels
+    - GH_REPO=Drakkar-Software/channel
     - DEPLOY_BRANCH=master
-    - PACKAGE_FOLDER=octobot_channels
+    - PACKAGE_FOLDER=channel
 
 install:
   - python3 -m pip install  --prefer-binary -r dev_requirements.txt -r requirements.txt

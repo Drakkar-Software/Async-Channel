@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -17,9 +17,9 @@ from uuid import uuid4
 
 import pytest
 
-from octobot_channels.channels.channel_instances import del_chan_at_id, get_chan_at_id, set_chan_at_id, \
+from channel.channels.channel_instances import del_chan_at_id, get_chan_at_id, set_chan_at_id, \
     del_channel_container, get_channels
-from octobot_channels.util.channel_creator import create_channel_instance
+from channel.util.channel_creator import create_channel_instance
 from tests import EmptyTestWithIdChannel, EMPTY_TEST_WITH_ID_CHANNEL
 
 
