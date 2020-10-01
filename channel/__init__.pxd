@@ -1,5 +1,5 @@
-# cython: language_level=3, boundscheck=False, wraparound=False
-#  Drakkar-Software OctoBot-Channels
+# cython: language_level=3
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or

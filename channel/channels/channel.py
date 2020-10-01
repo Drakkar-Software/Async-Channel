@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,15 +14,15 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Defines the OctoBot-Channels core class : Channel
+Defines the channel core class : Channel
 """
 from typing import Iterable
 
 from octobot_commons.enums import ChannelConsumerPriorityLevels
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels.constants import CHANNEL_WILDCARD
-from octobot_channels.channels.channel_instances import ChannelInstances
+from channel.constants import CHANNEL_WILDCARD
+from channel.channels.channel_instances import ChannelInstances
 
 
 # pylint: disable=undefined-variable, not-callable

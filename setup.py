@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -35,15 +35,15 @@ except ImportError:
 from setuptools import find_packages
 from setuptools import setup, Extension
 
-from octobot_channels import PROJECT_NAME, VERSION
+from channel import PROJECT_NAME, VERSION
 
 PACKAGES = find_packages(exclude=["tests"])
 
-packages_list = ["octobot_channels.consumer",
-                 "octobot_channels.producer",
-                 "octobot_channels.channels.channel",
-                 "octobot_channels.channels.channel_instances",
-                 "octobot_channels.util.channel_creator"]
+packages_list = ["channel.consumer",
+                 "channel.producer",
+                 "channel.channels.channel",
+                 "channel.channels.channel_instances",
+                 "channel.util.channel_creator"]
 
 ext_modules = [
     Extension(package, [f"{package.replace('.', '/')}.py"])
@@ -60,11 +60,11 @@ CYTHON_DEBUG = False if not os.getenv('CYTHON_DEBUG') else os.getenv('CYTHON_DEB
 setup(
     name=PROJECT_NAME,
     version=VERSION,
-    url='https://github.com/Drakkar-Software/OctoBot-Channels',
+    url='https://github.com/Drakkar-Software/channel',
     license='LGPL-3.0',
     author='Drakkar-Software',
     author_email='drakkar-software@protonmail.com',
-    description='OctoBot project channels module',
+    description='Python channel based communication library',
     packages=PACKAGES,
     include_package_data=True,
     # long_description=DESCRIPTION,

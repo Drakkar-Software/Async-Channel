@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ Define Channel creation helping methods
 """
 from typing import ClassVar, Callable
 
-from octobot_channels.channels.channel import Channel
+from channel.channels.channel import Channel
 
 
 async def create_all_subclasses_channel(

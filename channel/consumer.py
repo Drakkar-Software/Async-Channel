@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Channels
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define OctoBot-Channels Consumer class
+Define channel Consumer class
 """
 import asyncio
 from asyncio import Queue, CancelledError
@@ -22,7 +22,7 @@ from asyncio import Queue, CancelledError
 from octobot_commons.enums import ChannelConsumerPriorityLevels
 from octobot_commons.logging.logging_util import get_logger
 
-from octobot_channels.constants import DEFAULT_QUEUE_SIZE
+from channel.constants import DEFAULT_QUEUE_SIZE
 
 
 class Consumer:

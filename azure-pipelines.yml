@@ -44,9 +44,9 @@ jobs:
   - script: |
       python setup.py build_ext --inplace
       python setup.py install
-    displayName: 'Install OctoBot-Channels'
+    displayName: 'Install channel'
   - script: python -m pytest tests
-    displayName: 'Run OctoBot-Channels tests'
+    displayName: 'Run channel tests'
   - script: python setup.py bdist_wheel
     displayName: 'Building wheel'
   - task: TwineAuthenticate@1
@@ -80,9 +80,9 @@ jobs:
   - script: |
       python setup.py build_ext --inplace
       python setup.py install
-    displayName: 'Install OctoBot-Channels'
+    displayName: 'Install channel'
   - script: python -m pytest tests
-    displayName: 'Run OctoBot-Channels tests'
+    displayName: 'Run channel tests'
   - script: python setup.py bdist_wheel
     displayName: 'Building wheel'
   - task: TwineAuthenticate@1

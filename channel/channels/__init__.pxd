@@ -1,4 +1,5 @@
-#  Drakkar-Software OctoBot-Channels
+# cython: language_level=3
+#  Drakkar-Software channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -13,8 +14,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-"""
-Define OctoBot-Channels project
-"""
-PROJECT_NAME = "OctoBot-Channels"
-VERSION = "1.4.11"  # major.minor.revision

@@ -4,7 +4,7 @@ COMPILER=gcc
 LINKER=gcc
 
 CLEAN_EXT=*.o *.c *.so
-EXTENSION_FOLDER=octobot_channels
+EXTENSION_FOLDER=channel
 CFLAGS=-O9
 
 PYTHON=$(PYTHON_VENV)
@@ -12,7 +12,7 @@ PYTHON=$(PYTHON_VENV)
 # export PYTHONPATH=$PYTHONPATH:../OctoBot-Commons
 
 help:
-	@echo "OctoBot-Channels Cython Makefile.  Available tasks:"
+	@echo "Channel Cython Makefile.  Available tasks:"
 	@echo "build -> build the Cython extension module."
 	@echo "clean -> clean the Cython extension module."
 	@echo "debug -> debug the Cython extension module."
