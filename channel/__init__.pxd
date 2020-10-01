@@ -14,3 +14,22 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from channel cimport producer
+from channel cimport consumer
+
+from channel.producer cimport (
+    Producer,
+)
+from channel.consumer cimport (
+    Consumer,
+    InternalConsumer,
+    SupervisedConsumer,
+)
+
+__all__ = [
+    "Producer",
+    "Consumer",
+    "InternalConsumer",
+    "SupervisedConsumer",
+]
