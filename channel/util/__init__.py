@@ -13,3 +13,15 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from channel.util import channel_creator
+
+from channel.util.channel_creator import (
+    create_all_subclasses_channel,
+    create_channel_instance,
+)
+
+__all__ = [
+    "create_all_subclasses_channel",
+    "create_channel_instance",
+]

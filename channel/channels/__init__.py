@@ -13,3 +13,37 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from channel.channels import channel_instances
+from channel.channels import channel
+
+from channel.channels.channel_instances import (
+    ChannelInstances,
+    set_chan_at_id,
+    get_channels,
+    del_channel_container,
+    get_chan_at_id,
+    del_chan_at_id,
+)
+from channel.channels.channel import (
+    Channel,
+    set_chan,
+    del_chan,
+    get_chan,
+    CHANNEL_WILDCARD,
+)
+
+__all__ = [
+    "ChannelInstances",
+    "set_chan_at_id",
+    "get_channels",
+    "del_channel_container",
+    "get_chan_at_id",
+    "del_chan_at_id",
+    "Channel",
+    "set_chan",
+    "del_chan",
+    "get_chan",
+    "CHANNEL_WILDCARD",
+]
+
