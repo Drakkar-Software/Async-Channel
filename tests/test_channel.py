@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@ import os
 import pytest
 import mock 
 
-import channel.channels as channels
-import channel.util as util
-import channel
+import async_channel.channels as channels
+import async_channel.util as util
+import async_channel
 
 import tests
 
@@ -114,74 +114,74 @@ async def test_new_consumer_with_expected_wildcard_filters(test_channel):
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
         {"test_key": 1, "test_key_2": "abc", "test_key_3": 45}) == []
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": 1, "test_key_2": "abc", "test_key_3": channel.CHANNEL_WILDCARD}) == [consumer]
+        {"test_key": 1, "test_key_2": "abc", "test_key_3": async_channel.CHANNEL_WILDCARD}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 4, "test_key_2": "bc"}) == []
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": channel.CHANNEL_WILDCARD}) == [
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": async_channel.CHANNEL_WILDCARD}) == [
         consumer]
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 3, "test_key_2": channel.CHANNEL_WILDCARD}) == []
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 3, "test_key_2": async_channel.CHANNEL_WILDCARD}) == []
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": "abc"}) == [consumer]
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": "abc"}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": "a"}) == []
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": "a"}) == []
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": channel.CHANNEL_WILDCARD}) == [consumer]
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": async_channel.CHANNEL_WILDCARD}) == [consumer]
 
 
 @pytest.mark.asyncio
 async def test_new_consumer_with_consumer_wildcard_filters(test_channel):
     consumer = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(tests.empty_test_callback, {"test_key": 1,
                                                                                      "test_key_2": "abc",
-                                                                                     "test_key_3": channel.CHANNEL_WILDCARD})
+                                                                                     "test_key_3": async_channel.CHANNEL_WILDCARD})
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumers() == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({}) == [consumer]  # returns all if empty
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": "abc"}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
         {"test_key": 1, "test_key_2": "abc", "test_key_3": 45}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": 1, "test_key_2": "abc", "test_key_3": channel.CHANNEL_WILDCARD}) == [consumer]
+        {"test_key": 1, "test_key_2": "abc", "test_key_3": async_channel.CHANNEL_WILDCARD}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 4, "test_key_2": "bc"}) == []
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": channel.CHANNEL_WILDCARD}) == [
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1, "test_key_2": async_channel.CHANNEL_WILDCARD}) == [
         consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 1}) == [consumer]
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_2": channel.CHANNEL_WILDCARD}) == [consumer]
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_3": channel.CHANNEL_WILDCARD}) == [consumer]
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_2": async_channel.CHANNEL_WILDCARD}) == [consumer]
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_3": async_channel.CHANNEL_WILDCARD}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key_3": "e"}) == [consumer]
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 3, "test_key_2": channel.CHANNEL_WILDCARD}) == []
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"test_key": 3, "test_key_2": async_channel.CHANNEL_WILDCARD}) == []
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": "abc"}) == [consumer]
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": "abc"}) == [consumer]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": "a"}) == []
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": "a"}) == []
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": "a", "test_key_3": channel.CHANNEL_WILDCARD}) == []
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": "a", "test_key_3": async_channel.CHANNEL_WILDCARD}) == []
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters(
-        {"test_key": channel.CHANNEL_WILDCARD, "test_key_2": channel.CHANNEL_WILDCARD}) == [consumer]
+        {"test_key": async_channel.CHANNEL_WILDCARD, "test_key_2": async_channel.CHANNEL_WILDCARD}) == [consumer]
 
 
 @pytest.mark.asyncio
 async def test_new_consumer_with_multiple_consumer_filtering(test_channel):
     consumers_descriptions = [
-        {"A": 1, "B": 2, "C": channel.CHANNEL_WILDCARD},  # 0
-        {"A": False, "B": "BBBB", "C": channel.CHANNEL_WILDCARD},  # 1
-        {"A": 3, "B": channel.CHANNEL_WILDCARD, "C": channel.CHANNEL_WILDCARD},  # 2
-        {"A": channel.CHANNEL_WILDCARD, "B": channel.CHANNEL_WILDCARD, "C": channel.CHANNEL_WILDCARD},  # 3
-        {"A": channel.CHANNEL_WILDCARD, "B": 2, "C": 1},  # 4
-        {"A": True, "B": channel.CHANNEL_WILDCARD, "C": channel.CHANNEL_WILDCARD},  # 5
-        {"A": None, "B": None, "C": channel.CHANNEL_WILDCARD},  # 6
-        {"A": "PPP", "B": 1, "C": channel.CHANNEL_WILDCARD, "D": 5},  # 7
-        {"A": channel.CHANNEL_WILDCARD, "B": 2, "C": "ABC"},  # 8
-        {"A": channel.CHANNEL_WILDCARD, "B": True, "C": channel.CHANNEL_WILDCARD},  # 9
-        {"A": channel.CHANNEL_WILDCARD, "B": 6, "C": channel.CHANNEL_WILDCARD, "D": channel.CHANNEL_WILDCARD},  # 10
-        {"A": channel.CHANNEL_WILDCARD, "B": channel.CHANNEL_WILDCARD, "C": channel.CHANNEL_WILDCARD, "D": channel.CHANNEL_WILDCARD},  # 11
-        {"A": None, "B": False, "C": "LLLL", "D": channel.CHANNEL_WILDCARD},  # 12
-        {"A": None, "B": None, "C": channel.CHANNEL_WILDCARD, "D": None},  # 13
-        {"A": channel.CHANNEL_WILDCARD, "B": 2, "C": channel.CHANNEL_WILDCARD, "D": None},  # 14
-        {"A": channel.CHANNEL_WILDCARD, "B": [2, 3, 4, 5, 6], "C": channel.CHANNEL_WILDCARD, "D": None},  # 15
-        {"A": channel.CHANNEL_WILDCARD, "B": ["A", 5, "G"], "C": channel.CHANNEL_WILDCARD, "D": None},  # 16
-        {"A": [1, 2, 3], "B": 2, "C": channel.CHANNEL_WILDCARD, "D": channel.CHANNEL_WILDCARD},  # 17
-        {"A": ["A", "B", "C"], "B": 2, "C": channel.CHANNEL_WILDCARD, "D": channel.CHANNEL_WILDCARD},  # 18
-        {"A": channel.CHANNEL_WILDCARD, "B": [2], "C": channel.CHANNEL_WILDCARD, "D": channel.CHANNEL_WILDCARD},  # 19
-        {"A": channel.CHANNEL_WILDCARD, "B": ["B"], "C": channel.CHANNEL_WILDCARD, "D": channel.CHANNEL_WILDCARD},  # 20
-        {"A": 18, "B": ["A", "B", "C"], "C": ["---", "9", "#"], "D": channel.CHANNEL_WILDCARD},  # 21
+        {"A": 1, "B": 2, "C": async_channel.CHANNEL_WILDCARD},  # 0
+        {"A": False, "B": "BBBB", "C": async_channel.CHANNEL_WILDCARD},  # 1
+        {"A": 3, "B": async_channel.CHANNEL_WILDCARD, "C": async_channel.CHANNEL_WILDCARD},  # 2
+        {"A": async_channel.CHANNEL_WILDCARD, "B": async_channel.CHANNEL_WILDCARD, "C": async_channel.CHANNEL_WILDCARD},  # 3
+        {"A": async_channel.CHANNEL_WILDCARD, "B": 2, "C": 1},  # 4
+        {"A": True, "B": async_channel.CHANNEL_WILDCARD, "C": async_channel.CHANNEL_WILDCARD},  # 5
+        {"A": None, "B": None, "C": async_channel.CHANNEL_WILDCARD},  # 6
+        {"A": "PPP", "B": 1, "C": async_channel.CHANNEL_WILDCARD, "D": 5},  # 7
+        {"A": async_channel.CHANNEL_WILDCARD, "B": 2, "C": "ABC"},  # 8
+        {"A": async_channel.CHANNEL_WILDCARD, "B": True, "C": async_channel.CHANNEL_WILDCARD},  # 9
+        {"A": async_channel.CHANNEL_WILDCARD, "B": 6, "C": async_channel.CHANNEL_WILDCARD, "D": async_channel.CHANNEL_WILDCARD},  # 10
+        {"A": async_channel.CHANNEL_WILDCARD, "B": async_channel.CHANNEL_WILDCARD, "C": async_channel.CHANNEL_WILDCARD, "D": async_channel.CHANNEL_WILDCARD},  # 11
+        {"A": None, "B": False, "C": "LLLL", "D": async_channel.CHANNEL_WILDCARD},  # 12
+        {"A": None, "B": None, "C": async_channel.CHANNEL_WILDCARD, "D": None},  # 13
+        {"A": async_channel.CHANNEL_WILDCARD, "B": 2, "C": async_channel.CHANNEL_WILDCARD, "D": None},  # 14
+        {"A": async_channel.CHANNEL_WILDCARD, "B": [2, 3, 4, 5, 6], "C": async_channel.CHANNEL_WILDCARD, "D": None},  # 15
+        {"A": async_channel.CHANNEL_WILDCARD, "B": ["A", 5, "G"], "C": async_channel.CHANNEL_WILDCARD, "D": None},  # 16
+        {"A": [1, 2, 3], "B": 2, "C": async_channel.CHANNEL_WILDCARD, "D": async_channel.CHANNEL_WILDCARD},  # 17
+        {"A": ["A", "B", "C"], "B": 2, "C": async_channel.CHANNEL_WILDCARD, "D": async_channel.CHANNEL_WILDCARD},  # 18
+        {"A": async_channel.CHANNEL_WILDCARD, "B": [2], "C": async_channel.CHANNEL_WILDCARD, "D": async_channel.CHANNEL_WILDCARD},  # 19
+        {"A": async_channel.CHANNEL_WILDCARD, "B": ["B"], "C": async_channel.CHANNEL_WILDCARD, "D": async_channel.CHANNEL_WILDCARD},  # 20
+        {"A": 18, "B": ["A", "B", "C"], "C": ["---", "9", "#"], "D": async_channel.CHANNEL_WILDCARD},  # 21
         {"A": [9, 18], "B": ["B", "C", "D"], "C": ["---", "9", "#", "@", "{"], "D": ["P", "__str__"]}  # 22
     ]
 
@@ -195,10 +195,10 @@ async def test_new_consumer_with_multiple_consumer_filtering(test_channel):
     # Warning : consumer[5] is returned because 1 == True
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": 1, "B": "6"}) == \
            [consumers[3], consumers[5], consumers[11]]
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": channel.CHANNEL_WILDCARD, "B": "G", "C": "1A"}) == \
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": async_channel.CHANNEL_WILDCARD, "B": "G", "C": "1A"}) == \
            [consumers[2], consumers[3], consumers[5], consumers[11], consumers[16]]
-    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": channel.CHANNEL_WILDCARD, "B": channel.CHANNEL_WILDCARD,
-                                                                   "C": channel.CHANNEL_WILDCARD}) == consumers
+    assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": async_channel.CHANNEL_WILDCARD, "B": async_channel.CHANNEL_WILDCARD,
+                                                                   "C": async_channel.CHANNEL_WILDCARD}) == consumers
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": 18, "B": "A", "C": "#"}) == \
            [consumers[3], consumers[11], consumers[16], consumers[21]]
     assert channels.get_chan(tests.EMPTY_TEST_CHANNEL).get_consumer_from_filters({"A": 18, "B": "C", "C": "#", "D": None}) == \
@@ -313,13 +313,13 @@ async def test_should_pause_producers_with_priority_consumers(test_channel):
     await test_channel.register_producer(producer)
     consumer_1 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.HIGH.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.HIGH.value)
     consumer_2 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.MEDIUM.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.MEDIUM.value)
     consumer_3 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     test_channel.is_paused = False
     if not os.getenv('CYTHON_IGNORE'):
         assert not test_channel._should_pause_producers()
@@ -334,13 +334,13 @@ async def test_should_pause_producers_with_optional_consumers(test_channel):
     await test_channel.register_producer(producer)
     consumer_1 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     consumer_2 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     consumer_3 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     test_channel.is_paused = False
     if not os.getenv('CYTHON_IGNORE'):
         assert test_channel._should_pause_producers()
@@ -373,13 +373,13 @@ async def test_should_resume_producers_with_priority_consumers(test_channel):
     await test_channel.register_producer(producer)
     consumer_1 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.HIGH.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.HIGH.value)
     consumer_2 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.MEDIUM.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.MEDIUM.value)
     consumer_3 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     test_channel.is_paused = True
     if not os.getenv('CYTHON_IGNORE'):
         assert test_channel._should_resume_producers()
@@ -394,13 +394,13 @@ async def test_should_resume_producers_with_optional_consumers(test_channel):
     await test_channel.register_producer(producer)
     consumer_1 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     consumer_2 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     consumer_3 = await channels.get_chan(tests.EMPTY_TEST_CHANNEL).new_consumer(
         tests.empty_test_callback,
-        priority_level=channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
+        priority_level=async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value)
     test_channel.is_paused = True
     if not os.getenv('CYTHON_IGNORE'):
         assert not test_channel._should_resume_producers()

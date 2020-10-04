@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,18 +14,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define channel global enums
+Define async_channel global constants
 """
+CHANNEL_WILDCARD = "*"
 
-import enum
-
-
-class ChannelConsumerPriorityLevels(enum.Enum):
-    """
-    Channel consumer priority levels
-    """
-
-    HIGH = 0
-    MEDIUM = 1
-    # LOW = 2 not necessary for now
-    OPTIONAL = 2
+DEFAULT_QUEUE_SIZE = 0  # unlimited

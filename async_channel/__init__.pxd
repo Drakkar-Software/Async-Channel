@@ -1,4 +1,5 @@
-#  Drakkar-Software channel
+# cython: language_level=3
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -13,40 +14,22 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-"""
-Define channel project
-"""
 
-from channel import constants
-from channel.constants import (
-    CHANNEL_WILDCARD,
-    DEFAULT_QUEUE_SIZE,
+from async_channel cimport producer
+from async_channel cimport consumer
+
+from async_channel.producer cimport (
+    Producer,
 )
-
-from channel import enums
-from channel.enums import ChannelConsumerPriorityLevels
-
-from channel import producer
-from channel.producer import Producer
-
-from channel import consumer
-from channel.consumer import (
+from async_channel.consumer cimport (
     Consumer,
     InternalConsumer,
     SupervisedConsumer,
 )
 
-PROJECT_NAME = "channel"
-VERSION = "2.0.1"  # major.minor.revision
-
 __all__ = [
-    "CHANNEL_WILDCARD",
-    "DEFAULT_QUEUE_SIZE",
-    "ChannelConsumerPriorityLevels",
     "Producer",
     "Consumer",
     "InternalConsumer",
     "SupervisedConsumer",
-    "PROJECT_NAME",
-    "VERSION",
 ]

@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -15,9 +15,9 @@
 #  License along with this library.
 import asyncio
 
-import channel.channels as channels
-import channel.consumer as channel_consumer
-import channel.producer as producer
+import async_channel.channels as channels
+import async_channel.consumer as channel_consumer
+import async_channel.producer as producer
 
 TEST_CHANNEL = "Test"
 EMPTY_TEST_CHANNEL = "EmptyTest"

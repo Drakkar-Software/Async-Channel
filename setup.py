@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -35,15 +35,15 @@ except ImportError:
 from setuptools import find_packages
 from setuptools import setup, Extension
 
-from channel import PROJECT_NAME, VERSION
+from async_channel import PROJECT_NAME, VERSION
 
 PACKAGES = find_packages(exclude=["tests"])
 
-packages_list = ["channel.consumer",
-                 "channel.producer",
-                 "channel.channels.channel",
-                 "channel.channels.channel_instances",
-                 "channel.util.channel_creator"]
+packages_list = ["async_channel.consumer",
+                 "async_channel.producer",
+                 "async_channel.channels.channel",
+                 "async_channel.channels.channel_instances",
+                 "async_channel.util.channel_creator"]
 
 ext_modules = [
     Extension(package, [f"{package.replace('.', '/')}.py"])
@@ -60,7 +60,7 @@ CYTHON_DEBUG = False if not os.getenv('CYTHON_DEBUG') else os.getenv('CYTHON_DEB
 setup(
     name=PROJECT_NAME,
     version=VERSION,
-    url='https://github.com/Drakkar-Software/channel',
+    url='https://github.com/Drakkar-Software/Async-Channel',
     license='LGPL-3.0',
     author='Drakkar-Software',
     author_email='drakkar-software@protonmail.com',

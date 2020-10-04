@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -16,9 +16,9 @@
 import mock 
 import pytest
 
-import channel.channels as channels
-import channel.producer as channel_producer
-import channel.util as util
+import async_channel.channels as channels
+import async_channel.producer as channel_producer
+import async_channel.util as util
 import tests 
 
 TEST_SYNCHRONIZED_CHANNEL = "TestSynchronized"

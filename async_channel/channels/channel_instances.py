@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -16,7 +16,7 @@
 """
 This module defines created Channels interaction methods
 """
-import channel.util.logging_util as logging
+import async_channel.util.logging_util as logging
 
 
 class ChannelInstances:
@@ -46,7 +46,7 @@ class ChannelInstances:
 
 def set_chan_at_id(chan, name) -> None:
     """
-    Add a new channel to the channels instances dictionary at chan.id
+    Add a new async_channel to the channels instances dictionary at chan.id
     :param chan: the channel instance
     :param name: the channel name
     """
@@ -66,9 +66,9 @@ def set_chan_at_id(chan, name) -> None:
 
 def get_channels(chan_id) -> dict:
     """
-    Get channel instances by channel id
+    Get async_channel instances by async_channel id
     :param chan_id: the channel id
-    :return: the channel instances at channel id
+    :return: the channel instances at async_channel id
     """
     try:
         return ChannelInstances.instance().channels[chan_id]
@@ -78,7 +78,7 @@ def get_channels(chan_id) -> dict:
 
 def del_channel_container(chan_id) -> None:
     """
-    Delete all channel id instances
+    Delete all async_channel id instances
     :param chan_id: the channel id
     """
     ChannelInstances.instance().channels.pop(chan_id, None)

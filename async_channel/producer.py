@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,11 +14,11 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define channel Producer class
+Define async_channel Producer class
 """
 import asyncio
 
-import channel.util.logging_util as logging
+import async_channel.util.logging_util as logging
 
 
 class Producer:
@@ -34,7 +34,7 @@ class Producer:
     def __init__(self, channel):
         self.logger = logging.get_logger(self.__class__.__name__)
 
-        # Related channel instance
+        # Related async_channel instance
         self.channel = channel
 
         """
@@ -59,9 +59,9 @@ class Producer:
         Send to each consumer data though its queue
         :param data: data to be put into consumers queues
 
-        The implementation should use 'self.channel.get_consumers'
+        The implementation should use 'self.async_channel.get_consumers'
         Example
-            >>> for consumer in self.channel.get_consumers():
+            >>> for consumer in self.async_channel.get_consumers():
             >>>     await consumer.queue.put({
             >>>         "my_key": my_value
             >>>     })
@@ -153,7 +153,7 @@ class Producer:
         Start the producer main task
         Shouldn't start the producer main task if the channel is synchronized
         Should always call
-        >>> self.channel.register_producer
+        >>> self.async_channel.register_producer
         """
         await self.channel.register_producer(self)
         if not self.channel.is_synchronized:

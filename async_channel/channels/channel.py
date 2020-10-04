@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@ Defines the channel core class : Channel
 """
 import typing
 
-import channel.util.logging_util as logging
-import channel.enums
-import channel.channels.channel_instances as channel_instances
+import async_channel.util.logging_util as logging
+import async_channel.enums
+import async_channel.channels.channel_instances as channel_instances
 
 
 # pylint: disable=undefined-variable, not-callable
@@ -42,7 +42,9 @@ class Channel:
     INSTANCE_KEY = "consumer_instance"
 
     # Channel default consumer priority level
-    DEFAULT_PRIORITY_LEVEL = channel.enums.ChannelConsumerPriorityLevels.HIGH.value
+    DEFAULT_PRIORITY_LEVEL = (
+        async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value
+    )
 
     def __init__(self):
         self.logger = logging.get_logger(self.__class__.__name__)
@@ -83,7 +85,7 @@ class Channel:
         priority_level: int = DEFAULT_PRIORITY_LEVEL,
     ) -> CONSUMER_CLASS:
         """
-        Create an appropriate consumer instance for this channel and add it to the consumer list
+        Create an appropriate consumer instance for this async_channel and add it to the consumer list
         Should end by calling '_check_producers_state'
         :param callback: method that should be called when consuming the queue
         :param consumer_filters: the consumer filters
@@ -197,7 +199,7 @@ class Channel:
         for consumer in self.get_consumers():
             if (
                 consumer.priority_level
-                < channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+                < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
             ):
                 return False
         return True
@@ -214,7 +216,7 @@ class Channel:
         for consumer in self.get_consumers():
             if (
                 consumer.priority_level
-                < channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+                < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
             ):
                 return True
         return False
@@ -244,7 +246,7 @@ class Channel:
     def get_producers(self) -> typing.Iterable:
         """
         Should be overwritten according to the class needs
-        :return: channel producers iterable
+        :return: async_channel producers iterable
         """
         return self.producers
 
@@ -345,13 +347,13 @@ def _check_filters(consumer_filters, expected_filters) -> bool:
     """
     try:
         for key, value in expected_filters.items():
-            if value == channel.CHANNEL_WILDCARD:
+            if value == async_channel.CHANNEL_WILDCARD:
                 continue
             if isinstance(consumer_filters[key], list):
-                if set(consumer_filters[key]) & {value, channel.CHANNEL_WILDCARD}:
+                if set(consumer_filters[key]) & {value, async_channel.CHANNEL_WILDCARD}:
                     continue
                 return False
-            if consumer_filters[key] not in [value, channel.CHANNEL_WILDCARD]:
+            if consumer_filters[key] not in [value, async_channel.CHANNEL_WILDCARD]:
                 return False
         return True
     except KeyError:

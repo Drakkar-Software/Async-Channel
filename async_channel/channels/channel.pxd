@@ -1,5 +1,5 @@
 # cython: language_level=3, wraparound=False
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-cimport channel.producer as producer
+cimport async_channel.producer as producer
 
 cdef class Channel(object):
     cdef object logger
