@@ -1,4 +1,5 @@
-#  Drakkar-Software channel
+# cython: language_level=3, boundscheck=False, wraparound=False
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -13,17 +14,20 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-"""
-Define Channel helping methods
-"""
-from channel.util import channel_creator
 
-from channel.util.channel_creator import (
-    create_all_subclasses_channel,
-    create_channel_instance,
-)
+cdef class Consumer:
+    cdef public object logger  # object type = Logger
+    cdef public object queue  # object type = asyncio.Queue
+    cdef public object callback  # object type = callable
+    cdef public object consume_task  # object type = asyncio.Task
 
-__all__ = [
-    "create_all_subclasses_channel",
-    "create_channel_instance",
-]
+    cdef public bint should_stop
+    cdef public int priority_level
+
+    cpdef void create_task(self)
+
+cdef class InternalConsumer(Consumer):
+    pass
+
+cdef class SupervisedConsumer(Consumer):
+    pass

@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'channel'
+project = 'Async-Channel'
 copyright = '2020, Drakkar-Software'
 author = 'Drakkar-Software'
 

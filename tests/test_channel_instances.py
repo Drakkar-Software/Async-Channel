@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@ import uuid
 
 import pytest
 
-import channel.channels as channels
-import channel.util as util
+import async_channel.channels as channels
+import async_channel.util as util
 import tests
 
 

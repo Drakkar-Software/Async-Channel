@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@ Define Channel creation helping methods
 """
 import typing
 
-import channel.channels as channels
+import async_channel.channels as channels
 
 
 async def create_all_subclasses_channel(
@@ -31,7 +31,7 @@ async def create_all_subclasses_channel(
     Calls 'channel_creator.create_channel_instance' for each subclasses of the 'channel_class' param
     :param channel_class: The class in which to search for subclasses
     :param set_chan_method: The method reference used in 'channel_creator.create_channel_instance'
-    :param is_synchronized: The channel is_synchronized attribute
+    :param is_synchronized: the channel is_synchronized attribute
     :param kwargs: Some additional params passed to 'channel_creator.create_channel_instance'
     """
     for to_be_created_channel_class in channel_class.__subclasses__():
@@ -50,10 +50,10 @@ async def create_channel_instance(
     **kwargs: dict
 ) -> channels.Channel:
     """
-    Creates, initialize and start a channel instance
+    Creates, initialize and start a async_channel instance
     :param channel_class: The class to instantiate with optional kwargs params
     :param set_chan_method: The method to call to add the created channel instance to a Channel list
-    :param is_synchronized: The channel is_synchronized attribute
+    :param is_synchronized: the channel is_synchronized attribute
     :param kwargs: Some additional params passed to the 'channel_class' constructor
     :return: the created 'channel_class' instance
     """

@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,12 +14,12 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define channel Consumer class
+Define async_channel Consumer class
 """
 import asyncio
 
-import channel.util.logging_util as logging
-import channel.enums
+import async_channel.util.logging_util as logging
+import async_channel.enums
 
 
 class Consumer:
@@ -33,8 +33,8 @@ class Consumer:
     def __init__(
         self,
         callback: object,
-        size: int = channel.constants.DEFAULT_QUEUE_SIZE,
-        priority_level: int = channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
+        size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
+        priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
         self.logger = logging.get_logger(self.__class__.__name__)
 

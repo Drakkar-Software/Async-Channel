@@ -42,4 +42,4 @@ steps:
     event:
       - tag
     repo:
-      - Drakkar-Software/channel
+      - Drakkar-Software/Async-Channel

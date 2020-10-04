@@ -1,4 +1,4 @@
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,8 +14,16 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define channel global constants
+Define Channel helping methods
 """
-CHANNEL_WILDCARD = "*"
+from async_channel.util import channel_creator
 
-DEFAULT_QUEUE_SIZE = 0  # unlimited
+from async_channel.util.channel_creator import (
+    create_all_subclasses_channel,
+    create_channel_instance,
+)
+
+__all__ = [
+    "create_all_subclasses_channel",
+    "create_channel_instance",
+]

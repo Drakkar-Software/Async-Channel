@@ -1,5 +1,4 @@
-# cython: language_level=3
-#  Drakkar-Software channel
+#  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,22 +13,19 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+"""
+Define async_channel global enums
+"""
 
-from channel cimport producer
-from channel cimport consumer
+import enum
 
-from channel.producer cimport (
-    Producer,
-)
-from channel.consumer cimport (
-    Consumer,
-    InternalConsumer,
-    SupervisedConsumer,
-)
 
-__all__ = [
-    "Producer",
-    "Consumer",
-    "InternalConsumer",
-    "SupervisedConsumer",
-]
+class ChannelConsumerPriorityLevels(enum.Enum):
+    """
+    Channel consumer priority levels
+    """
+
+    HIGH = 0
+    MEDIUM = 1
+    # LOW = 2 not necessary for now
+    OPTIONAL = 2

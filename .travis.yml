@@ -9,7 +9,7 @@ env:
   global:
     - GH_REPO=Drakkar-Software/OctoBot-Channels
     - DEPLOY_BRANCH=master
-    - PACKAGE_FOLDER=channel
+    - PACKAGE_FOLDER=async_channel
 
 install:
   - python3 -m pip install  --prefer-binary -r dev_requirements.txt -r requirements.txt
