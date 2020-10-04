@@ -7,7 +7,7 @@ cache: pip
 python: 3.8-dev
 env:
   global:
-    - GH_REPO=Drakkar-Software/OctoBot-Channels
+    - GH_REPO=Drakkar-Software/Async-Channel
     - DEPLOY_BRANCH=master
     - PACKAGE_FOLDER=async_channel
 
