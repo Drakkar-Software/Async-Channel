@@ -17,8 +17,8 @@
 Define channel Consumer class
 """
 import asyncio
-import logging
 
+import channel.util.logging_util as logging
 import channel.enums
 
 
@@ -36,7 +36,7 @@ class Consumer:
         size: int = channel.constants.DEFAULT_QUEUE_SIZE,
         priority_level: int = channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.get_logger(self.__class__.__name__)
 
         # Consumer data queue. It contains producer's work (received through Producer.send()).
         self.queue = asyncio.Queue(maxsize=size)

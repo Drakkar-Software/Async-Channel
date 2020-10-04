@@ -17,7 +17,8 @@
 Define channel Producer class
 """
 import asyncio
-import logging
+
+import channel.util.logging_util as logging
 
 
 class Producer:
@@ -31,7 +32,7 @@ class Producer:
     """
 
     def __init__(self, channel):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.get_logger(self.__class__.__name__)
 
         # Related channel instance
         self.channel = channel
