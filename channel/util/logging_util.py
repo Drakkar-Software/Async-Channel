@@ -14,39 +14,20 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define channel project
+Define channel logger implementation
 """
+import logging
 
-from channel import constants
-from channel.constants import (
-    CHANNEL_WILDCARD,
-    DEFAULT_QUEUE_SIZE,
-)
 
-from channel import enums
-from channel.enums import ChannelConsumerPriorityLevels
+# pylint: disable=no-member, import-outside-toplevel
+def get_logger(name: str = "") -> logging.Logger:
+    """
+    :param name: the logger name
+    :return: the logger implementation, can be octobot_commons one or default python logging
+    """
+    try:
+        import octobot_commons.logging as common_logging
 
-from channel import producer
-from channel.producer import Producer
-
-from channel import consumer
-from channel.consumer import (
-    Consumer,
-    InternalConsumer,
-    SupervisedConsumer,
-)
-
-PROJECT_NAME = "channel"
-VERSION = "2.0.1"  # major.minor.revision
-
-__all__ = [
-    "CHANNEL_WILDCARD",
-    "DEFAULT_QUEUE_SIZE",
-    "ChannelConsumerPriorityLevels",
-    "Producer",
-    "Consumer",
-    "InternalConsumer",
-    "SupervisedConsumer",
-    "PROJECT_NAME",
-    "VERSION",
-]
+        return common_logging.get_logger(logger_name=name)
+    except ImportError:
+        return logging.getLogger(name)

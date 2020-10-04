@@ -17,8 +17,8 @@
 Defines the channel core class : Channel
 """
 import typing
-import logging
 
+import channel.util.logging_util as logging
 import channel.enums
 import channel.channels.channel_instances as channel_instances
 
@@ -45,7 +45,7 @@ class Channel:
     DEFAULT_PRIORITY_LEVEL = channel.enums.ChannelConsumerPriorityLevels.HIGH.value
 
     def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.get_logger(self.__class__.__name__)
 
         # Channel unique id
         self.chan_id = None
