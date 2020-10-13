@@ -4,7 +4,7 @@ COMPILER=gcc
 LINKER=gcc
 
 CLEAN_EXT=*.o *.c *.so
-EXTENSION_FOLDER=channel
+EXTENSION_FOLDER=async_channel
 CFLAGS=-O9
 
 PYTHON=$(PYTHON_VENV)
