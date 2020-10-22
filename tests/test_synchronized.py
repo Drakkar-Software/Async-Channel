@@ -21,10 +21,10 @@ import async_channel.producer as channel_producer
 import async_channel.util as util
 import tests 
 
-TEST_SYNCHRONIZED_CHANNEL = "TestSynchronized"
+TEST_SYNCHRONIZED_CHANNEL = "SynchronizedTest"
 
 
-class TestSynchronizedProducer(channel_producer.Producer):
+class SynchronizedProducerTest(channel_producer.Producer):
     async def send(self, data, **kwargs):
         await super().send(data)
         await channels.get_chan(TEST_SYNCHRONIZED_CHANNEL).stop()
@@ -36,14 +36,14 @@ class TestSynchronizedProducer(channel_producer.Producer):
         pass
 
 
-class TestSynchronizedChannel(channels.Channel):
-    PRODUCER_CLASS = TestSynchronizedProducer
+class SynchronizedChannelTest(channels.Channel):
+    PRODUCER_CLASS = SynchronizedProducerTest
     CONSUMER_CLASS = tests.EmptyTestConsumer
 
 
 @pytest.yield_fixture()
 async def synchronized_channel():
-    yield await util.create_channel_instance(TestSynchronizedChannel, channels.set_chan, is_synchronized=True)
+    yield await util.create_channel_instance(SynchronizedChannelTest, channels.set_chan, is_synchronized=True)
     channels.del_chan(TEST_SYNCHRONIZED_CHANNEL)
 
 
@@ -54,7 +54,7 @@ async def test_producer_synchronized_perform_consumers_queue_with_one_consumer(s
 
     test_consumer = await synchronized_channel.new_consumer(callback)
 
-    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = SynchronizedProducerTest(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     with mock.patch.object(test_consumer, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_callback:
@@ -71,7 +71,7 @@ async def test_synchronized_no_tasks(synchronized_channel):
 
     test_consumer = await synchronized_channel.new_consumer(callback)
 
-    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = SynchronizedProducerTest(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     assert test_consumer.consume_task is None
@@ -85,7 +85,7 @@ async def test_is_consumers_queue_empty_with_one_consumer(synchronized_channel):
 
     await synchronized_channel.new_consumer(callback)
 
-    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = SynchronizedProducerTest(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     await producer.send({})
@@ -107,7 +107,7 @@ async def test_is_consumers_queue_empty_with_multiple_consumers(synchronized_cha
     await synchronized_channel.new_consumer(callback, priority_level=2)
     await synchronized_channel.new_consumer(callback, priority_level=3)
 
-    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = SynchronizedProducerTest(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     await producer.send({})
@@ -139,7 +139,7 @@ async def test_producer_synchronized_perform_consumers_queue_with_multiple_consu
     test_consumer_2_2 = await synchronized_channel.new_consumer(callback, priority_level=2)
     test_consumer_3_1 = await synchronized_channel.new_consumer(callback, priority_level=3)
 
-    producer = TestSynchronizedProducer(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
+    producer = SynchronizedProducerTest(channels.get_chan(TEST_SYNCHRONIZED_CHANNEL))
     await producer.run()
 
     with mock.patch.object(test_consumer_1_1, 'callback', new=mock.AsyncMock()) as mocked_test_consumer_1_1_callback, \
