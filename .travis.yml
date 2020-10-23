@@ -1,12 +1,13 @@
 notifications:
   email: false
-dist: xenial
 os: linux
+dist: xenial
 language: python
-cache: pip
 python: 3.8-dev
+cache: pip
 env:
   global:
+    - PYTHON_VERSION=3.8
     - GH_REPO=Drakkar-Software/Async-Channel
     - DEPLOY_BRANCH=master
     - PACKAGE_FOLDER=async_channel
@@ -16,19 +17,15 @@ install:
 
 jobs:
   include:
-    - name: "Linux - Python 3.8-dev - Python sources"
+    - name: "Linux - Python 3.8 - Python sources"
       stage: test
-      os: linux
-      language: python
       script:
         - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
       after_success:
         - if [ $TRAVIS_PULL_REQUEST == "false" ]; then coveralls; fi
 
-    - name: "Linux - Python 3.8-dev - Installed"
+    - name: "Linux - Python 3.8 - Installed"
       stage: test
-      os: linux
-      language: python
       script:
         - export CYTHON_IGNORE=true
         - python3 setup.py build_ext --inplace
@@ -36,10 +33,8 @@ jobs:
         - rm -rf $PACKAGE_FOLDER
         - pytest tests
 
-    - name: "Linux amd64 - Python 3.8-dev - Lint"
+    - name: "Linux amd64 - Python 3.8 - Lint"
       stage: test
-      os: linux
-      language: python
       script:
         - black $PACKAGE_FOLDER --diff --check
         - pylint --rcfile=standard.rc $PACKAGE_FOLDER
@@ -62,14 +57,14 @@ jobs:
             branch: $DEPLOY_BRANCH
             tags: true
         - provider: script
-          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/pypi-builder:manylinux-i686
+          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/pypi-builder:python-$PYTHON_VERSION-manylinux-i686
           cleanup: true
           on:
             repo: "$GH_REPO"
             branch: "$DEPLOY_BRANCH"
             tags: true
         - provider: script
-          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/pypi-builder:manylinux-x86_64
+          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/pypi-builder:python-$PYTHON_VERSION-manylinux-x86_64
           cleanup: true
           on:
             repo: "$GH_REPO"
