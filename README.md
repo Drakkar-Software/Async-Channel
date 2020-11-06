@@ -1,7 +1,7 @@
 # Async-Channel [2.0.3](https://github.com/Drakkar-Software/Async-Channel/blob/master/CHANGELOG.md)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/523d43c62f1d4de08395752367f5fddc)](https://www.codacy.com/gh/Drakkar-Software/Async-Channel/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Drakkar-Software/Async-Channel&amp;utm_campaign=Badge_Grade)
 [![PyPI](https://img.shields.io/pypi/v/async-channel.svg)](https://pypi.python.org/pypi/async-channel/)
-[![Github-Action-CI](https://github.com/Drakkar-Software/Async-Channel/workflows/Github-Action-CI/badge.svg)](https://github.com/Drakkar-Software/Async-Channel/actions)
+[![Github-Action-CI](https://github.com/Drakkar-Software/Async-Channel/workflows/Async-Channel-Default-CI/badge.svg)](https://github.com/Drakkar-Software/Async-Channel/actions)
 [![Build Status](https://cloud.drone.io/api/badges/Drakkar-Software/Async-Channel/status.svg)](https://cloud.drone.io/Drakkar-Software/Async-Channel)
 [![Coverage Status](https://coveralls.io/repos/github/Drakkar-Software/OctoBot-Channels/badge.svg?branch=master)](https://coveralls.io/github/Drakkar-Software/OctoBot-Channels?branch=master)
 [![Doc Status](https://readthedocs.org/projects/octobot-channels/badge/?version=stable)](https://octobot-channels.readthedocs.io/en/stable/?badge=stable)
