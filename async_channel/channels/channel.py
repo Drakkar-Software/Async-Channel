@@ -18,7 +18,7 @@ Defines the channel core class : Channel
 """
 import typing
 
-import async_channel.util as util
+import async_channel.util.logging_util as logging
 import async_channel.enums
 import async_channel.channels.channel_instances as channel_instances
 
@@ -47,7 +47,7 @@ class Channel:
     )
 
     def __init__(self):
-        self.logger = util.get_logger(self.__class__.__name__)
+        self.logger = logging.get_logger(self.__class__.__name__)
 
         # Channel unique id
         self.chan_id = None
