@@ -16,7 +16,7 @@
 """
 This module defines created Channels interaction methods
 """
-import async_channel.util as util
+import async_channel.util.logging_util as logging
 
 
 class ChannelInstances:
@@ -108,6 +108,6 @@ def del_chan_at_id(chan_name, chan_id) -> None:
     try:
         ChannelInstances.instance().channels[chan_id].pop(chan_name, None)
     except KeyError:
-        util.get_logger(ChannelInstances.__name__).warning(
+        logging.get_logger(ChannelInstances.__name__).warning(
             f"Can't del chan {chan_name} with chan_id: {chan_id}"
         )
