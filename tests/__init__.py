@@ -50,12 +50,12 @@ async def empty_test_callback():
 
 
 async def mock_was_called_once(mocked_method):
-    await asyncio.sleep(0.1)
+    await _wait_asyncio_next_cycle()
     mocked_method.assert_called_once()
 
 
 async def mock_was_not_called(mocked_method):
-    await asyncio.sleep(0.1)
+    await _wait_asyncio_next_cycle()
     mocked_method.assert_not_called()
 
 
@@ -66,3 +66,9 @@ class EmptyTestWithIdChannel(channels.Channel):
     def __init__(self, test_id):
         super().__init__()
         self.chan_id = test_id
+
+
+async def _wait_asyncio_next_cycle():
+    async def do_nothing():
+        pass
+    await asyncio.create_task(do_nothing())
