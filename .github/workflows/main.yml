@@ -31,15 +31,15 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
-        arch: [ x64, x86 ]
+        arch: [ x64, x86, arm ]
         type: [sources, cython]
         exclude:
           - os: macos-latest # currently not supported
-            arch: x86
+            arch: [x86, arm]
           - os: ubuntu-latest # currently not supported
-            arch: x86
+            arch: [x86, arm]
           - os: windows-latest # don't test 'sources' twice on windows
-            arch: x86
+            arch: [x86, arm]
             type: sources
 
     steps:
