@@ -17,7 +17,7 @@
 cimport async_channel.producer as producer
 
 cdef class Channel(object):
-    cdef object logger
+    cdef public object logger
 
     cdef public str chan_id
 
