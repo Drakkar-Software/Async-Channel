@@ -25,7 +25,7 @@ import async_channel
 import tests
 
 
-@pytest.yield_fixture()
+@pytest.fixture
 async def test_channel():
     channels.del_chan(tests.EMPTY_TEST_CHANNEL)
     yield await util.create_channel_instance(tests.EmptyTestChannel, channels.set_chan)

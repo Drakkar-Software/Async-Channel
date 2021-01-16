@@ -41,7 +41,7 @@ class SynchronizedChannelTest(channels.Channel):
     CONSUMER_CLASS = tests.EmptyTestConsumer
 
 
-@pytest.yield_fixture()
+@pytest.fixture
 async def synchronized_channel():
     yield await util.create_channel_instance(SynchronizedChannelTest, channels.set_chan, is_synchronized=True)
     channels.del_chan(TEST_SYNCHRONIZED_CHANNEL)
