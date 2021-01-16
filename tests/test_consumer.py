@@ -55,7 +55,7 @@ async def test_consume_ends_called():
     await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
-@pytest.yield_fixture()
+@pytest.fixture
 async def internal_consumer():
     class TestInternalConsumer(channel_consumer.InternalConsumer):
         async def perform(self, kwargs):
