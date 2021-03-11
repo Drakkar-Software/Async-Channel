@@ -46,7 +46,7 @@ class Channel:
         async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value
     )
 
-    def __init__(self):
+    def __init__(self, use_ipc=False):
         self.logger = logging.get_logger(self.__class__.__name__)
 
         # Channel unique id
@@ -67,6 +67,9 @@ class Channel:
         # Used to synchronize producers and consumer
         self.is_synchronized = False
 
+        # Used to activate Interprocess communication
+        self.use_ipc = use_ipc
+
     @classmethod
     def get_name(cls) -> str:
         """
@@ -77,12 +80,12 @@ class Channel:
 
     # pylint: disable=too-many-arguments
     async def new_consumer(
-        self,
-        callback: object = None,
-        consumer_filters: dict = None,
-        internal_consumer: object = None,
-        size: int = 0,
-        priority_level: int = DEFAULT_PRIORITY_LEVEL,
+            self,
+            callback: object = None,
+            consumer_filters: dict = None,
+            internal_consumer: object = None,
+            size: int = 0,
+            priority_level: int = DEFAULT_PRIORITY_LEVEL,
     ) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this async_channel and add it to the consumer list
@@ -105,7 +108,7 @@ class Channel:
 
     # pylint: disable=unused-argument
     async def _add_new_consumer_and_run(
-        self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
+            self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
     ) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
@@ -198,8 +201,8 @@ class Channel:
             return True
         for consumer in self.get_consumers():
             if (
-                consumer.priority_level
-                < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+                    consumer.priority_level
+                    < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
             ):
                 return False
         return True
@@ -215,8 +218,8 @@ class Channel:
             return False
         for consumer in self.get_consumers():
             if (
-                consumer.priority_level
-                < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+                    consumer.priority_level
+                    < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
             ):
                 return True
         return False

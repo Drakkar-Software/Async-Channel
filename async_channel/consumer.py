@@ -138,7 +138,7 @@ class Consumer:
         Connect to Channel socket when IPC is enabled for this channel
         :return:
         """
-        if self.channel.is_ipc:
+        if self.channel.use_ipc:
             ipc_context = zmq.Context.instance()
             self.ipc_socket = ipc_context.socket(zmq.SUB)
             self.ipc_socket.connect(self.channel.ipc_url)
