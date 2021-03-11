@@ -36,6 +36,7 @@ from setuptools import find_packages
 from setuptools import setup, Extension
 
 from async_channel import PROJECT_NAME, VERSION
+import zmq
 
 PACKAGES = find_packages(exclude=["tests"])
 
@@ -46,7 +47,7 @@ packages_list = ["async_channel.consumer",
                  "async_channel.util.channel_creator"]
 
 ext_modules = [
-    Extension(package, [f"{package.replace('.', '/')}.py"])
+    Extension(package, [f"{package.replace('.', '/')}.py"], include_dirs=[zmq.get_includes()])
     for package in packages_list]
 
 # long description from README file
