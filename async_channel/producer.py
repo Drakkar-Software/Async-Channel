@@ -17,6 +17,7 @@
 Define async_channel Producer class
 """
 import asyncio
+import zmq
 
 import async_channel.util.logging_util as logging
 
@@ -53,6 +54,10 @@ class Producer:
         Should be used to know if the producer is already started
         """
         self.is_running = False
+
+        # connect to channel socket if ipc enabled
+        self.ipc_socket = None
+        self._ipc_connect()
 
     async def send(self, data) -> None:
         """
@@ -169,3 +174,12 @@ class Producer:
             if consumer.priority_level <= priority_level and not consumer.queue.empty():
                 return False
         return True
+
+    def _ipc_connect(self):
+        """
+        Connect to Channel socket when IPC is enabled for this channel
+        """
+        if self.channel.is_ipc:
+            ipc_context = zmq.Context.instance()
+            self.ipc_socket = ipc_context.socket(zmq.PUB)
+            self.ipc_socket.bind(self.channel.ipc_url)

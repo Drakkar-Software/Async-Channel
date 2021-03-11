@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
+from zmq cimport Socket
+
 cdef class Producer:
     cdef public object channel # object type = Channel
     cdef public object logger  # object type = logger
@@ -23,5 +25,9 @@ cdef class Producer:
     cdef public bint should_stop
     cdef public bint is_running
 
+    cdef Socket ipc_socket
+
     cpdef void create_task(self)
     cpdef bint is_consumers_queue_empty(self, int priority_level)
+
+    cdef void _ipc_connect(self)
