@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
+from zmq cimport Socket
+
 cdef class Consumer:
     cdef public object logger  # object type = Logger
     cdef public object queue  # object type = asyncio.Queue
@@ -24,7 +26,11 @@ cdef class Consumer:
     cdef public bint should_stop
     cdef public int priority_level
 
+    cdef Socket ipc_socket
+
     cpdef void create_task(self)
+
+    cdef void _ipc_connect(self)
 
 cdef class InternalConsumer(Consumer):
     pass

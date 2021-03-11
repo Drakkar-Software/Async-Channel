@@ -17,6 +17,7 @@
 Define async_channel Consumer class
 """
 import asyncio
+import zmq
 
 import async_channel.util.logging_util as logging
 import async_channel.enums
@@ -59,13 +60,17 @@ class Consumer:
         # The lowest level has the highest priority
         self.priority_level = priority_level
 
+        # connect to channel socket if ipc enabled
+        self.ipc_socket = None
+        self._ipc_connect()
+
     async def consume(self) -> None:
         """
         Should be overwritten with a self.queue.get() in a while loop
         """
         while not self.should_stop:
             try:
-                await self.perform(await self.queue.get())
+                await self.perform(await self.receive())
             except asyncio.CancelledError:
                 self.logger.debug("Cancelled task")
             except Exception as consume_exception:  # pylint: disable=broad-except
@@ -76,6 +81,15 @@ class Consumer:
                 )
             finally:
                 await self.consume_ends()
+
+    async def receive(self):
+        """
+        Wait and receive data from the queue or the ipc socket
+        :return: the received data
+        """
+        if not self.channel.is_ipc:
+            return await self.queue.get()
+        return await self.socket.recv_multipart()
 
     async def perform(self, kwargs) -> None:
         """
@@ -118,6 +132,17 @@ class Consumer:
         await self.start()
         if with_task:
             self.create_task()
+
+    def _ipc_connect(self):
+        """
+        Connect to Channel socket when IPC is enabled for this channel
+        :return:
+        """
+        if self.channel.is_ipc:
+            ipc_context = zmq.Context.instance()
+            self.ipc_socket = ipc_context.socket(zmq.SUB)
+            self.ipc_socket.connect(self.channel.ipc_url)
+            self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
     def __str__(self):
         return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
