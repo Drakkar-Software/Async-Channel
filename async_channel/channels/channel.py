@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -80,12 +81,12 @@ class Channel:
 
     # pylint: disable=too-many-arguments
     async def new_consumer(
-            self,
-            callback: object = None,
-            consumer_filters: dict = None,
-            internal_consumer: object = None,
-            size: int = 0,
-            priority_level: int = DEFAULT_PRIORITY_LEVEL,
+        self,
+        callback: object = None,
+        consumer_filters: dict = None,
+        internal_consumer: object = None,
+        size: int = 0,
+        priority_level: int = DEFAULT_PRIORITY_LEVEL,
     ) -> CONSUMER_CLASS:
         """
         Create an appropriate consumer instance for this async_channel and add it to the consumer list
@@ -108,7 +109,7 @@ class Channel:
 
     # pylint: disable=unused-argument
     async def _add_new_consumer_and_run(
-            self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
+        self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
     ) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
@@ -201,8 +202,8 @@ class Channel:
             return True
         for consumer in self.get_consumers():
             if (
-                    consumer.priority_level
-                    < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+                consumer.priority_level
+                < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
             ):
                 return False
         return True
@@ -218,8 +219,8 @@ class Channel:
             return False
         for consumer in self.get_consumers():
             if (
-                    consumer.priority_level
-                    < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
+                consumer.priority_level
+                < async_channel.ChannelConsumerPriorityLevels.OPTIONAL.value
             ):
                 return True
         return False

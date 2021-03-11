@@ -18,6 +18,7 @@
 from zmq cimport Socket
 
 cdef class Consumer:
+    cdef public object channel # object type = Channel
     cdef public object logger  # object type = Logger
     cdef public object queue  # object type = asyncio.Queue
     cdef public object callback  # object type = callable

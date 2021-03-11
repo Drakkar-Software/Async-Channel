@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -33,11 +34,15 @@ class Consumer:
 
     def __init__(
         self,
+        channel,
         callback: object,
         size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
         priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
         self.logger = logging.get_logger(self.__class__.__name__)
+
+        # Related async_channel instance
+        self.channel = channel
 
         # Consumer data queue. It contains producer's work (received through Producer.send()).
         self.queue = asyncio.Queue(maxsize=size)
@@ -87,9 +92,9 @@ class Consumer:
         Wait and receive data from the queue or the ipc socket
         :return: the received data
         """
-        if not self.channel.is_ipc:
+        if not self.channel.use_ipc:
             return await self.queue.get()
-        return await self.socket.recv_multipart()
+        return await self.ipc_socket.recv_multipart()
 
     async def perform(self, kwargs) -> None:
         """
@@ -133,16 +138,16 @@ class Consumer:
         if with_task:
             self.create_task()
 
+    # pylint: disable=no-member
     def _ipc_connect(self):
         """
         Connect to Channel socket when IPC is enabled for this channel
-        :return:
         """
         if self.channel.use_ipc:
             ipc_context = zmq.Context.instance()
             self.ipc_socket = ipc_context.socket(zmq.SUB)
-            self.ipc_socket.connect(self.channel.ipc_url)
-            self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, '')
+            self.ipc_socket.connect(self.channel.use_ipc)
+            self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, self.channel.get_name())
 
     def __str__(self):
         return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
@@ -153,11 +158,11 @@ class InternalConsumer(Consumer):
     An InternalConsumer is a classic Consumer except that his callback is declared internally
     """
 
-    def __init__(self):
+    def __init__(self, channel):
         """
         The constructor only override the callback to be the 'internal_callback' method
         """
-        super().__init__(None)
+        super().__init__(channel, None)
         self.callback = self.internal_callback
 
     async def internal_callback(self, **kwargs: dict) -> None:
