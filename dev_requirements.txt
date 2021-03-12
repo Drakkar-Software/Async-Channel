@@ -21,3 +21,5 @@ sphinx_rtd_theme
 
 pylint
 black==20.8b1
+
+timy
