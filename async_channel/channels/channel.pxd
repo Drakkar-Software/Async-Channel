@@ -20,6 +20,7 @@ cdef class Channel(object):
     cdef public object logger
 
     cdef public str chan_id
+    cdef public str ipc_url
 
     cdef public list producers
     cdef public list consumers

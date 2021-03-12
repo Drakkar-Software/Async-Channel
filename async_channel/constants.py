@@ -19,3 +19,9 @@ Define async_channel global constants
 CHANNEL_WILDCARD = "*"
 
 DEFAULT_QUEUE_SIZE = 0  # unlimited
+
+# IPC constants
+DEFAULT_IPC_PROTOCOL = "tcp"
+DEFAULT_IPC_IP = "127.0.0.1"
+DEFAULT_IPC_PORT = "5555"
+DEFAULT_IPC_URL = f"{DEFAULT_IPC_PROTOCOL}://{DEFAULT_IPC_IP}:{DEFAULT_IPC_PORT}"

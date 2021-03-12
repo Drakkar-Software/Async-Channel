@@ -183,4 +183,4 @@ class Producer:
         if self.channel.use_ipc:
             ipc_context = zmq.Context.instance()
             self.ipc_socket = ipc_context.socket(zmq.PUB)
-            self.ipc_socket.bind(self.channel.use_ipc)
+            self.ipc_socket.bind(self.channel.ipc_url)

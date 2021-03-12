@@ -21,6 +21,7 @@ import typing
 
 import async_channel.util.logging_util as logging
 import async_channel.enums
+import async_channel.constants
 import async_channel.channels.channel_instances as channel_instances
 
 
@@ -47,7 +48,7 @@ class Channel:
         async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value
     )
 
-    def __init__(self, use_ipc=False):
+    def __init__(self, use_ipc=False, ipc_url=async_channel.constants.DEFAULT_IPC_URL):
         self.logger = logging.get_logger(self.__class__.__name__)
 
         # Channel unique id
@@ -70,6 +71,9 @@ class Channel:
 
         # Used to activate Interprocess communication
         self.use_ipc = use_ipc
+
+        # Required when using IPC, the local socket url
+        self.ipc_url = ipc_url
 
     @classmethod
     def get_name(cls) -> str:

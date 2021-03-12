@@ -146,7 +146,7 @@ class Consumer:
         if self.channel.use_ipc:
             ipc_context = zmq.Context.instance()
             self.ipc_socket = ipc_context.socket(zmq.SUB)
-            self.ipc_socket.connect(self.channel.use_ipc)
+            self.ipc_socket.connect(self.channel.ipc_url)
             self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, self.channel.get_name())
 
     def __str__(self):
