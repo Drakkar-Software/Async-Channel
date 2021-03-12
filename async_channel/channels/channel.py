@@ -105,7 +105,9 @@ class Channel:
         consumer = (
             internal_consumer
             if internal_consumer
-            else self.CONSUMER_CLASS(callback, size=size, priority_level=priority_level)
+            else self.CONSUMER_CLASS(
+                self, callback, size=size, priority_level=priority_level
+            )
         )
         await self._add_new_consumer_and_run(consumer, consumer_filters)
         await self._check_producers_state()

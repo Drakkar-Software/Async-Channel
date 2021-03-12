@@ -69,7 +69,7 @@ async def internal_consumer():
     await util.create_channel_instance(TestChannel, channels.set_chan)
     producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
     await producer.run()
-    yield TestInternalConsumer()
+    yield TestInternalConsumer(channels.get_chan(tests.TEST_CHANNEL))
     await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
