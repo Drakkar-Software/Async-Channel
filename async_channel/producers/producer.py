@@ -54,10 +54,12 @@ class Producer:
         """
         self.is_running = False
 
-    async def send(self, data) -> None:
+    async def send(self, data, consumers=None) -> None:
         """
         Send to each consumer data though its queue
         :param data: data to be put into consumers queues
+        :param consumers: the consumer list that must receive the data, when the consumer list is None
+        use self.async_channel.get_consumers() to determine this list
 
         The implementation should use 'self.async_channel.get_consumers'
         Example
@@ -66,7 +68,9 @@ class Producer:
             >>>         "my_key": my_value
             >>>     })
         """
-        for consumer in self.channel.get_consumers():
+        for consumer in (
+            consumers if consumers is not None else self.channel.get_consumers()
+        ):
             await consumer.queue.put(data)
 
     async def push(self, **kwargs) -> None:

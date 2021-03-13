@@ -97,6 +97,38 @@ async def test_send_producer_with_consumer():
 
 
 @pytest.mark.asyncio
+async def test_send_producer_with_multiple_consumers():
+    class TestConsumer(channel_consumer.Consumer):
+        pass
+
+    class TestChannel(channels.Channel):
+        PRODUCER_CLASS = tests.EmptyTestProducer
+        CONSUMER_CLASS = TestConsumer
+
+    async def callback(data):
+        assert data == "test"
+        await channels.get_chan(tests.TEST_CHANNEL).stop()
+
+    channels.del_chan(tests.TEST_CHANNEL)
+    await util.create_channel_instance(TestChannel, channels.set_chan)
+    consumer_1 = await channels.get_chan(tests.TEST_CHANNEL).new_consumer(callback)
+    consumer_2 = await channels.get_chan(tests.TEST_CHANNEL).new_consumer(callback)
+
+    assert consumer_1.queue.empty()
+    assert consumer_2.queue.empty()
+
+    producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
+    await producer.run()
+    await producer.send({"data": "test"}, consumers=[consumer_1])
+
+    assert not consumer_1.queue.empty()
+    assert consumer_2.queue.empty()
+
+    await producer.send({"data": "test"}, consumers=[consumer_2])
+    assert not consumer_2.queue.empty()
+
+
+@pytest.mark.asyncio
 async def test_pause_producer_without_consumers():
     class TestProducer(channel_producer.Producer):
         async def pause(self):
