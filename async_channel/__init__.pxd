@@ -14,22 +14,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-from async_channel cimport producer
-from async_channel cimport consumer
-
-from async_channel.producer cimport (
-    Producer,
-)
-from async_channel.consumer cimport (
-    Consumer,
-    InternalConsumer,
-    SupervisedConsumer,
-)
-
-__all__ = [
-    "Producer",
-    "Consumer",
-    "InternalConsumer",
-    "SupervisedConsumer",
-]

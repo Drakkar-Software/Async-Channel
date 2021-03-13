@@ -17,39 +17,40 @@
 import pytest
 import mock 
 
-import async_channel.consumers.consumer as channel_consumer
+import async_channel.consumers as consumers
 import async_channel.channels as channels
 import async_channel.util as util
-import tests 
+import tests
 
 
-async def init_consumer_test():
+@pytest.fixture
+async def internal_consumer():
+    class TestInternalConsumer(consumers.InternalConsumer):
+        async def perform(self, kwargs):
+            pass
+
     class TestChannel(channels.Channel):
         PRODUCER_CLASS = tests.EmptyTestProducer
-        CONSUMER_CLASS = tests.EmptyTestConsumer
+        CONSUMER_CLASS = TestInternalConsumer
 
     channels.del_chan(tests.TEST_CHANNEL)
     await util.create_channel_instance(TestChannel, channels.set_chan)
     producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
     await producer.run()
-    return await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
-
-
-@pytest.mark.asyncio
-async def test_perform_called():
-    consumer = await init_consumer_test()
-    with mock.patch.object(consumer, 'perform', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_CHANNEL).get_internal_producer().send({})
-        await tests.mock_was_called_once(mocked_consume_ends)
-
+    yield TestInternalConsumer(channels.get_chan(tests.TEST_CHANNEL))
     await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
 @pytest.mark.asyncio
-async def test_consume_ends_called():
-    consumer = await init_consumer_test()
-    with mock.patch.object(consumer, 'consume_ends', new=mock.AsyncMock()) as mocked_consume_ends:
+async def test_internal_consumer(internal_consumer):
+    await channels.get_chan(tests.TEST_CHANNEL).new_consumer(internal_consumer=internal_consumer)
+
+    with mock.patch.object(internal_consumer, 'perform', new=mock.AsyncMock()) as mocked_consume_ends:
         await channels.get_chan(tests.TEST_CHANNEL).get_internal_producer().send({})
         await tests.mock_was_called_once(mocked_consume_ends)
 
-    await channels.get_chan(tests.TEST_CHANNEL).stop()
+
+@pytest.mark.asyncio
+async def test_default_internal_consumer_callback(internal_consumer):
+    with pytest.raises(NotImplementedError):
+        await internal_consumer.internal_callback()

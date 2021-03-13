@@ -14,25 +14,17 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define async_channel project
+Define Producer implementation and usage
 """
+from async_channel.producers import producer
 
-from async_channel import constants
-from async_channel.constants import (
-    CHANNEL_WILDCARD,
-    DEFAULT_QUEUE_SIZE,
-)
+from async_channel.producers.producer import Producer
 
-from async_channel import enums
-from async_channel.enums import ChannelConsumerPriorityLevels
+from async_channel.producers import ipc_producer
 
-PROJECT_NAME = "async-channel"
-VERSION = "2.0.12"  # major.minor.revision
+from async_channel.producers.ipc_producer import IPCProducer
 
 __all__ = [
-    "CHANNEL_WILDCARD",
-    "DEFAULT_QUEUE_SIZE",
-    "ChannelConsumerPriorityLevels",
-    "PROJECT_NAME",
-    "VERSION",
+    "Producer",
+    "IPCProducer",
 ]

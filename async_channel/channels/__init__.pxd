@@ -17,12 +17,12 @@
 
 from async_channel.channels cimport channel
 from async_channel.channels.channel cimport (
-    Channel
+    Channel,
 )
 
 from async_channel.channels cimport channel_instances
 from async_channel.channels.channel_instances cimport (
-    ChannelInstances
+    ChannelInstances,
 )
 
 __all__ = [

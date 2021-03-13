@@ -15,8 +15,8 @@ With python3 : `pip install async-channel`
 ## Usage
 Example
 ```python
-import async_channel.consumer as consumer
-import async_channel.producer as producer
+import async_channel.consumers.consumer as consumer
+import async_channel.producers.producer as producer
 import async_channel.channels as channels
 import async_channel.util as util
 

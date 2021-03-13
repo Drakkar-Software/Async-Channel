@@ -15,19 +15,11 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from zmq cimport Socket
+cimport zmq
 
-cdef class Producer:
-    cdef public object channel # object type = Channel
-    cdef public object logger  # object type = logger
-    cdef public object produce_task  # object type = asyncio.Task
+cimport async_channel.producers.producer as producer
 
-    cdef public bint should_stop
-    cdef public bint is_running
-
-    cdef Socket ipc_socket
-
-    cpdef void create_task(self)
-    cpdef bint is_consumers_queue_empty(self, int priority_level)
+cdef class IPCProducer(producer.Producer):
+    cdef zmq.Socket ipc_socket
 
     cdef void _ipc_connect(self)

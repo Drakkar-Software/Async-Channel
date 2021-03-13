@@ -15,41 +15,27 @@
 #  License along with this library.
 
 import pytest
-import mock 
 
-import async_channel.consumers.consumer as channel_consumer
 import async_channel.channels as channels
+import async_channel.consumers as channel_consumer
 import async_channel.util as util
-import tests 
+import tests
 
 
-async def init_consumer_test():
+@pytest.mark.asyncio
+async def test_supervised_consumer():
+    class TestSupervisedConsumer(channel_consumer.SupervisedConsumer):
+        pass
+
     class TestChannel(channels.Channel):
         PRODUCER_CLASS = tests.EmptyTestProducer
-        CONSUMER_CLASS = tests.EmptyTestConsumer
+        CONSUMER_CLASS = TestSupervisedConsumer
 
     channels.del_chan(tests.TEST_CHANNEL)
     await util.create_channel_instance(TestChannel, channels.set_chan)
     producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_CHANNEL))
     await producer.run()
-    return await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
-
-
-@pytest.mark.asyncio
-async def test_perform_called():
-    consumer = await init_consumer_test()
-    with mock.patch.object(consumer, 'perform', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_CHANNEL).get_internal_producer().send({})
-        await tests.mock_was_called_once(mocked_consume_ends)
-
-    await channels.get_chan(tests.TEST_CHANNEL).stop()
-
-
-@pytest.mark.asyncio
-async def test_consume_ends_called():
-    consumer = await init_consumer_test()
-    with mock.patch.object(consumer, 'consume_ends', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_CHANNEL).get_internal_producer().send({})
-        await tests.mock_was_called_once(mocked_consume_ends)
-
+    consumer = await channels.get_chan(tests.TEST_CHANNEL).new_consumer(tests.empty_test_callback)
+    await channels.get_chan(tests.TEST_CHANNEL).get_internal_producer().send({})
+    await consumer.queue.join()
     await channels.get_chan(tests.TEST_CHANNEL).stop()

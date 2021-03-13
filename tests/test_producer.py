@@ -16,9 +16,9 @@
 
 import pytest
 
-import async_channel.consumer as channel_consumer
+import async_channel.consumers as channel_consumer
 import async_channel.channels as channels
-import async_channel.producer as channel_producer
+import async_channel.producers as channel_producer
 import async_channel.util as util
 import tests 
 

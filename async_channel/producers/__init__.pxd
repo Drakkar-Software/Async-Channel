@@ -1,4 +1,4 @@
-# cython: language_level=3, boundscheck=False, wraparound=False
+# cython: language_level=3
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -15,26 +15,18 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from zmq cimport Socket
+from async_channel.producers cimport producer
+from async_channel.producers.producer cimport (
+    Producer
+)
 
-cdef class Consumer:
-    cdef public object channel # object type = Channel
-    cdef public object logger  # object type = Logger
-    cdef public object queue  # object type = asyncio.Queue
-    cdef public object callback  # object type = callable
-    cdef public object consume_task  # object type = asyncio.Task
+from async_channel.producers cimport ipc_producer
+from async_channel.producers.ipc_producer cimport (
+    IPCProducer
+)
 
-    cdef public bint should_stop
-    cdef public int priority_level
 
-    cdef Socket ipc_socket
-
-    cpdef void create_task(self)
-
-    cdef void _ipc_connect(self)
-
-cdef class InternalConsumer(Consumer):
-    pass
-
-cdef class SupervisedConsumer(Consumer):
-    pass
+__all__ = [
+    "Producer",
+    "IPCProducer",
+]

@@ -28,6 +28,7 @@ except ImportError:
         from Cython.Build import cythonize
         return cythonize(*args, **kwargs)
 
+
     def build_ext(*args, **kwargs):
         from Cython.Distutils import build_ext
         return build_ext(*args, **kwargs)
@@ -40,14 +41,19 @@ import zmq
 
 PACKAGES = find_packages(exclude=["tests"])
 
-packages_list = ["async_channel.consumer",
-                 "async_channel.producer",
+packages_list = ["async_channel.consumers.consumer",
+                 "async_channel.consumers.internal_consumer",
+                 "async_channel.consumers.ipc_consumer",
+                 "async_channel.consumers.supervised_consumer",
+                 "async_channel.consumers.supervised_ipc_consumer",
+                 "async_channel.producers.producer",
+                 "async_channel.producers.ipc_producer",
                  "async_channel.channels.channel",
                  "async_channel.channels.channel_instances",
                  "async_channel.util.channel_creator"]
 
 ext_modules = [
-    Extension(package, [f"{package.replace('.', '/')}.py"], include_dirs=[zmq.get_includes()])
+    Extension(package, [f"{package.replace('.', '/')}.py"], include_dirs=zmq.get_includes())
     for package in packages_list]
 
 # long description from README file

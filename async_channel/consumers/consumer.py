@@ -18,10 +18,9 @@
 Define async_channel Consumer class
 """
 import asyncio
-import zmq
 
-import async_channel.util.logging_util as logging
 import async_channel.enums
+import async_channel.util.logging_util as logging
 
 
 class Consumer:
@@ -65,10 +64,6 @@ class Consumer:
         # The lowest level has the highest priority
         self.priority_level = priority_level
 
-        # connect to channel socket if ipc enabled
-        self.ipc_socket = None
-        self._ipc_connect()
-
     async def consume(self) -> None:
         """
         Should be overwritten with a self.queue.get() in a while loop
@@ -89,12 +84,10 @@ class Consumer:
 
     async def receive(self):
         """
-        Wait and receive data from the queue or the ipc socket
+        Wait and receive data from the queue
         :return: the received data
         """
-        if not self.channel.use_ipc:
-            return await self.queue.get()
-        return await self.ipc_socket.recv_multipart()
+        return await self.queue.get()
 
     async def perform(self, kwargs) -> None:
         """
@@ -138,51 +131,5 @@ class Consumer:
         if with_task:
             self.create_task()
 
-    # pylint: disable=no-member
-    def _ipc_connect(self):
-        """
-        Connect to Channel socket when IPC is enabled for this channel
-        """
-        if self.channel.use_ipc:
-            ipc_context = zmq.Context.instance()
-            self.ipc_socket = ipc_context.socket(zmq.SUB)
-            self.ipc_socket.connect(self.channel.ipc_url)
-            self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, self.channel.get_name())
-
     def __str__(self):
         return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
-
-
-class InternalConsumer(Consumer):
-    """
-    An InternalConsumer is a classic Consumer except that his callback is declared internally
-    """
-
-    def __init__(self, channel):
-        """
-        The constructor only override the callback to be the 'internal_callback' method
-        """
-        super().__init__(channel, None)
-        self.callback = self.internal_callback
-
-    async def internal_callback(self, **kwargs: dict) -> None:
-        """
-        The method triggered when the producer has pushed into the channel
-        :param kwargs: Additional params
-        """
-        raise NotImplementedError("internal_callback is not implemented")
-
-
-class SupervisedConsumer(Consumer):
-    """
-    A SupervisedConsumer is a classic Consumer that notifies the queue when its work is done
-    """
-
-    async def consume_ends(self) -> None:
-        """
-        The method called when the work is done
-        """
-        try:
-            self.queue.task_done()
-        except ValueError:  # when task_done() is called when the Exception was CancelledError
-            pass

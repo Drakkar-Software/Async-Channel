@@ -1,3 +1,4 @@
+# cython: language_level=3, boundscheck=False, wraparound=False
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -13,26 +14,16 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-"""
-Define async_channel project
-"""
 
-from async_channel import constants
-from async_channel.constants import (
-    CHANNEL_WILDCARD,
-    DEFAULT_QUEUE_SIZE,
-)
 
-from async_channel import enums
-from async_channel.enums import ChannelConsumerPriorityLevels
+cdef class Consumer:
+    cdef public object channel # object type = Channel
+    cdef public object logger  # object type = Logger
+    cdef public object queue  # object type = asyncio.Queue
+    cdef public object callback  # object type = callable
+    cdef public object consume_task  # object type = asyncio.Task
 
-PROJECT_NAME = "async-channel"
-VERSION = "2.0.12"  # major.minor.revision
+    cdef public bint should_stop
+    cdef public int priority_level
 
-__all__ = [
-    "CHANNEL_WILDCARD",
-    "DEFAULT_QUEUE_SIZE",
-    "ChannelConsumerPriorityLevels",
-    "PROJECT_NAME",
-    "VERSION",
-]
+    cpdef void create_task(self)

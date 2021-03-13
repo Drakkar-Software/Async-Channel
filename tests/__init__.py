@@ -16,8 +16,8 @@
 import asyncio
 
 import async_channel.channels as channels
-import async_channel.consumer as channel_consumer
-import async_channel.producer as producer
+import async_channel.consumers.consumer as channel_consumer
+import async_channel.producers.producer as producer
 
 TEST_CHANNEL = "Test"
 EMPTY_TEST_CHANNEL = "EmptyTest"

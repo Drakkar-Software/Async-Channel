@@ -18,7 +18,7 @@ Define Channel creation helping methods
 """
 import typing
 
-import async_channel.channels as channels
+import async_channel.channels.channel as channel
 
 
 async def create_all_subclasses_channel(
@@ -48,7 +48,7 @@ async def create_channel_instance(
     set_chan_method: typing.Callable,
     is_synchronized: bool = False,
     **kwargs: dict
-) -> channels.Channel:
+) -> channel.Channel:
     """
     Creates, initialize and start a async_channel instance
     :param channel_class: The class to instantiate with optional kwargs params

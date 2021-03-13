@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,25 +15,22 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 """
-Define async_channel project
+Define async_channel SupervisedConsumer class
 """
 
-from async_channel import constants
-from async_channel.constants import (
-    CHANNEL_WILDCARD,
-    DEFAULT_QUEUE_SIZE,
-)
+import async_channel.consumers.consumer as consumer
 
-from async_channel import enums
-from async_channel.enums import ChannelConsumerPriorityLevels
 
-PROJECT_NAME = "async-channel"
-VERSION = "2.0.12"  # major.minor.revision
+class SupervisedConsumer(consumer.Consumer):
+    """
+    A SupervisedConsumer is a classic Consumer that notifies the queue when its work is done
+    """
 
-__all__ = [
-    "CHANNEL_WILDCARD",
-    "DEFAULT_QUEUE_SIZE",
-    "ChannelConsumerPriorityLevels",
-    "PROJECT_NAME",
-    "VERSION",
-]
+    async def consume_ends(self) -> None:
+        """
+        The method called when the work is done
+        """
+        try:
+            self.queue.task_done()
+        except ValueError:  # when task_done() is called when the Exception was CancelledError
+            pass

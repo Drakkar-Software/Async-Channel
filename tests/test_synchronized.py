@@ -17,7 +17,7 @@ import mock
 import pytest
 
 import async_channel.channels as channels
-import async_channel.producer as channel_producer
+import async_channel.producers.producer as channel_producer
 import async_channel.util as util
 import tests 
 
