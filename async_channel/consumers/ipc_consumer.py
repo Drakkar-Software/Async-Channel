@@ -18,6 +18,7 @@
 Define async_channel IPCConsumer class
 """
 import asyncio
+import json
 
 import zmq.asyncio
 import zmq
@@ -53,7 +54,7 @@ class IPCConsumer(consumer.Consumer):
         Wait and receive data from the ipc socket
         :return: the received data
         """
-        return await self.ipc_socket.recv_multipart()
+        return json.loads((await self.ipc_socket.recv_multipart())[0])
 
     # pylint: disable=no-member
     def _ipc_connect(self):
