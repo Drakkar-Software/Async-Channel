@@ -27,27 +27,24 @@ import tests
 pytestmark = pytest.mark.asyncio
 
 
-# async def test_send_ipc_internal_producer_without_consumer():
-#     class TestIPCProducer(channel_producer.IPCProducer):
-#         async def send(self, data, **kwargs):
-#             await super().send(data)
-#             await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
-#
-#         async def pause(self):
-#             pass
-#
-#         async def resume(self):
-#             pass
-#
-#     class TestIPCChannel(channels.Channel):
-#         PRODUCER_CLASS = TestIPCProducer
-#
-#         def __init__(self):
-#             super().__init__(use_ipc=True)
-#
-#     channels.del_chan(tests.TEST_IPC_CHANNEL)
-#     await util.create_channel_instance(TestIPCChannel, channels.set_chan)
-#     await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send({})
+async def test_send_ipc_internal_producer_without_consumer():
+    class TestIPCProducer(channel_producer.IPCProducer):
+        async def send(self, data, **kwargs):
+            await super().send(data)
+            await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
+
+        async def pause(self):
+            pass
+
+        async def resume(self):
+            pass
+
+    class TestIPCChannel(channels.Channel):
+        PRODUCER_CLASS = TestIPCProducer
+
+    channels.del_chan(tests.TEST_IPC_CHANNEL)
+    await util.create_channel_instance(TestIPCChannel, channels.set_chan)
+    await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send({})
 
 
 async def test_send_ipc_producer_with_consumer():
@@ -58,10 +55,8 @@ async def test_send_ipc_producer_with_consumer():
         PRODUCER_CLASS = tests.EmptyTestIPCProducer
         CONSUMER_CLASS = TestIPCConsumer
 
-        def __init__(self):
-            super().__init__(use_ipc=True)
-
     async def callback(data):
+        print(data)
         assert data == "test"
         await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
 
@@ -81,9 +76,6 @@ async def test_send_ipc_producer_with_multiple_consumers():
     class TestIPCChannel(channels.Channel):
         PRODUCER_CLASS = tests.EmptyTestIPCProducer
         CONSUMER_CLASS = TestIPCConsumer
-
-        def __init__(self):
-            super().__init__(use_ipc=True)
 
     async def callback(data):
         assert data == "test"

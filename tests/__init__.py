@@ -65,9 +65,6 @@ class EmptyTestIPCChannel(channels.Channel):
     CONSUMER_CLASS = EmptyTestIPCConsumer
     PRODUCER_CLASS = EmptyTestIPCProducer
 
-    def __init__(self):
-        super().__init__(use_ipc=True)
-
 
 async def empty_test_callback():
     pass

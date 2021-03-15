@@ -51,7 +51,7 @@ class Channel:
     # Channel IPC port
     IPC_PORT = async_channel.constants.DEFAULT_IPC_PORT
 
-    def __init__(self, use_ipc=False, ipc_url=async_channel.constants.DEFAULT_IPC_URL):
+    def __init__(self, ipc_url=async_channel.constants.DEFAULT_IPC_URL):
         self.logger = logging.get_logger(self.__class__.__name__)
 
         # Channel unique id
@@ -71,9 +71,6 @@ class Channel:
 
         # Used to synchronize producers and consumer
         self.is_synchronized = False
-
-        # Used to activate Interprocess communication
-        self.use_ipc = use_ipc
 
         # Required when using IPC, the local socket url
         self.ipc_url = f"{ipc_url}{self.IPC_PORT}"

@@ -38,7 +38,7 @@ async def init_ipc_consumer_test():
 async def test_ipc_perform_called():
     consumer = await init_ipc_consumer_test()
     with mock.patch.object(consumer, 'perform', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send({})
+        await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send("test")
         await tests.mock_was_called_once(mocked_consume_ends)
 
     await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
@@ -48,7 +48,7 @@ async def test_ipc_perform_called():
 async def test_ipc_consume_ends_called():
     consumer = await init_ipc_consumer_test()
     with mock.patch.object(consumer, 'consume_ends', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send({})
+        await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send("test")
         await tests.mock_was_called_once(mocked_consume_ends)
 
     await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()

@@ -15,12 +15,10 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 cimport zmq
-cimport zmq.asyncio
 
 cimport async_channel.producers.producer as producer
 
 cdef class IPCProducer(producer.Producer):
     cdef zmq.Socket ipc_socket
-    cdef zmq.asyncio.Context ipc_context
 
     cdef void _ipc_connect(self)
