@@ -267,6 +267,9 @@ class Channel:
         for producer in self.get_producers():
             await producer.stop()
 
+        if self.internal_producer is not None:
+            await self.internal_producer.stop()
+
     def flush(self) -> None:
         """
         Flush the channel object before stopping
