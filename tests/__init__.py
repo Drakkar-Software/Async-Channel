@@ -16,20 +16,36 @@
 import asyncio
 
 import async_channel.channels as channels
-import async_channel.consumers.consumer as channel_consumer
-import async_channel.producers.producer as producer
+import async_channel.consumers as consumers
+import async_channel.producers as producers
 
 TEST_CHANNEL = "Test"
+TEST_IPC_CHANNEL = "TestIPC"
 EMPTY_TEST_CHANNEL = "EmptyTest"
 EMPTY_TEST_WITH_ID_CHANNEL = "EmptyTestWithId"
 CONSUMER_KEY = "test"
 
 
-class EmptyTestConsumer(channel_consumer.Consumer):
+class EmptyTestConsumer(consumers.Consumer):
     pass
 
 
-class EmptyTestProducer(producer.Producer):
+class EmptyTestIPCConsumer(consumers.IPCConsumer):
+    pass
+
+
+class EmptyTestProducer(producers.Producer):
+    async def start(self):
+        await asyncio.sleep(100000)
+
+    async def pause(self):
+        pass
+
+    async def resume(self):
+        pass
+
+
+class EmptyTestIPCProducer(producers.IPCProducer):
     async def start(self):
         await asyncio.sleep(100000)
 
@@ -43,6 +59,14 @@ class EmptyTestProducer(producer.Producer):
 class EmptyTestChannel(channels.Channel):
     CONSUMER_CLASS = EmptyTestConsumer
     PRODUCER_CLASS = EmptyTestProducer
+
+
+class EmptyTestIPCChannel(channels.Channel):
+    CONSUMER_CLASS = EmptyTestIPCConsumer
+    PRODUCER_CLASS = EmptyTestIPCProducer
+
+    def __init__(self):
+        super().__init__(use_ipc=True)
 
 
 async def empty_test_callback():
@@ -71,4 +95,5 @@ class EmptyTestWithIdChannel(channels.Channel):
 async def _wait_asyncio_next_cycle():
     async def do_nothing():
         pass
+
     await asyncio.create_task(do_nothing())

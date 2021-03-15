@@ -17,6 +17,7 @@
 """
 Define async_channel IPCConsumer class
 """
+import zmq.asyncio
 import zmq
 
 import async_channel.consumers.consumer as consumer
@@ -49,7 +50,14 @@ class IPCConsumer(consumer.Consumer):
         Connect to Channel socket, set self.ipc_socket value with the socket that was created
         and subscribed to Channel name subject
         """
-        ipc_context = zmq.Context.instance()
+        ipc_context = zmq.asyncio.Context.instance()
         self.ipc_socket = ipc_context.socket(zmq.SUB)
-        self.ipc_socket.connect(self.channel.ipc_url)
+        self.ipc_socket.bind(self.channel.ipc_url)
         self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, self.channel.get_name())
+
+    async def stop(self) -> None:
+        """
+        Close IPC socket
+        """
+        await super().stop()
+        self.ipc_socket.close()

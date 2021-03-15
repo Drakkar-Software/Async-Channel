@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-cimport zmq
+cimport zmq.asyncio as zmq
 
 cimport async_channel.producers.producer as producer
 

@@ -16,6 +16,9 @@
 """
 Define async_channel IPCProducer class
 """
+import json
+
+import zmq.asyncio
 import zmq
 
 import async_channel.producers.producer as producer
@@ -36,20 +39,26 @@ class IPCProducer(producer.Producer):
         # connect to the channel ipc socket
         self._ipc_connect()
 
-    async def send(self, data) -> None:
-        pass  # TODO
-
-    async def push(self, **kwargs) -> None:
+    async def send(self, data, consumers=None) -> None:
         """
-        Push notification that new data should be sent implementation
-        When nothing should be done on data : self.send()
+        Send to each consumer data though the ipc socket
         """
+        if consumers is not None:
+            self.logger.warning("Consumer filtering is not available with IPCProducer")
+        await self.ipc_socket.send_multipart([json.dumps(data).encode('utf-8')])
 
     # pylint: disable=no-member
     def _ipc_connect(self):
         """
         Connect to Channel socket when IPC is enabled for this channel
         """
-        ipc_context = zmq.Context.instance()
+        ipc_context = zmq.asyncio.Context.instance()
         self.ipc_socket = ipc_context.socket(zmq.PUB)
-        self.ipc_socket.bind(self.channel.ipc_url)
+        self.ipc_socket.connect(self.channel.ipc_url)
+
+    async def stop(self) -> None:
+        """
+        Close IPC socket
+        """
+        await super().stop()
+        self.ipc_socket.close()

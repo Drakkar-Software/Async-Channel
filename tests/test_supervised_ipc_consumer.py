@@ -1,4 +1,3 @@
-# cython: language_level=3, boundscheck=False, wraparound=False
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -14,12 +13,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-cimport zmq.asyncio as zmq
-
-cimport async_channel.consumers.consumer as consumer
-
-cdef class IPCConsumer(consumer.Consumer):
-    cdef zmq.Socket ipc_socket
-
-    cdef void _ipc_connect(self)
