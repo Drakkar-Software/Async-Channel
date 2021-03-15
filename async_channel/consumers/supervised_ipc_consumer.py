@@ -1,4 +1,3 @@
-# pylint: disable=too-many-instance-attributes
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -30,4 +29,3 @@ class SupervisedIPCConsumer(ipc_consumer.IPCConsumer):
         """
         The method called when the work is done
         """
-        # TODO

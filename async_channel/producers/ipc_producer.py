@@ -16,6 +16,7 @@
 """
 Define async_channel IPCProducer class
 """
+import asyncio
 import json
 
 import zmq
@@ -30,6 +31,9 @@ class IPCProducer(producer.Producer):
     the channel socket instead of a consumer queue
     """
 
+    # seconds to wait to fix slow subscriber problem
+    SLOW_SUBSCRIBER_FIX_TIME = 4
+
     def __init__(self, channel):
         super().__init__(channel)
 
@@ -39,13 +43,23 @@ class IPCProducer(producer.Producer):
         # connect to the channel ipc socket
         self._ipc_connect()
 
+    async def run(self) -> None:
+        """
+        Synchronize consumers by sending a "hello" payload
+        Inspired from slow subscriber detection pattern
+        https://zguide.zeromq.org/docs/chapter5/#Slow-Subscriber-Detection-Suicidal-Snail-Pattern
+        """
+        await super().run()
+        await asyncio.sleep(self.SLOW_SUBSCRIBER_FIX_TIME)
+        await self.send({})
+
     async def send(self, data, consumers=None) -> None:
         """
         Send to each consumer data though the ipc socket
         """
         if consumers is not None:
             self.logger.warning("Consumer filtering is not available with IPCProducer")
-        await self.ipc_socket.send_multipart([json.dumps(data).encode('utf-8')])
+        await self.ipc_socket.send_multipart([json.dumps(data).encode("utf-8")])
 
     # pylint: disable=no-member
     def _ipc_connect(self):

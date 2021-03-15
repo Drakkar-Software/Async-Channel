@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import asyncio
 
 import mock
 import pytest
@@ -29,16 +30,16 @@ async def init_ipc_consumer_test():
 
     channels.del_chan(tests.TEST_IPC_CHANNEL)
     await util.create_channel_instance(TestIPCChannel, channels.set_chan)
-    producer = tests.EmptyTestProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
+    producer = tests.EmptyTestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
     await producer.run()
-    return await channels.get_chan(tests.TEST_IPC_CHANNEL).new_consumer(callback=tests.empty_test_callback)
+    return producer, await channels.get_chan(tests.TEST_IPC_CHANNEL).new_consumer(callback=tests.empty_test_callback)
 
 
 @pytest.mark.asyncio
 async def test_ipc_perform_called():
-    consumer = await init_ipc_consumer_test()
+    producer, consumer = await init_ipc_consumer_test()
     with mock.patch.object(consumer, 'perform', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send("test")
+        await producer.send({"data": "test"})
         await tests.mock_was_called_once(mocked_consume_ends)
 
     await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
@@ -46,9 +47,9 @@ async def test_ipc_perform_called():
 
 @pytest.mark.asyncio
 async def test_ipc_consume_ends_called():
-    consumer = await init_ipc_consumer_test()
+    producer, consumer = await init_ipc_consumer_test()
     with mock.patch.object(consumer, 'consume_ends', new=mock.AsyncMock()) as mocked_consume_ends:
-        await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send("test")
+        await producer.send({"data": "test"})
         await tests.mock_was_called_once(mocked_consume_ends)
 
     await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()

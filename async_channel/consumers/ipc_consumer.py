@@ -1,4 +1,3 @@
-# pylint: disable=too-many-instance-attributes
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
@@ -17,11 +16,10 @@
 """
 Define async_channel IPCConsumer class
 """
-import asyncio
 import json
 
-import zmq.asyncio
 import zmq
+import zmq.asyncio
 
 import async_channel
 import async_channel.consumers.consumer as consumer
@@ -33,16 +31,15 @@ class IPCConsumer(consumer.Consumer):
     """
 
     def __init__(
-            self,
-            channel,
-            callback: object,
-            size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
-            priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
+        self,
+        channel,
+        callback: object,
+        size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
+        priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
-        super().__init__(channel=channel,
-                         callback=callback,
-                         size=size,
-                         priority_level=priority_level)
+        super().__init__(
+            channel=channel, callback=callback, size=size, priority_level=priority_level
+        )
 
         # the Channel ipc socket
         self.ipc_socket = None
@@ -65,7 +62,7 @@ class IPCConsumer(consumer.Consumer):
         ipc_context = zmq.asyncio.Context.instance()
         self.ipc_socket = ipc_context.socket(zmq.SUB)
         self.ipc_socket.connect(self.channel.ipc_url)
-        self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, '')
+        self.ipc_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
     async def stop(self) -> None:
         """

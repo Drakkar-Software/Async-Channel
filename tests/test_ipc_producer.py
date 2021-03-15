@@ -56,7 +56,6 @@ async def test_send_ipc_producer_with_consumer():
         CONSUMER_CLASS = TestIPCConsumer
 
     async def callback(data):
-        print(data)
         assert data == "test"
         await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
 
@@ -67,6 +66,7 @@ async def test_send_ipc_producer_with_consumer():
     producer = tests.EmptyTestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
     await producer.run()
     await producer.send({"data": "test"})
+    await asyncio.sleep(5)  # wait for socket to close
 
 
 async def test_send_ipc_producer_with_multiple_consumers():
@@ -92,4 +92,28 @@ async def test_send_ipc_producer_with_multiple_consumers():
     producer = tests.EmptyTestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
     await producer.run()
     await producer.send({"data": "test"})
+
+
+async def test_send_ipc_producer_with_multiple_consumers_and_filter():
+    class TestIPCConsumer(channel_consumer.IPCConsumer):
+        pass
+
+    class TestIPCChannel(channels.Channel):
+        PRODUCER_CLASS = tests.EmptyTestIPCProducer
+        CONSUMER_CLASS = TestIPCConsumer
+
+    async def callback(data):
+        assert data == "test"
+        await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
+
+    channels.del_chan(tests.TEST_IPC_CHANNEL)
+    await util.create_channel_instance(TestIPCChannel, channels.set_chan)
+    consumer_1 = await channels.get_chan(tests.TEST_IPC_CHANNEL).new_consumer(callback)
+    consumer_2 = await channels.get_chan(tests.TEST_IPC_CHANNEL).new_consumer(callback)
+
+    assert consumer_1.queue.empty()
+    assert consumer_2.queue.empty()
+
+    producer = tests.EmptyTestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
+    await producer.run()
     await producer.send({"data": "test"}, consumers=[consumer_1])  # same as consumers=None
