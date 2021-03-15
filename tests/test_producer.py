@@ -60,7 +60,7 @@ async def test_send_producer_without_consumer():
     class TestConsumer(channel_consumer.Consumer):
         async def consume(self):
             while not self.should_stop:
-                await self.callback(**(await self.queue.get()))
+                await self.callback(**(await self.receive()))
 
     class TestChannel(channels.Channel):
         PRODUCER_CLASS = TestProducer

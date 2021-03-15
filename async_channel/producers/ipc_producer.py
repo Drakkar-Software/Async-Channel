@@ -36,6 +36,9 @@ class IPCProducer(producer.Producer):
         # the Channel ipc socket
         self.ipc_socket = None
 
+        # ZMQ Context
+        self.ipc_context = None
+
         # connect to the channel ipc socket
         self._ipc_connect()
 
@@ -52,13 +55,16 @@ class IPCProducer(producer.Producer):
         """
         Connect to Channel socket when IPC is enabled for this channel
         """
-        ipc_context = zmq.asyncio.Context.instance()
-        self.ipc_socket = ipc_context.socket(zmq.PUB)
-        self.ipc_socket.connect(self.channel.ipc_url)
+        self.ipc_context = zmq.asyncio.Context.instance()
+        self.ipc_socket = self.ipc_context.socket(zmq.PUB)
+        self.ipc_socket.bind(self.channel.ipc_url)
 
     async def stop(self) -> None:
         """
         Close IPC socket
         """
         await super().stop()
+        self.ipc_context.term()
         self.ipc_socket.close()
+        self.ipc_context = None
+        self.ipc_socket = None

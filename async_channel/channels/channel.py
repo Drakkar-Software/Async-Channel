@@ -48,6 +48,9 @@ class Channel:
         async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value
     )
 
+    # Channel IPC port
+    IPC_PORT = async_channel.constants.DEFAULT_IPC_PORT
+
     def __init__(self, use_ipc=False, ipc_url=async_channel.constants.DEFAULT_IPC_URL):
         self.logger = logging.get_logger(self.__class__.__name__)
 
@@ -73,7 +76,7 @@ class Channel:
         self.use_ipc = use_ipc
 
         # Required when using IPC, the local socket url
-        self.ipc_url = ipc_url
+        self.ipc_url = f"{ipc_url}{self.IPC_PORT}"
 
     @classmethod
     def get_name(cls) -> str:

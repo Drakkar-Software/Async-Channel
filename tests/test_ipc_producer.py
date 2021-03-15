@@ -13,6 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import asyncio
+
 import pytest
 
 import async_channel.consumers as channel_consumer
@@ -25,63 +27,39 @@ import tests
 pytestmark = pytest.mark.asyncio
 
 
-async def test_send_ipc_internal_producer_without_consumer():
-    class TestIPCProducer(channel_producer.Producer):
-        async def send(self, data, **kwargs):
-            await super().send(data)
-            await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
-
-        async def pause(self):
-            pass
-
-        async def resume(self):
-            pass
-
-    class TestIPCChannel(channels.Channel):
-        PRODUCER_CLASS = TestIPCProducer
-
-    channels.del_chan(tests.TEST_IPC_CHANNEL)
-    await util.create_channel_instance(TestIPCChannel, channels.set_chan)
-    await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send({})
-
-
-async def test_send_ipc_producer_without_consumer():
-    class TestIPCProducer(channel_producer.Producer):
-        async def send(self, data, **kwargs):
-            await super().send(data)
-            await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
-
-        async def pause(self):
-            pass
-
-        async def resume(self):
-            pass
-
-    class TestIPCConsumer(channel_consumer.Consumer):
-        async def consume(self):
-            while not self.should_stop:
-                await self.callback(**(await self.queue.get()))
-
-    class TestIPCChannel(channels.Channel):
-        PRODUCER_CLASS = TestIPCProducer
-        CONSUMER_CLASS = TestIPCConsumer
-
-    channels.del_chan(tests.TEST_IPC_CHANNEL)
-    await util.create_channel_instance(TestIPCChannel, channels.set_chan)
-
-    producer = TestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
-    await producer.run()
-    await producer.send({})
-    await producer.stop()
+# async def test_send_ipc_internal_producer_without_consumer():
+#     class TestIPCProducer(channel_producer.IPCProducer):
+#         async def send(self, data, **kwargs):
+#             await super().send(data)
+#             await channels.get_chan(tests.TEST_IPC_CHANNEL).stop()
+#
+#         async def pause(self):
+#             pass
+#
+#         async def resume(self):
+#             pass
+#
+#     class TestIPCChannel(channels.Channel):
+#         PRODUCER_CLASS = TestIPCProducer
+#
+#         def __init__(self):
+#             super().__init__(use_ipc=True)
+#
+#     channels.del_chan(tests.TEST_IPC_CHANNEL)
+#     await util.create_channel_instance(TestIPCChannel, channels.set_chan)
+#     await channels.get_chan(tests.TEST_IPC_CHANNEL).get_internal_producer().send({})
 
 
 async def test_send_ipc_producer_with_consumer():
-    class TestIPCConsumer(channel_consumer.Consumer):
+    class TestIPCConsumer(channel_consumer.IPCConsumer):
         pass
 
     class TestIPCChannel(channels.Channel):
         PRODUCER_CLASS = tests.EmptyTestIPCProducer
         CONSUMER_CLASS = TestIPCConsumer
+
+        def __init__(self):
+            super().__init__(use_ipc=True)
 
     async def callback(data):
         assert data == "test"
@@ -94,16 +72,18 @@ async def test_send_ipc_producer_with_consumer():
     producer = tests.EmptyTestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
     await producer.run()
     await producer.send({"data": "test"})
-    await producer.stop()
 
 
 async def test_send_ipc_producer_with_multiple_consumers():
-    class TestIPCConsumer(channel_consumer.Consumer):
+    class TestIPCConsumer(channel_consumer.IPCConsumer):
         pass
 
     class TestIPCChannel(channels.Channel):
         PRODUCER_CLASS = tests.EmptyTestIPCProducer
         CONSUMER_CLASS = TestIPCConsumer
+
+        def __init__(self):
+            super().__init__(use_ipc=True)
 
     async def callback(data):
         assert data == "test"
@@ -120,7 +100,4 @@ async def test_send_ipc_producer_with_multiple_consumers():
     producer = tests.EmptyTestIPCProducer(channels.get_chan(tests.TEST_IPC_CHANNEL))
     await producer.run()
     await producer.send({"data": "test"})
-
-    assert consumer_1.queue.empty()  # Consumer filtering is not available with IPCProducer
-    assert consumer_2.queue.empty()
-    await producer.stop()
+    await producer.send({"data": "test"}, consumers=[consumer_1])  # same as consumers=None
