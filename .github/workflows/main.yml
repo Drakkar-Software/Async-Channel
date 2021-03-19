@@ -23,11 +23,11 @@ jobs:
       run: pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
 
     - name: Black lint
-      run: black ${{ secrets.PACKAGE_FOLDER }} --diff --check
+      run: black async_channel --diff --check
 
     - name: Pylint
       run: |
-        pylint --rcfile=standard.rc ${{ secrets.PACKAGE_FOLDER }}
+        pylint --rcfile=standard.rc async_channel
         if [ $? -ne 1 ]; then exit 0; fi
 
   tests:
@@ -68,7 +68,7 @@ jobs:
       run: pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
 
     - name: Publish coverage
-      if: matrix.type == 'sources'
+      if: matrix.type == 'sources' && github.event_name == 'push'
       run: coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
