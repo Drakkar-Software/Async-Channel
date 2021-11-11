@@ -116,7 +116,7 @@ class Producer:
         It will wait until all consumers have notified that their consume() method have ended
         """
         await asyncio.gather(
-            *[consumer.queue.join() for consumer in self.channel.get_consumers()]
+            *(consumer.queue.join() for consumer in self.channel.get_consumers())
         )
 
     async def synchronized_perform_consumers_queue(self, priority_level) -> None:
@@ -124,13 +124,10 @@ class Producer:
         Empties the queue synchronously for each consumers
         :param priority_level: the consumer minimal priority level
         """
-        for consumer in [
-            consumer
-            for consumer in self.channel.get_consumers()
-            if consumer.priority_level <= priority_level
-        ]:
-            while not consumer.queue.empty():
-                await consumer.perform(await consumer.queue.get())
+        for consumer in self.channel.get_consumers():
+            if consumer.priority_level <= priority_level:
+                while not consumer.queue.empty():
+                    await consumer.perform(await consumer.queue.get())
 
     async def stop(self) -> None:
         """
