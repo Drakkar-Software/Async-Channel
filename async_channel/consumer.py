@@ -119,6 +119,19 @@ class Consumer:
         if with_task:
             self.create_task()
 
+    async def join(self, timeout) -> None:
+        """
+        Implemented in SupervisedConsumer to wait for any "perform" call to be finished.
+        Instantly returns on regular consumer
+        """
+
+    async def join_queue(self) -> None:
+        """
+        Implemented in SupervisedConsumer to wait for the whole queue to finish
+        processing.
+        Instantly returns on regular consumer
+        """
+
     def __str__(self):
         return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
 
@@ -147,6 +160,44 @@ class SupervisedConsumer(Consumer):
     """
     A SupervisedConsumer is a classic Consumer that notifies the queue when its work is done
     """
+    def __init__(
+        self,
+        callback: object,
+        size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
+        priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
+    ):
+        """
+        The constructor only override the callback to be the 'internal_callback' method
+        """
+        super().__init__(callback, size=size, priority_level=priority_level)
+
+        # Clear when perform is running (set after)
+        self.idle = asyncio.Event()
+        self.idle.set()
+
+    async def join(self, timeout) -> None:
+        """
+        Wait for any perform to be finished.
+        """
+        if not self.idle.is_set():
+            await asyncio.wait_for(self.idle.wait(), timeout)
+
+    async def join_queue(self) -> None:
+        """
+        Wait for the consumer queue to finish processing.
+        """
+        await self.queue.join()
+
+    async def perform(self, kwargs) -> None:
+        """
+        Clear self.idle event when perform is being done then set it
+        :param kwargs: queue get content
+        """
+        try:
+            self.idle.clear()
+            await self.callback(**kwargs)
+        finally:
+            self.idle.set()
 
     async def consume_ends(self) -> None:
         """
