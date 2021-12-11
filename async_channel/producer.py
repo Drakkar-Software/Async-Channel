@@ -116,18 +116,23 @@ class Producer:
         It will wait until all consumers have notified that their consume() method have ended
         """
         await asyncio.gather(
-            *(consumer.queue.join() for consumer in self.channel.get_consumers())
+            *(consumer.join_queue() for consumer in self.channel.get_consumers())
         )
 
-    async def synchronized_perform_consumers_queue(self, priority_level) -> None:
+    async def synchronized_perform_consumers_queue(self, priority_level, join_consumers, timeout) -> None:
         """
         Empties the queue synchronously for each consumers
         :param priority_level: the consumer minimal priority level
+        :param join_consumers: True if consumer tasks should be joined. Avoids orphaned tasks to run without
+        :param timeout: Time to wait for consumers in join call
+        waiting for them when started before this check (when check, their queue is empty but a task is running)
         """
         for consumer in self.channel.get_consumers():
             if consumer.priority_level <= priority_level:
                 while not consumer.queue.empty():
                     await consumer.perform(await consumer.queue.get())
+                if join_consumers:
+                    await consumer.join(timeout)
 
     async def stop(self) -> None:
         """
