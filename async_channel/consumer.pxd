@@ -30,4 +30,4 @@ cdef class InternalConsumer(Consumer):
     pass
 
 cdef class SupervisedConsumer(Consumer):
-    pass
+    cdef public object idle  # object type = asyncio.Event

@@ -29,6 +29,10 @@ class EmptyTestConsumer(channel_consumer.Consumer):
     pass
 
 
+class EmptyTestSupervisedConsumer(channel_consumer.SupervisedConsumer):
+    pass
+
+
 class EmptyTestProducer(producer.Producer):
     async def start(self):
         await asyncio.sleep(100000)
@@ -50,12 +54,12 @@ async def empty_test_callback():
 
 
 async def mock_was_called_once(mocked_method):
-    await _wait_asyncio_next_cycle()
+    await wait_asyncio_next_cycle()
     mocked_method.assert_called_once()
 
 
 async def mock_was_not_called(mocked_method):
-    await _wait_asyncio_next_cycle()
+    await wait_asyncio_next_cycle()
     mocked_method.assert_not_called()
 
 
@@ -68,7 +72,7 @@ class EmptyTestWithIdChannel(channels.Channel):
         self.chan_id = test_id
 
 
-async def _wait_asyncio_next_cycle():
+async def wait_asyncio_next_cycle():
     async def do_nothing():
         pass
     await asyncio.create_task(do_nothing())
