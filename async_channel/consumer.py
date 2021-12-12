@@ -160,6 +160,7 @@ class SupervisedConsumer(Consumer):
     """
     A SupervisedConsumer is a classic Consumer that notifies the queue when its work is done
     """
+
     def __init__(
         self,
         callback: object,

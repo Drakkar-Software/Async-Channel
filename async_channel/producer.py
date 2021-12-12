@@ -119,7 +119,9 @@ class Producer:
             *(consumer.join_queue() for consumer in self.channel.get_consumers())
         )
 
-    async def synchronized_perform_consumers_queue(self, priority_level, join_consumers, timeout) -> None:
+    async def synchronized_perform_consumers_queue(
+        self, priority_level, join_consumers, timeout
+    ) -> None:
         """
         Empties the queue synchronously for each consumers
         :param priority_level: the consumer minimal priority level
