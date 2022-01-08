@@ -1,2 +1,2 @@
 # Setup requirements
-cython==0.29.24
+cython==0.29.26
