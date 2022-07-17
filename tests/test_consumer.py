@@ -15,6 +15,7 @@
 #  License along with this library.
 
 import pytest
+import pytest_asyncio
 import mock 
 
 import async_channel.consumer as channel_consumer
@@ -55,7 +56,7 @@ async def test_consume_ends_called():
     await channels.get_chan(tests.TEST_CHANNEL).stop()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def internal_consumer():
     class TestInternalConsumer(channel_consumer.InternalConsumer):
         async def perform(self, kwargs):

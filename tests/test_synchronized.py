@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
+import pytest_asyncio
 
 import mock
 import pytest
@@ -43,7 +44,7 @@ class SynchronizedChannelTest(channels.Channel):
     CONSUMER_CLASS = tests.EmptyTestConsumer
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def synchronized_channel():
     yield await util.create_channel_instance(SynchronizedChannelTest, channels.set_chan, is_synchronized=True)
     channels.del_chan(TEST_SYNCHRONIZED_CHANNEL)

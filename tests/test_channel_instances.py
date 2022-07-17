@@ -16,20 +16,21 @@
 import uuid
 
 import pytest
+import pytest_asyncio
 
 import async_channel.channels as channels
 import async_channel.util as util
 import tests
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def chan_id():
     channel_uuid = uuid.uuid4().hex
     await util.create_channel_instance(tests.EmptyTestWithIdChannel, channels.set_chan_at_id, test_id=channel_uuid)
     return channel_uuid
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def channel_id():
     channel_uuid = uuid.uuid4().hex
     await util.create_channel_instance(tests.EmptyTestWithIdChannel, channels.set_chan_at_id, test_id=channel_uuid)
