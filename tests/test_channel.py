@@ -16,6 +16,7 @@
 import os
 
 import pytest
+import pytest_asyncio
 import mock 
 
 import async_channel.channels as channels
@@ -25,7 +26,7 @@ import async_channel
 import tests
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_channel():
     channels.del_chan(tests.EMPTY_TEST_CHANNEL)
     yield await util.create_channel_instance(tests.EmptyTestChannel, channels.set_chan)
