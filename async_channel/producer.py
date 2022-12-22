@@ -129,12 +129,11 @@ class Producer:
         :param timeout: Time to wait for consumers in join call
         waiting for them when started before this check (when check, their queue is empty but a task is running)
         """
-        for consumer in self.channel.get_consumers():
-            if consumer.priority_level <= priority_level:
-                while not consumer.queue.empty():
-                    await consumer.perform(await consumer.queue.get())
-                if join_consumers:
-                    await consumer.join(timeout)
+        for consumer in self.channel.get_prioritized_consumers(priority_level):
+            while not consumer.queue.empty():
+                await consumer.perform(await consumer.queue.get())
+            if join_consumers:
+                await consumer.join(timeout)
 
     async def stop(self) -> None:
         """

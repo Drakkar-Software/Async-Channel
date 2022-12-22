@@ -31,6 +31,7 @@ cdef class Channel(object):
 
     cpdef void add_new_consumer(self, object consumer, dict consumer_filters)
     cpdef list get_consumers(self)
+    cpdef list get_prioritized_consumers(self, int priority_level)
     cpdef object get_producers(self)
     cpdef void unregister_producer(self, producer.Producer producer)
     cpdef list get_consumer_from_filters(self, dict consumer_filters)
