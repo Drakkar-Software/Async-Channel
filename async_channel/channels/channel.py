@@ -148,6 +148,18 @@ class Channel:
         """
         return [consumer[self.INSTANCE_KEY] for consumer in self.consumers]
 
+    def get_prioritized_consumers(self, priority_level) -> list:
+        """
+        Returns all consumers instance
+        Can be overwritten according to the class needs
+        :return: the subscribed consumers list
+        """
+        return [
+            consumer[self.INSTANCE_KEY]
+            for consumer in self.consumers
+            if consumer[self.INSTANCE_KEY].priority_level <= priority_level
+        ]
+
     def _filter_consumers(self, consumer_filters) -> list:
         """
         Returns the consumers that match the selection
