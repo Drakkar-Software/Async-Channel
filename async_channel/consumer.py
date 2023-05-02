@@ -206,5 +206,7 @@ class SupervisedConsumer(Consumer):
         """
         try:
             self.queue.task_done()
-        except ValueError:  # when task_done() is called when the Exception was CancelledError
+        except (
+            ValueError
+        ):  # when task_done() is called when the Exception was CancelledError
             pass
