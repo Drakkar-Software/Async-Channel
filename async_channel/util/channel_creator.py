@@ -47,6 +47,7 @@ async def create_channel_instance(
     channel_class: typing.ClassVar,
     set_chan_method: typing.Callable,
     is_synchronized: bool = False,
+    channel_name: str = None,
     **kwargs: dict
 ) -> channels.Channel:
     """
@@ -54,11 +55,12 @@ async def create_channel_instance(
     :param channel_class: The class to instantiate with optional kwargs params
     :param set_chan_method: The method to call to add the created channel instance to a Channel list
     :param is_synchronized: the channel is_synchronized attribute
+    :param channel_name: name of the channel to create. Defaults to channel_class.get_name()
     :param kwargs: Some additional params passed to the 'channel_class' constructor
     :return: the created 'channel_class' instance
     """
     created_channel = channel_class(**kwargs)
-    set_chan_method(created_channel, name=channel_class.get_name())
+    set_chan_method(created_channel, name=channel_name or channel_class.get_name())
     created_channel.is_synchronized = is_synchronized
     await created_channel.start()
     return created_channel
