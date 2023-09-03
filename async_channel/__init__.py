@@ -37,7 +37,7 @@ from async_channel.consumer import (
 )
 
 PROJECT_NAME = "async-channel"
-VERSION = "2.2.0"  # major.minor.revision
+VERSION = "2.2.1"  # major.minor.revision
 
 __all__ = [
     "CHANNEL_WILDCARD",

@@ -1,4 +1,4 @@
-# Async-Channel [2.2.0](https://github.com/Drakkar-Software/Async-Channel/blob/master/CHANGELOG.md)
+# Async-Channel [2.2.1](https://github.com/Drakkar-Software/Async-Channel/blob/master/CHANGELOG.md)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/523d43c62f1d4de08395752367f5fddc)](https://www.codacy.com/gh/Drakkar-Software/Async-Channel/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Drakkar-Software/Async-Channel&amp;utm_campaign=Badge_Grade)
 [![PyPI](https://img.shields.io/pypi/v/async-channel.svg)](https://pypi.python.org/pypi/async-channel/)
 [![Github-Action-CI](https://github.com/Drakkar-Software/Async-Channel/workflows/Async-Channel-Default-CI/badge.svg)](https://github.com/Drakkar-Software/Async-Channel/actions)
