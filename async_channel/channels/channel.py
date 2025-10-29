@@ -1,3 +1,4 @@
+# pylint: disable=too-many-positional-arguments
 #  Drakkar-Software Async-Channel
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
