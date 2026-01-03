@@ -18,7 +18,8 @@ Define Channel creation helping methods
 """
 import typing
 
-import async_channel.channels
+if typing.TYPE_CHECKING:
+    import async_channel.channels.channel
 
 
 async def create_all_subclasses_channel(

@@ -23,7 +23,8 @@ import async_channel.util.logging_util as logging
 import async_channel.enums
 import async_channel.channels.channel_instances as channel_instances
 
-import async_channel.producer
+if typing.TYPE_CHECKING:
+    import async_channel.producer
 
 
 # pylint: disable=undefined-variable, not-callable
