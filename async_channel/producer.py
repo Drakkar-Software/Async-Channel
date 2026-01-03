@@ -20,7 +20,9 @@ import asyncio
 import typing
 
 import async_channel.util.logging_util as logging
-import async_channel.channels.channel
+
+if typing.TYPE_CHECKING:
+    import async_channel.channels.channel
 
 
 class Producer:
