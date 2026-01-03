@@ -17,8 +17,10 @@
 Define async_channel Producer class
 """
 import asyncio
+import typing
 
 import async_channel.util.logging_util as logging
+import async_channel.channels.channel
 
 
 class Producer:
@@ -31,30 +33,30 @@ class Producer:
     When the channel is synchronized priority levels are used to priorities or delay consumer calls
     """
 
-    def __init__(self, channel):
+    def __init__(self, channel: "async_channel.channels.channel.Channel"):
         self.logger = logging.get_logger(self.__class__.__name__)
 
         # Related async_channel instance
-        self.channel = channel
+        self.channel: "async_channel.channels.channel.Channel" = channel
 
         """
         Should only be used with .cancel()
         """
-        self.produce_task = None
+        self.produce_task: typing.Optional[asyncio.Task] = None
 
         """
         Should be used as the perform while loop condition
             while(self.should_stop):
                 ...
         """
-        self.should_stop = False
+        self.should_stop: bool = False
 
         """
         Should be used to know if the producer is already started
         """
-        self.is_running = False
+        self.is_running: bool = False
 
-    async def send(self, data) -> None:
+    async def send(self, data: typing.Any) -> None:
         """
         Send to each consumer data though its queue
         :param data: data to be put into consumers queues
@@ -120,7 +122,7 @@ class Producer:
         )
 
     async def synchronized_perform_consumers_queue(
-        self, priority_level, join_consumers, timeout
+        self, priority_level: int, join_consumers: bool, timeout: float
     ) -> None:
         """
         Empties the queue synchronously for each consumers
@@ -162,7 +164,7 @@ class Producer:
         if not self.channel.is_synchronized:
             self.create_task()
 
-    def is_consumers_queue_empty(self, priority_level) -> bool:
+    def is_consumers_queue_empty(self, priority_level: int) -> bool:
         """
         Check if consumers queue are empty
         :param priority_level: the consumer minimal priority level

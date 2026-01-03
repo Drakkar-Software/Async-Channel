@@ -18,6 +18,8 @@ This module defines created Channels interaction methods
 """
 import async_channel.util.logging_util as logging
 
+import async_channel.channels.channel
+
 
 class ChannelInstances:
     """
@@ -28,7 +30,7 @@ class ChannelInstances:
     _instances = {}
 
     @classmethod
-    def instance(cls, *args, **kwargs):
+    def instance(cls, *args, **kwargs) -> "ChannelInstances":
         """
         Create the instance if not already created
         Return the class instance
@@ -41,10 +43,14 @@ class ChannelInstances:
         return cls._instances[cls]
 
     def __init__(self):
-        self.channels = {}
+        self.channels: dict[
+            str, dict[str, "async_channel.channels.channel.Channel"]
+        ] = {}
 
 
-def set_chan_at_id(chan, name) -> None:
+def set_chan_at_id(
+    chan: "async_channel.channels.channel.Channel", name: str
+) -> "async_channel.channels.channel.Channel":
     """
     Add a new async_channel to the channels instances dictionary at chan.id
     :param chan: the channel instance
@@ -64,7 +70,7 @@ def set_chan_at_id(chan, name) -> None:
     raise ValueError(f"Channel {chan_name} already exists.")
 
 
-def get_channels(chan_id) -> dict:
+def get_channels(chan_id: str) -> dict[str, "async_channel.channels.channel.Channel"]:
     """
     Get async_channel instances by async_channel id
     :param chan_id: the channel id
@@ -76,7 +82,7 @@ def get_channels(chan_id) -> dict:
         raise KeyError(f"Channels not found with chan_id: {chan_id}") from exception
 
 
-def del_channel_container(chan_id) -> None:
+def del_channel_container(chan_id: str) -> None:
     """
     Delete all async_channel id instances
     :param chan_id: the channel id
@@ -84,7 +90,9 @@ def del_channel_container(chan_id) -> None:
     ChannelInstances.instance().channels.pop(chan_id, None)
 
 
-def get_chan_at_id(chan_name, chan_id) -> object:
+def get_chan_at_id(
+    chan_name: str, chan_id: str
+) -> "async_channel.channels.channel.Channel":
     """
     Get the channel instance that matches the name and the id
     :param chan_name: the channel name
@@ -99,7 +107,7 @@ def get_chan_at_id(chan_name, chan_id) -> object:
         ) from exception
 
 
-def del_chan_at_id(chan_name, chan_id) -> None:
+def del_chan_at_id(chan_name: str, chan_id: str) -> None:
     """
     Delete the channel instance that matches the name and the id
     :param chan_name: the channel name

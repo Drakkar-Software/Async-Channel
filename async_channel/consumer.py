@@ -17,6 +17,7 @@
 Define async_channel Consumer class
 """
 import asyncio
+import typing
 
 import async_channel.util.logging_util as logging
 import async_channel.enums
@@ -32,32 +33,32 @@ class Consumer:
 
     def __init__(
         self,
-        callback: object,
+        callback: typing.Callable,
         size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
         priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
         self.logger = logging.get_logger(self.__class__.__name__)
 
         # Consumer data queue. It contains producer's work (received through Producer.send()).
-        self.queue = asyncio.Queue(maxsize=size)
+        self.queue: asyncio.Queue = asyncio.Queue(maxsize=size)
 
         # Method to be called when performing task is done
-        self.callback = callback
+        self.callback: typing.Callable = callback
 
         # Should only be used with .cancel()
-        self.consume_task = None
+        self.consume_task: typing.Optional[asyncio.Task] = None
 
         """
         Should be used as the perform while loop condition
             >>> while(self.should_stop):
                     ...
         """
-        self.should_stop = False
+        self.should_stop: bool = False
 
         # Default priority level
         # Used by Producers to call consumers by prioritization
         # The lowest level has the highest priority
-        self.priority_level = priority_level
+        self.priority_level: int = priority_level
 
     async def consume(self) -> None:
         """
@@ -70,9 +71,9 @@ class Consumer:
                 self.logger.debug("Cancelled task")
             except Exception as consume_exception:  # pylint: disable=broad-except
                 self.logger.exception(
-                    exception=consume_exception,
-                    publish_error_if_necessary=True,
-                    error_message=f"Exception when calling callback on {self}: {consume_exception}",
+                    consume_exception,
+                    publish_error_if_necessary=True,  # type: ignore
+                    error_message=f"Exception when calling callback on {self}: {consume_exception}",  # type: ignore
                 )
             finally:
                 await self.consume_ends()
@@ -109,7 +110,7 @@ class Consumer:
         """
         self.consume_task = asyncio.create_task(self.consume())
 
-    async def run(self, with_task=True) -> None:
+    async def run(self, with_task: bool = True) -> None:
         """
         - Initialize the consumer
         - Start the consumer main task
@@ -119,7 +120,7 @@ class Consumer:
         if with_task:
             self.create_task()
 
-    async def join(self, timeout) -> None:
+    async def join(self, timeout: float) -> None:
         """
         Implemented in SupervisedConsumer to wait for any "perform" call to be finished.
         Instantly returns on regular consumer
@@ -132,7 +133,7 @@ class Consumer:
         Instantly returns on regular consumer
         """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__} with callback: {self.callback.__name__}"
 
 
@@ -146,7 +147,7 @@ class InternalConsumer(Consumer):
         The constructor only override the callback to be the 'internal_callback' method
         """
         super().__init__(None)
-        self.callback = self.internal_callback
+        self.callback: typing.Callable = self.internal_callback
 
     async def internal_callback(self, **kwargs: dict) -> None:
         """
@@ -163,7 +164,7 @@ class SupervisedConsumer(Consumer):
 
     def __init__(
         self,
-        callback: object,
+        callback: typing.Callable,
         size: int = async_channel.constants.DEFAULT_QUEUE_SIZE,
         priority_level: int = async_channel.enums.ChannelConsumerPriorityLevels.HIGH.value,
     ):
@@ -173,10 +174,10 @@ class SupervisedConsumer(Consumer):
         super().__init__(callback, size=size, priority_level=priority_level)
 
         # Clear when perform is running (set after)
-        self.idle = asyncio.Event()
+        self.idle: asyncio.Event = asyncio.Event()
         self.idle.set()
 
-    async def join(self, timeout) -> None:
+    async def join(self, timeout: float) -> None:
         """
         Wait for any perform to be finished.
         """
