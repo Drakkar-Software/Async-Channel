@@ -23,6 +23,8 @@ import async_channel.util.logging_util as logging
 import async_channel.enums
 import async_channel.channels.channel_instances as channel_instances
 
+import async_channel.producer
+
 
 # pylint: disable=undefined-variable, not-callable
 class Channel:
@@ -34,10 +36,14 @@ class Channel:
     """
 
     # Channel producer class
-    PRODUCER_CLASS = None
+    PRODUCER_CLASS: typing.Optional[typing.Type["async_channel.producer.Producer"]] = (
+        None
+    )
 
     # Channel consumer class
-    CONSUMER_CLASS = None
+    CONSUMER_CLASS: typing.Optional[typing.Type["async_channel.consumer.Consumer"]] = (
+        None
+    )
 
     # Consumer instance in consumer filters
     INSTANCE_KEY = "consumer_instance"
@@ -51,22 +57,26 @@ class Channel:
         self.logger = logging.get_logger(self.__class__.__name__)
 
         # Channel unique id
-        self.chan_id = None
+        self.chan_id: typing.Optional[str] = None
 
         # Channel subscribed producers list
-        self.producers = []
+        self.producers: list["async_channel.producer.Producer"] = []
 
-        # Channel subscribed consumers list
-        self.consumers = []
+        # Channel subscribed consumers list: list dicts of dicts containing:
+        # - At least a consumer instance under the INSTANCE_KEY key
+        # - Possibly other filters under other keys and values
+        self.consumers: list[dict[str, typing.Any]] = []
 
         # Used to perform global send from non-producer context
-        self.internal_producer = None
+        self.internal_producer: typing.Optional["async_channel.producer.Producer"] = (
+            None
+        )
 
         # Used to save producers state (paused or not)
-        self.is_paused = True
+        self.is_paused: bool = True
 
         # Used to synchronize producers and consumer
-        self.is_synchronized = False
+        self.is_synchronized: bool = False
 
     @classmethod
     def get_name(cls) -> str:
@@ -80,11 +90,11 @@ class Channel:
     async def new_consumer(
         self,
         callback: object = None,
-        consumer_filters: dict = None,
-        internal_consumer: object = None,
+        consumer_filters: typing.Optional[dict] = None,
+        internal_consumer: typing.Optional["async_channel.consumer.Consumer"] = None,
         size: int = 0,
         priority_level: int = DEFAULT_PRIORITY_LEVEL,
-    ) -> CONSUMER_CLASS:
+    ) -> "async_channel.consumer.Consumer":
         """
         Create an appropriate consumer instance for this async_channel and add it to the consumer list
         Should end by calling '_check_producers_state'
@@ -98,7 +108,7 @@ class Channel:
         consumer = (
             internal_consumer
             if internal_consumer
-            else self.CONSUMER_CLASS(callback, size=size, priority_level=priority_level)
+            else self.CONSUMER_CLASS(callback, size=size, priority_level=priority_level)  # type: ignore
         )
         await self._add_new_consumer_and_run(consumer, consumer_filters)
         await self._check_producers_state()
@@ -106,7 +116,10 @@ class Channel:
 
     # pylint: disable=unused-argument
     async def _add_new_consumer_and_run(
-        self, consumer: CONSUMER_CLASS, consumer_filters: dict, **kwargs
+        self,
+        consumer: "async_channel.consumer.Consumer",
+        consumer_filters: typing.Optional[dict],
+        **kwargs,
     ) -> None:
         """
         Should be called by 'new_consumer' to add the consumer to self.consumers and call 'consumer.run()'
@@ -120,7 +133,9 @@ class Channel:
         self.add_new_consumer(consumer, consumer_filters)
         await consumer.run(with_task=not self.is_synchronized)
 
-    def add_new_consumer(self, consumer, consumer_filters) -> None:
+    def add_new_consumer(
+        self, consumer: "async_channel.consumer.Consumer", consumer_filters: dict
+    ) -> None:
         """
         Add a new consumer to consumer list with filters
         :param consumer: the consumer to add
@@ -130,7 +145,9 @@ class Channel:
         consumer_filters[self.INSTANCE_KEY] = consumer
         self.consumers.append(consumer_filters)
 
-    def get_consumer_from_filters(self, consumer_filters) -> list:
+    def get_consumer_from_filters(
+        self, consumer_filters: dict
+    ) -> list["async_channel.consumer.Consumer"]:
         """
         Returns the instance filtered consumers list
         WARNING:
@@ -141,7 +158,7 @@ class Channel:
         """
         return self._filter_consumers(consumer_filters)
 
-    def get_consumers(self) -> list:
+    def get_consumers(self) -> list["async_channel.consumer.Consumer"]:
         """
         Returns all consumers instance
         Can be overwritten according to the class needs
@@ -149,7 +166,9 @@ class Channel:
         """
         return [consumer[self.INSTANCE_KEY] for consumer in self.consumers]
 
-    def get_prioritized_consumers(self, priority_level) -> list:
+    def get_prioritized_consumers(
+        self, priority_level: int
+    ) -> list["async_channel.consumer.Consumer"]:
         """
         Returns all consumers instance
         Can be overwritten according to the class needs
@@ -161,7 +180,9 @@ class Channel:
             if consumer[self.INSTANCE_KEY].priority_level <= priority_level
         ]
 
-    def _filter_consumers(self, consumer_filters) -> list:
+    def _filter_consumers(
+        self, consumer_filters: dict
+    ) -> list["async_channel.consumer.Consumer"]:
         """
         Returns the consumers that match the selection
         Returns all consumer instances if consumer_filter is empty
@@ -174,7 +195,9 @@ class Channel:
             if _check_filters(consumer, consumer_filters)
         ]
 
-    async def remove_consumer(self, consumer: CONSUMER_CLASS) -> None:
+    async def remove_consumer(
+        self, consumer: "async_channel.consumer.Consumer"
+    ) -> None:
         """
         Should be overwritten according to the class needs
         Should end by calling '_check_producers_state' and then 'consumer.stop'
@@ -234,7 +257,9 @@ class Channel:
                 return True
         return False
 
-    async def register_producer(self, producer) -> None:
+    async def register_producer(
+        self, producer: "async_channel.producer.Producer"
+    ) -> None:
         """
         Add the producer to producers list
         Can be overwritten to perform additional action when registering
@@ -247,7 +272,7 @@ class Channel:
         if self.is_paused:
             await producer.pause()
 
-    def unregister_producer(self, producer) -> None:
+    def unregister_producer(self, producer: "async_channel.producer.Producer") -> None:
         """
         Remove the producer from producers list
         Can be overwritten to perform additional action when registering
@@ -256,7 +281,7 @@ class Channel:
         if producer in self.producers:
             self.producers.remove(producer)
 
-    def get_producers(self) -> typing.Iterable:
+    def get_producers(self) -> typing.Iterable["async_channel.producer.Producer"]:
         """
         Should be overwritten according to the class needs
         :return: async_channel producers iterable
@@ -306,7 +331,7 @@ class Channel:
         for producer in self.get_producers():
             await producer.modify(**kwargs)
 
-    def get_internal_producer(self, **kwargs) -> PRODUCER_CLASS:
+    def get_internal_producer(self, **kwargs) -> "async_channel.producer.Producer":
         """
         Returns internal producer if exists else creates it
         :param kwargs: arguments for internal producer __init__
@@ -314,14 +339,14 @@ class Channel:
         """
         if not self.internal_producer:
             try:
-                self.internal_producer = self.PRODUCER_CLASS(self, **kwargs)
+                self.internal_producer = self.PRODUCER_CLASS(self, **kwargs)  # type: ignore
             except TypeError:
                 self.logger.exception("PRODUCER_CLASS not defined")
                 raise
         return self.internal_producer
 
 
-def set_chan(chan, name) -> Channel:
+def set_chan(chan: Channel, name: str) -> Channel:
     """
     Set a new Channel instance in the channels list according to channel name
     :param chan: new Channel instance
@@ -335,7 +360,7 @@ def set_chan(chan, name) -> Channel:
     raise ValueError(f"Channel {chan_name} already exists.")
 
 
-def del_chan(name) -> None:
+def del_chan(name: str) -> None:
     """
     Delete a Channel instance from the channels list according to channel name
     :param name: name of the channel to delete
@@ -344,7 +369,7 @@ def del_chan(name) -> None:
         channel_instances.ChannelInstances.instance().channels.pop(name, None)
 
 
-def get_chan(chan_name) -> Channel:
+def get_chan(chan_name: str) -> Channel:
     """
     Return the channel instance from channel name
     :param chan_name: the channel name
@@ -353,7 +378,7 @@ def get_chan(chan_name) -> Channel:
     return channel_instances.ChannelInstances.instance().channels[chan_name]
 
 
-def _check_filters(consumer_filters, expected_filters) -> bool:
+def _check_filters(consumer_filters: dict, expected_filters: dict) -> bool:
     """
     Checks if the consumer match the specified filters
     Returns True if expected_filters is empty
