@@ -21,4 +21,4 @@ sphinx==3.2.1
 sphinx_rtd_theme
 
 pylint
-black==23.3.0
+black==25.12.0
